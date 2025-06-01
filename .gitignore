@@ -2,7 +2,3 @@
 node_modules/
 .next/
 out/
-
-# Lock files
-package-lock.json
-yarn.lock
