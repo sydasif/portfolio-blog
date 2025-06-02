@@ -28,7 +28,7 @@ export default function Home({ allPostsData }) {
   return (
     <>
       <Head>
-        <title>NetAuto Blog - Networking & Automation Insights</title>
+        <title>Net.Automate  - Networking & Automation Insights</title>
         <meta name="description" content="Discover insights about network automation and engineering" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
@@ -72,7 +72,7 @@ export default function Home({ allPostsData }) {
           {/* Footer */}
           <footer className="bg-white border-t border-gray-200 py-8">
             <div className="container mx-auto px-4 text-center text-gray-600">
-              <p>&copy; {new Date().getFullYear()} NetAuto Blog. All rights reserved.</p>
+              <p>&copy; {new Date().getFullYear()} Net.Automate. All rights reserved.</p>
             </div>
           </footer>
         </div>

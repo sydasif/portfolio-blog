@@ -6,10 +6,10 @@ export default function Navbar() {
       <div className="container mx-auto px-4 py-4 flex justify-between items-center">
         <div>
           <Link href="/" legacyBehavior>
-            <a className="text-2xl font-bold text-indigo-600 hover:text-indigo-700">NetAuto Blog</a>
+            <a className="text-2xl font-bold text-indigo-600 hover:text-indigo-700">Net.Automate</a>
           </Link>
           <div className="text-xs md:text-sm text-gray-500 leading-tight mt-1">
-            Network Automation, Infrastructure as Code, and DevOps for Modern Engineers
+            Network Automation, Infrastructure as Code, and DevOps
           </div>
         </div>
         <div className="flex space-x-6">
