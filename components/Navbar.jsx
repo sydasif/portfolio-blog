@@ -1,9 +1,8 @@
 import Link from 'next/link';
 
 export default function Navbar() {
-  return (
-    <nav className="bg-white shadow-sm sticky top-0 z-20">
-      <div className="container mx-auto px-4 py-4 flex justify-between items-center">
+  return (    <nav className="bg-white shadow-md sticky top-0 z-50 border-b border-gray-200">
+      <div className="container mx-auto px-4 py-3 flex justify-between items-center">
         <div>
           <Link href="/" legacyBehavior>
             <a className="text-2xl font-bold text-indigo-600 hover:text-indigo-700">Net.Automate</a>

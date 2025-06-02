@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import Head from 'next/head';
+import { useRouter } from 'next/router';
 import BlogPostCard from '../components/BlogPostCard';
 import { ErrorBoundary } from 'react-error-boundary';
 import { getSortedPostsData } from '../lib/posts';
@@ -16,6 +17,13 @@ function ErrorFallback({ error }) {
 
 export default function Home({ allPostsData }) {
   const [searchQuery, setSearchQuery] = useState('');
+  const router = useRouter();
+
+  const siteUrl = 'https://www.netautomate.blog'; // Replace with your actual domain
+  const pageUrl = `${siteUrl}${router.asPath}`;
+  const pageTitle = "Net.Automate - Networking & Automation Insights";
+  const description = "Discover insights about network automation, infrastructure as code, DevOps, and modern networking practices.";
+  const defaultOgImage = `${siteUrl}/images/og-default.png`; // Path to your default OG image
 
   const filteredPosts = allPostsData.filter(
     (post) => {
@@ -28,10 +36,24 @@ export default function Home({ allPostsData }) {
   return (
     <>
       <Head>
-        <title>Net.Automate  - Networking & Automation Insights</title>
-        <meta name="description" content="Discover insights about network automation and engineering" />
+        <title>{pageTitle}</title>
+        <meta name="description" content={description} />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
+        <link rel="canonical" href={pageUrl} />
+
+        <meta property="og:title" content={pageTitle} />
+        <meta property="og:description" content={description} />
+        <meta property="og:url" content={pageUrl} />
+        <meta property="og:type" content="website" />
+        <meta property="og:image" content={defaultOgImage} />
+        <meta property="og:site_name" content="Net.Automate" />
+
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={pageTitle} />
+        <meta name="twitter:description" content={description} />
+        <meta name="twitter:image" content={defaultOgImage} />
+        <meta name="keywords" content="network automation, devops, infrastructure as code, python, ansible, networking, cloud networking, sdn" />
       </Head>
       <ErrorBoundary FallbackComponent={ErrorFallback}>
         <div className="bg-gray-50 min-h-screen text-gray-800">
@@ -70,9 +92,10 @@ export default function Home({ allPostsData }) {
           </main>
 
           {/* Footer */}
-          <footer className="bg-white border-t border-gray-200 py-8">
+          <footer className="bg-gray-100 border-t border-gray-200 py-10">
             <div className="container mx-auto px-4 text-center text-gray-600">
-              <p>&copy; {new Date().getFullYear()} Net.Automate. All rights reserved.</p>
+              <p>© {new Date().getFullYear()} Net.Automate. All rights reserved.</p>
+              <p className="text-sm mt-1">Exploring the intersection of networking and software.</p>
             </div>
           </footer>
         </div>

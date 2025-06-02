@@ -2,9 +2,8 @@ import Link from 'next/link';
 
 export default function BlogPostCard({ post }) {
   if (!post) return null;
-
   return (
-    <div className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300">
+    <div className="bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-shadow duration-300 ease-in-out">
       {post.image && (
         <img
           src={post.image}
