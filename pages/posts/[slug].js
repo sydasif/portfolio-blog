@@ -1,6 +1,7 @@
 import Head from 'next/head';
 import Link from 'next/link';
 import { getAllPostSlugs, getPostData } from '../../lib/posts';
+import Navbar from '../../components/Navbar';
 
 export default function Post({ postData }) {
   return (
@@ -11,14 +12,7 @@ export default function Post({ postData }) {
       </Head>
 
       <div className="bg-gray-50 min-h-screen text-gray-800">
-        {/* Minimal Header */}
-        <header className="bg-white shadow-sm">
-          <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-            <Link href="/" legacyBehavior>
-              <a className="text-2xl font-bold text-indigo-600 hover:text-indigo-700">NetAuto Blog</a>
-            </Link>
-          </div>
-        </header>
+        <Navbar />
 
         <main className="container mx-auto px-4 py-8">
           <article className="bg-white shadow-lg rounded-lg p-6 md:p-8 lg:p-10">
