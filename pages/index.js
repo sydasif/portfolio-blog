@@ -1,8 +1,8 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import Head from 'next/head';
 import BlogPostCard from '../components/BlogPostCard';
-import { blogPosts } from '../data/blogPosts';
 import { ErrorBoundary } from 'react-error-boundary';
+import { getSortedPostsData } from '../lib/posts';
 
 function ErrorFallback({ error }) {
   return (
@@ -13,19 +13,16 @@ function ErrorFallback({ error }) {
   );
 }
 
-export default function Home() {
+export default function Home({ allPostsData }) {
   const [searchQuery, setSearchQuery] = useState('');
-  const [filteredPosts, setFilteredPosts] = useState(blogPosts);
 
-  // Filter blog posts based on search query
-  useEffect(() => {
-    const filtered = blogPosts.filter(
-      (post) =>
-        post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        post.excerpt.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-    setFilteredPosts(filtered);
-  }, [searchQuery]);
+  const filteredPosts = allPostsData.filter(
+    (post) => {
+      const titleMatch = post.title.toLowerCase().includes(searchQuery.toLowerCase());
+      const excerptMatch = post.excerpt && post.excerpt.toLowerCase().includes(searchQuery.toLowerCase());
+      return titleMatch || excerptMatch;
+    }
+  );
 
   return (
     <>
@@ -84,7 +81,7 @@ export default function Home() {
           <main className="container mx-auto px-4 py-8">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredPosts && filteredPosts.map((post) => (
-                <BlogPostCard key={post.id} post={post} />
+                <BlogPostCard key={post.slug} post={post} />
               ))}
               {filteredPosts && filteredPosts.length === 0 && (
                 <div className="col-span-full text-center py-10">
@@ -104,4 +101,13 @@ export default function Home() {
       </ErrorBoundary>
     </>
   );
+}
+
+export async function getStaticProps() {
+  const allPostsData = getSortedPostsData();
+  return {
+    props: {
+      allPostsData,
+    },
+  };
 }

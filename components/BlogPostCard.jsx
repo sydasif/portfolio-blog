@@ -1,3 +1,5 @@
+import Link from 'next/link';
+
 export default function BlogPostCard({ post }) {
   if (!post) return null;
 
@@ -18,9 +20,11 @@ export default function BlogPostCard({ post }) {
         <p className="mt-2 text-gray-600">{post.excerpt || 'No description available'}</p>
         <div className="mt-4 flex items-center justify-between">
           <span className="text-sm text-gray-500">{post.date || 'No date'}</span>
-          <button className="text-indigo-600 hover:text-indigo-800 font-medium">
-            Read More
-          </button>
+          {post.slug && (
+            <Link href={`/posts/${post.slug}`} legacyBehavior>
+              <a className="text-indigo-600 hover:text-indigo-800 font-medium">Read More</a>
+            </Link>
+          )}
         </div>
       </div>
     </div>
