@@ -1,6 +1,6 @@
 ---
 title: "Docker for Network Engineers - Docker Networking"
-date: "2025-06-03"
+date: "2023-06-03"
 excerpt: "Understand how Docker handles container networking — from bridge and host modes to Mac VLAN, IP VLAN, and advanced L3 setups — all tailored for network engineers."
 description: "This post explores Docker networking for network engineers, covering default bridge networks, port mapping, custom networks, host mode, and advanced configurations like Mac VLAN and IP VLAN. Learn when and how to apply each to optimize container communication and isolation."
 category: "Docker Networking"

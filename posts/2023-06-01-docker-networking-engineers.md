@@ -1,6 +1,6 @@
 ---
 title: "Docker for Network Engineers - Introduction to Docker"
-date: "2025-06-01"
+date: "2023-06-01"
 excerpt: "A practical introduction to Docker containers for network engineers. Learn how to install Docker on Ubuntu, run containers, pull images, and manage volumes."
 description: "This blog post introduces Docker to network engineers, covering installation on Ubuntu, key Docker commands, image and container management, and volume mounting techniques."
 category: "Docker"
