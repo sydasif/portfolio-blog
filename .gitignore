@@ -1,4 +1,23 @@
-# Node.js dependencies
+# Node modules
 node_modules/
+
+# Next.js build output
 .next/
+
+# Production build
 out/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Local env files
+.env*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Tailwind output (if used)
+public/tailwind.css
