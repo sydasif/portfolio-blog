@@ -6,10 +6,10 @@ import Navbar from '../../components/Navbar';
 
 export default function Post({ postData }) {
   const router = useRouter();
-  const siteUrl = 'https://www.netautomate.blog'; // Replace with your actual domain
+  const siteUrl = ' `https://iaclab.vercel.app/` '; // Replace with your actual domain
   const pageUrl = `${siteUrl}${router.asPath}`;
   const pageTitle = `${postData.title} - Net.Automate`;
-  const description = postData.excerpt || 'A post from Net.Automate blog.';
+  const description = postData.description || postData.excerpt || 'A post from Net.Automate blog.';
   const defaultOgImage = `${siteUrl}/images/og-default.png`; // Path to your default OG image
 
   const ogImage = postData.image
@@ -31,10 +31,10 @@ export default function Post({ postData }) {
         <meta property="og:site_name" content="Net.Automate" />
         <meta property="article:published_time" content={postData.date} />
         {/* <meta property="article:modified_time" content={postData.modified_date_if_available} /> */}
-        <meta property="article:author" content="Syed Asif" /> {/* Or dynamically if you have authors */}
+        <meta property="article:author" content={postData.author || "Syed Asif"} />
         {postData.category && <meta property="article:section" content={postData.category} />}
-        {/* Add keywords/tags if available in postData */}
-        {/* e.g. <meta name="keywords" content={postData.tags.join(', ')} /> */}
+        {postData.tags && postData.tags.length > 0 && <meta name="keywords" content={postData.tags.join(', ')} />}
+        {postData.tags && postData.tags.map(tag => <meta property="article:tag" content={tag} key={tag} />)}
 
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content={pageTitle} />
