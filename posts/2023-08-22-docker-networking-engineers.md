@@ -1,0 +1,129 @@
+---
+title: "Docker for Network Engineers - App Container"
+author: "Syed Asif"
+date: "2023-08-22"
+excerpt: "Learn how to build a custom Docker container with Python and Netmiko for network automation tasks."
+description: "This blog demonstrates how to build a lightweight Docker container using a Python base image and Netmiko to automate network devices. You'll learn to write a Dockerfile, include your Netmiko script, build and run the container, and finally push the image to Docker Hub."
+tags:
+  - Docker
+  - Network Automation
+  - Netmiko
+  - Python
+  - DevOps
+  - Containers
+category: "Docker"
+image: "/images/docker.jpg"
+---
+
+Docker allows you to leverage pre-built and ready-to-use container images. If an application consists of multiple components such as a database, a front-end, and a back-end, you can deploy multiple containers and link them together.
+
+In the first blog, you looked at the Ops Perspective of Docker. I installed Docker and downloaded an image, started a new container, logged in to the new container, ran a command inside it, and then destroyed it.
+
+## The Dev Perspective
+
+In this blog, my topic is building a custom container to leverage network automation tools like Netmiko and other network libraries. As you know, most of these tools are built on Python and run in a Linux environment. Isolating your tools in a container can avoid dependency issues. You can use containers from Docker Hub as a base for your container, make a directory and place two empty files in it.
+
+```bash
+$ tree
+.
+├── app.py
+└── Dockerfile
+
+0 directories, 2 files
+```
+
+The file `app.py` is a Netmiko script that will be put into the new container image. The contents of the file are:
+
+```python
+from netmiko import ConnectHandler
+
+# Create a dictionary for a particular Device
+R1 = {'device_type': 'cisco_ios',
+      'ip': '10.10.10.9',
+      'username': 'admin',
+      'password': 'cisco'}
+
+net_connect = ConnectHandler(**R1)
+
+# Sending a command to the Device
+output = net_connect.send_command("show ip int br")
+print(output)
+```
+
+Next, you need to write the `Dockerfile`, which contains the actual build instructions, as shown below:
+
+```Dockerfile
+FROM python:slim-bullseye
+
+LABEL name="Python Automation"
+LABEL maintainer="sydasif78@gmail.com"
+
+RUN apt-get update
+
+RUN pip install --upgrade pip \
+&& pip install netmiko
+
+WORKDIR /home
+
+COPY app.py /home
+```
+
+Let’s walk through the Dockerfile:
+
+* `FROM` loads the base image.
+* `LABEL` adds metadata.
+* `RUN` executes commands inside the container.
+* `WORKDIR` sets the working directory.
+* `COPY` adds your Python script to the container.
+
+Use the `docker build` command to create a new image using the Dockerfile. Run the command from within the directory containing the app code and Dockerfile:
+
+```bash
+$ docker build -f ./Dockerfile -t automation .
+```
+
+Sample output:
+
+```terminal
+REPOSITORY   TAG             IMAGE ID       CREATED         SIZE
+automation   latest          828154ade6ae   6 seconds ago   199MB
+python       slim-bullseye   ba94a8d11761   3 days ago      125MB
+```
+
+Run a container from the image and test the app:
+
+```bash
+$ docker run --name netmiko -it automation bash
+root@daf6ab851974:/home# ls
+app.py
+```
+
+Execute the Python script:
+
+```bash
+root@daf6ab851974:/home# python app.py
+```
+
+This command connects us to a bash shell at `/home` inside the container. All tools installed during the build are available. Use the `exit` command to leave the container.
+
+## Sharing Docker Images
+
+You can share your container images to Docker Hub. First, log in:
+
+```bash
+$ docker login
+```
+
+Tag the existing image:
+
+```bash
+$ docker image tag automation sydasif78/python:latest
+```
+
+Push it to Docker Hub:
+
+```bash
+$ docker image push sydasif78/python:latest
+```
+
+Now you have a functional container ready for network automation projects. In the next blog, I’ll show how to connect this container to a network in GNS3 to test the image.

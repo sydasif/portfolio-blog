@@ -1,10 +1,11 @@
 ---
-title: "Docker for Network Engineers - Introduction to Docker"
+title: "Docker for Network Engineers - Introduction"
 date: "2023-06-01"
 excerpt: "A practical introduction to Docker containers for network engineers. Learn how to install Docker on Ubuntu, run containers, pull images, and manage volumes."
 description: "This blog post introduces Docker to network engineers, covering installation on Ubuntu, key Docker commands, image and container management, and volume mounting techniques."
 category: "Docker"
 tags: ["Docker", "Network Automation", "Ubuntu", "Linux Containers", "DevOps", "Docker Tutorial", "Docker Installation", "Network Engineers", "Containerization", "Docker Images"]
+image: "/images/docker.jpg"
 ---
 
 Docker containers are lightweight, portable, and efficient virtual environments that package applications and their dependencies. They enable consistent and rapid software deployment across different environments, making them a foundation for modern application development and deployment practices.

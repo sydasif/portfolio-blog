@@ -1,10 +1,11 @@
 ---
-title: 'Docker for Network Engineers - Introduction to Automation'
+title: 'Docker for Network Engineers - Automation'
 date: '2023-06-02'
 excerpt: 'Learn how to use Docker for network automation, from container basics and setup to advanced use cases like CI/CD, simulation, monitoring, and secure deployments.'
 description: 'A practical guide for network engineers to use Docker for automating, testing, and deploying network infrastructure with CI/CD, version control, and containerized tools.'
 category: 'Docker'
 tags: ['network-automation', 'docker', 'devops', 'containers', 'cicd', 'netmiko', 'nornir', 'ansible', 'containerlab']
+image: "/images/docker.jpg"
 ---
 
 ## Docker for Network Engineers
