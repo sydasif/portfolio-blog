@@ -4,6 +4,15 @@ import { useRouter } from "next/router";
 import { getAllPostSlugs, getPostData } from "../../lib/posts";
 import Navbar from "../../components/Navbar";
 import { MDXRemote } from 'next-mdx-remote';
+import TestComponent from '../../components/mdx/TestComponent';
+
+const components = {
+  TestComponent,
+  // Add other custom components here
+  // For example: CodeBlock,
+  // For default HTML elements, you can override them here
+  // h1: (props) => <h1 style={{ color: 'red' }} {...props} />,
+};
 
 export default function Post({ postData }) {
   const router = useRouter();
@@ -85,7 +94,7 @@ export default function Post({ postData }) {
             <div
               className="prose max-w-none"
             >
-              <MDXRemote {...postData.content} />
+              <MDXRemote {...postData.content} components={components} />
             </div>
           </article>
         </main>

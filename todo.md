@@ -12,9 +12,9 @@
 
 - [x] Organize markdown content into a clear folder structure (e.g., `content/posts/`)
 - [x] Enhance frontmatter metadata (author, readingTime, status, lastModified, etc.)
-- [ ] Add support for MDX (React components in markdown)
-- [ ] Implement syntax highlighting for code blocks
-- [ ] Add support for custom markdown extensions (tables, footnotes, etc.)
+- [x] Add support for MDX (React components in markdown)
+- [x] Implement syntax highlighting for code blocks
+- [x] Add support for custom markdown extensions (tables, footnotes, etc.)
 
 ## Phase 3: App Router Migration & Structure
 
