@@ -7,8 +7,13 @@ const nextConfig = {
   poweredByHeader: false,
   pageExtensions: ['js', 'jsx', 'ts', 'tsx', 'md', 'mdx'],
   images: {
-    domains: ["vercel.com"],
     formats: ["image/avif", "image/webp"],
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: '**',
+      },
+    ],
   },
   compiler: {
     removeConsole: process.env.NODE_ENV === "production",

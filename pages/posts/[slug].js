@@ -1,5 +1,6 @@
 import Head from "next/head";
 import Link from "next/link";
+import Image from "next/image";
 import { useRouter } from "next/router";
 import { getAllPostSlugs, getPostData } from "../../lib/posts";
 import Navbar from "../../components/Navbar";
@@ -71,10 +72,11 @@ export default function Post({ postData }) {
         <Navbar />
         <main className="container mx-auto px-4 py-8">
           <div className="mb-6 text-sm">
-            <Link href="/" legacyBehavior>
-              <a className="text-indigo-600 hover:text-indigo-800 hover:underline font-medium">
-                ← Back to All Posts
-              </a>
+            <Link
+              href="/"
+              className="text-indigo-600 hover:text-indigo-800 hover:underline font-medium"
+            >
+              ← Back to All Posts
             </Link>
           </div>
           <article className="bg-white shadow-lg rounded-lg p-6 md:p-8 lg:p-10">
@@ -85,15 +87,19 @@ export default function Post({ postData }) {
               <time>{postData.date}</time>
             </div>
             {postData.image && (
-              <img
-                src={postData.image}
-                alt={postData.title}
-                className="w-full h-64 object-cover rounded-lg mb-6"
-              />
+              <div className="relative w-full h-64 rounded-lg mb-6">
+                <Image
+                  src={postData.image}
+                  alt={postData.title}
+                  fill
+                  style={{ objectFit: 'cover' }}
+                  className="rounded-lg"
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                  priority
+                />
+              </div>
             )}
-            <div
-              className="prose max-w-none"
-            >
+            <div className="prose max-w-none">
               <MDXRemote {...postData.content} components={components} />
             </div>
           </article>

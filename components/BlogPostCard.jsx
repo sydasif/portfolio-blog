@@ -1,15 +1,20 @@
 import Link from "next/link";
+import Image from "next/image";
 
 export default function BlogPostCard({ post }) {
   if (!post) return null;
   return (
     <div className="bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-shadow duration-300 ease-in-out">
       {post.image && (
-        <img
-          src={post.image}
-          alt={post.title}
-          className="w-full h-48 object-cover"
-        />
+        <div className="relative w-full h-48">
+          <Image
+            src={post.image}
+            alt={post.title}
+            fill
+            style={{ objectFit: "cover" }}
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+          />
+        </div>
       )}
       <div className="p-6">
         {post.category && (
@@ -28,10 +33,11 @@ export default function BlogPostCard({ post }) {
             {post.date || "No date"}
           </span>
           {post.slug && (
-            <Link href={`/posts/${post.slug}`} legacyBehavior>
-              <a className="text-indigo-600 hover:text-indigo-800 font-medium">
-                Read More
-              </a>
+            <Link
+              href={`/posts/${post.slug}`}
+              className="text-indigo-600 hover:text-indigo-800 font-medium"
+            >
+              Read More
             </Link>
           )}
         </div>
