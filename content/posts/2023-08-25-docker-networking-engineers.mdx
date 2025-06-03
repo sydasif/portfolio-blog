@@ -12,6 +12,10 @@ tags:
   - Python
   - Network Labs
 image: "/images/docker.jpg"
+author: "Syed Asif"
+readingTime: "5 min read" # Placeholder - calculate based on content
+status: "published" # or "draft"
+lastModified: "2024-07-29" # Placeholder - update with actual last modified date
 ---
 
 Docker is a useful tool for network engineers. It allows you to develop, deploy, and run applications inside lightweight, isolated containers. Although Docker is commonly used for software development and deployment, it can also be valuable in network engineering for several reasons:
@@ -42,7 +46,7 @@ In this post, I connect the Docker container running a Netmiko based Python scri
 
 1. Install Ubuntu Server on VMware.
 2. Install Docker on the Ubuntu Server.
-3. Add the VM to your GNS3 project and ensure to check the “Allow GNS3 to use this host” option.
+3. Add the VM to your GNS3 project and ensure to check the "Allow GNS3 to use this host" option.
 
 ### Adding Ubuntu Server
 
@@ -58,7 +62,7 @@ Assign an IP address to the `Vmnet2` adapter.
 
 ![IP Setting](/images/ip-setting.png)
 
-Then, configure the Ubuntu Server’s network interface with a static IP:
+Then, configure the Ubuntu Server's network interface with a static IP:
 
 ```bash
 # Example static IP configuration
@@ -167,9 +171,9 @@ FastEthernet0/1            unassigned       YES NVRAM  administratively down dow
 
 Docker offers significant value to network engineers by providing:
 
-* **Consistency** across different environments
-* **Isolation** for tool and config testing
-* **Reproducibility** for collaborative work
-* **Flexibility** in lab simulations and integration with platforms like GNS3
+- **Consistency** across different environments
+- **Isolation** for tool and config testing
+- **Reproducibility** for collaborative work
+- **Flexibility** in lab simulations and integration with platforms like GNS3
 
 Keep exploring and expanding your lab environment with Dockerized tools and automation scripts.

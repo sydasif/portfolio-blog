@@ -6,6 +6,10 @@ description: "This post explores Docker networking for network engineers, coveri
 category: "Docker Networking"
 tags: ["Docker", "Networking", "Network Engineers", "Containers"]
 image: "/images/docker.jpg"
+author: "Syed Asif"
+readingTime: "5 min read"
+status: "published"
+lastModified: "2024-08-01"
 ---
 
 Docker containers have changed how we build, deploy, and manage applications. One critical part of this change is Docker’s networking capabilities, which allow containers to communicate with each other and the outside world. In this blog post, we’ll cover Docker networking — from basics like bridge networks and manual port settings to advanced techniques like Mac VLAN, IP VLAN, and IP VLAN L3 networking.
@@ -34,7 +38,7 @@ docker network rm            # Deletes a network
 docker network prune         # Removes unused networks
 docker network connect       # Connects a container to a network
 docker network disconnect    # Disconnects a container from a network
-````
+```
 
 ## Docker’s Default Bridge Network
 
@@ -107,9 +111,9 @@ docker run -d --network host my-high-performance-app
 
 ### Benefits:
 
-* Minimal overhead
-* Full access to host’s networking
-* Simpler setup
+- Minimal overhead
+- Full access to host’s networking
+- Simpler setup
 
 ⚠️ Be cautious about security and port conflicts.
 
@@ -119,15 +123,15 @@ Mac VLAN lets containers act like separate devices on the physical network. Each
 
 ### Use Cases:
 
-* Legacy applications
-* Security appliances
-* Isolation scenarios
+- Legacy applications
+- Security appliances
+- Isolation scenarios
 
 ### Challenges:
 
-* No DHCP support
-* IP conflicts
-* Complex setup
+- No DHCP support
+- IP conflicts
+- Complex setup
 
 ## Docker Networking with IP VLAN
 
@@ -135,9 +139,9 @@ IP VLAN is like Mac VLAN but shares MAC addresses and assigns unique IPs per con
 
 ### Benefits:
 
-* Improved network stability
-* Strong isolation
-* Suitable for apps needing dedicated IPs
+- Improved network stability
+- Strong isolation
+- Suitable for apps needing dedicated IPs
 
 Careful address planning is necessary.
 
@@ -147,9 +151,9 @@ This advanced setup builds on IP VLAN for segmentation, routing, and tighter sec
 
 ### Features:
 
-* Granular segmentation
-* Custom routing
-* Enhanced isolation
+- Granular segmentation
+- Custom routing
+- Enhanced isolation
 
 It suits microservices or multi-tenant setups but requires deeper configuration knowledge.
 

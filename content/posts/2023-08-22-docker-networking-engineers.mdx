@@ -1,9 +1,9 @@
 ---
 title: "Docker for Network Engineers - App Container"
-author: "Syed Asif"
 date: "2023-08-22"
 excerpt: "Learn how to build a custom Docker container with Python and Netmiko for network automation tasks."
 description: "This blog demonstrates how to build a lightweight Docker container using a Python base image and Netmiko to automate network devices. You'll learn to write a Dockerfile, include your Netmiko script, build and run the container, and finally push the image to Docker Hub."
+category: "Docker"
 tags:
   - Docker
   - Network Automation
@@ -11,8 +11,11 @@ tags:
   - Python
   - DevOps
   - Containers
-category: "Docker"
 image: "/images/docker.jpg"
+author: "Syed Asif"
+readingTime: "4 min read"
+status: "published"
+lastModified: "2024-07-30"
 ---
 
 Docker allows you to leverage pre-built and ready-to-use container images. If an application consists of multiple components such as a database, a front-end, and a back-end, you can deploy multiple containers and link them together.
@@ -70,11 +73,11 @@ COPY app.py /home
 
 Let’s walk through the Dockerfile:
 
-* `FROM` loads the base image.
-* `LABEL` adds metadata.
-* `RUN` executes commands inside the container.
-* `WORKDIR` sets the working directory.
-* `COPY` adds your Python script to the container.
+- `FROM` loads the base image.
+- `LABEL` adds metadata.
+- `RUN` executes commands inside the container.
+- `WORKDIR` sets the working directory.
+- `COPY` adds your Python script to the container.
 
 Use the `docker build` command to create a new image using the Dockerfile. Run the command from within the directory containing the app code and Dockerfile:
 

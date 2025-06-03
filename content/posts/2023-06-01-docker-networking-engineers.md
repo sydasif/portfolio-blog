@@ -4,8 +4,24 @@ date: "2023-06-01"
 excerpt: "A practical introduction to Docker containers for network engineers. Learn how to install Docker on Ubuntu, run containers, pull images, and manage volumes."
 description: "This blog post introduces Docker to network engineers, covering installation on Ubuntu, key Docker commands, image and container management, and volume mounting techniques."
 category: "Docker"
-tags: ["Docker", "Network Automation", "Ubuntu", "Linux Containers", "DevOps", "Docker Tutorial", "Docker Installation", "Network Engineers", "Containerization", "Docker Images"]
+tags:
+  [
+    "Docker",
+    "Network Automation",
+    "Ubuntu",
+    "Linux Containers",
+    "DevOps",
+    "Docker Tutorial",
+    "Docker Installation",
+    "Network Engineers",
+    "Containerization",
+    "Docker Images",
+  ]
 image: "/images/docker.jpg"
+author: "Syed Asif"
+readingTime: "5 min read" # Placeholder - calculate based on content
+status: "published" # or "draft"
+lastModified: "2024-07-29"
 ---
 
 Docker containers are lightweight, portable, and efficient virtual environments that package applications and their dependencies. They enable consistent and rapid software deployment across different environments, making them a foundation for modern application development and deployment practices.
@@ -43,7 +59,7 @@ $ sudo apt-get install \
     curl \
     gnupg \
     lsb-release
-````
+```
 
 Add Docker’s official GPG key:
 
@@ -133,17 +149,17 @@ root@20e3b1f9bab4:/#
 
 The docker container run command tells the Docker daemon to start a new container.
 
-* The `-it` flag tells Docker to make the container interactive and to attach the current shell to the container’s terminal.
+- The `-it` flag tells Docker to make the container interactive and to attach the current shell to the container’s terminal.
 
-* Next, the command tells Docker that we want the container to be based on the `ubuntu:latest` image.
+- Next, the command tells Docker that we want the container to be based on the `ubuntu:latest` image.
 
-* Finally, we tell Docker which process we want to run inside the container.
+- Finally, we tell Docker which process we want to run inside the container.
 
-* `-d` — run in a detached mode as a background service.
+- `-d` — run in a detached mode as a background service.
 
-* `-i` — keep STDIN open even if not attached.
+- `-i` — keep STDIN open even if not attached.
 
-* `-t` — tty session with the container.
+- `-t` — tty session with the container.
 
 `--name` flag is used to name your container with a custom name.
 Press `Ctrl+PQ` to exit the container without terminating it. This will land your shell bash at the terminal of your Docker host.
