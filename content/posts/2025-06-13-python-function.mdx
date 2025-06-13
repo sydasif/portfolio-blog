@@ -1,0 +1,216 @@
+---
+title: "Python Functions for Network Automation - 01"
+date: "2025-06-13"
+excerpt: "Learn how to use Python functions for automating repetitive network tasks. This beginner-friendly guide covers function basics, parameters, validation, and practical use cases in network engineering."
+description: "This post introduces the concept of Python functions with examples tailored for network automation. It explains how to define, call, and structure functions with parameters and default values, and emphasizes their importance in real-world networking scripts."
+category: "Python"
+tags:
+  - python
+  - network automation
+  - functions
+  - beginner
+  - scripting
+  - Netmiko
+  - Nornir
+author: "Syed Asif"
+---
+
+When working with network automation, understanding the basics of Python is essential. One of the most fundamental concepts in Python is the function. Functions help make code modular, reusable, and easier to read. In this post, we'll walk through a simple Python script that uses network-related examples to demonstrate how functions work. This knowledge is foundational for automating repetitive network tasks.
+
+---
+
+## **Function Basics**
+
+Let's begin with the simplest kind of function. Here's how you define and call a function:
+
+```python
+def connect_device():
+    """Display a simple connection message."""
+    print("Connected to network device!")
+
+connect_device()
+```
+
+This function doesn't take any input and simply prints a message. It represents a basic operation like confirming a device is online.
+
+### Function Anatomy
+
+Every function has several components:
+
+- **def keyword**: Declares a function
+- **Function name**: Should be descriptive (e.g., `connect_device`)
+- **Parameters**: Input values (optional)
+- **Docstring**: Documentation explaining what the function does
+- **Function body**: The code that executes
+- **Return statement**: Optional output
+
+---
+
+## **Passing Parameters**
+
+To make a function more flexible, you can pass data into it using parameters:
+
+```python
+def connect_device(hostname):
+    """Display a simple connection message."""
+    print(f"Connected to {hostname.upper()}!")
+
+connect_device("192.168.1.1")
+```
+
+Here, we pass an IP address as a string. The `.upper()` call is used to standardize the output format.
+
+### Parameter Types
+
+Parameters can accept different data types:
+
+```python
+def device_info(hostname, port=22, is_active=True):
+    """Display device information with different parameter types."""
+    print(f"Device: {hostname}")
+    print(f"SSH Port: {port}")
+    print(f"Status: {'Active' if is_active else 'Inactive'}")
+
+device_info("192.168.1.1")
+device_info("switch-01", 2222, False)
+```
+
+---
+
+## **Positional Arguments**
+
+Functions can take multiple arguments. With **positional arguments**, the order in which you pass them matters:
+
+```python
+def configure_interface(device_type, hostname):
+    print(f"\nConfiguring a {device_type}.")
+    print(f"My {device_type}'s IP is {hostname}.")
+
+configure_interface("router", "192.168.1.1")
+configure_interface("switch", "192.168.1.2")
+configure_interface("192.168.1.1", "router")  # Incorrect order
+```
+
+If the order is wrong, the output will be misleading or incorrect. This is a common source of bugs.
+
+---
+
+## **Keyword Arguments**
+
+To avoid issues with argument order, use **keyword arguments**:
+
+```python
+configure_interface(device_type="switch", hostname="192.168.1.2")
+```
+
+This method improves code clarity and helps prevent mistakes.
+
+### Mixed Arguments Example
+
+```python
+def configure_interface(device_type, hostname, interface, vlan_id=None):
+    """Configure an interface with optional VLAN assignment."""
+    print(f"Configuring {interface} on {device_type} at {hostname}")
+    if vlan_id:
+        print(f"Assigning to VLAN {vlan_id}")
+
+# Using keyword arguments - order doesn't matter
+configure_interface(
+    interface="GigabitEthernet0/1",
+    device_type="switch",
+    hostname="192.168.1.2",
+    vlan_id=100
+)
+```
+
+---
+
+## **Default Values in Functions**
+
+You can assign default values to parameters. These defaults are used if no argument is provided for that parameter:
+
+```python
+def configure_interface(hostname, device_type="router"):
+    print(f"My {device_type}'s IP is {hostname}.")
+
+configure_interface(hostname="192.168.1.1")
+configure_interface(hostname="192.168.1.2", device_type="switch")
+```
+
+This is particularly helpful when a certain value (like "router") is common and expected.
+
+### Common Network Automation Defaults
+
+```python
+def ssh_connect(hostname, username="admin", port=22, timeout=30):
+    """Establish SSH connection with common defaults."""
+    print(f"Connecting to {hostname}:{port} as {username}")
+    print(f"Timeout: {timeout} seconds")
+
+ssh_connect("192.168.1.1")  # Uses all defaults
+ssh_connect("192.168.1.2", username="netadmin", port=2222)
+```
+
+---
+
+## **Error Handling**
+
+If you forget to provide required arguments, Python will raise an error:
+
+```python
+configure_interface()
+```
+
+This reminds us to carefully match the function's expected inputs with our calls.
+
+### Input Validation
+
+```python
+def validate_ip_address(ip_address):
+    """Simple IP address validation."""
+    parts = ip_address.split('.')
+    if len(parts) != 4:
+        return False
+
+    for part in parts:
+        try:
+            num = int(part)
+            if not 0 <= num <= 255:
+                return False
+        except ValueError:
+            return False
+    return True
+
+def connect_device(hostname, username, password):
+    """Connect to device with validation."""
+    if not validate_ip_address(hostname):
+        print(f"Invalid IP address: {hostname}")
+        return False
+
+    if not username or not password:
+        print("Username and password are required")
+        return False
+
+    print(f"Connecting to {hostname} as {username}")
+    return True
+
+# Usage with validation
+connect_device("192.168.1.1", "admin", "password123")
+connect_device("invalid.ip", "admin", "password123")  # Will show error
+```
+
+---
+
+## **Key Takeaways**
+
+- Functions help structure code and reduce repetition.
+- Use parameters to make functions flexible.
+- Be mindful of argument types: positional, keyword, and default.
+- Input validation prevents common errors in network automation.
+- These basics are critical in writing maintainable network automation scripts.
+
+---
+
+## **Final Thoughts**
+
+Mastering functions is a crucial step toward writing efficient Python scripts for networking. These concepts form the foundation of tools like Nornir and Netmiko. Practice writing your own functions to automate tasks like device configuration or status checks. The better you get with functions, the easier it becomes to manage complex networks programmatically.
