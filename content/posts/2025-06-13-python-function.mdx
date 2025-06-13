@@ -1,5 +1,5 @@
 ---
-title: "Python Functions for Network Automation - 01"
+title: "Python Functions - Part 01"
 date: "2025-06-13"
 excerpt: "Learn how to use Python functions for automating repetitive network tasks. This beginner-friendly guide covers function basics, parameters, validation, and practical use cases in network engineering."
 description: "This post introduces the concept of Python functions with examples tailored for network automation. It explains how to define, call, and structure functions with parameters and default values, and emphasizes their importance in real-world networking scripts."
@@ -18,8 +18,6 @@ image: "/images/python-01.jpg"
 
 When working with network automation, understanding the basics of Python is essential. One of the most fundamental concepts in Python is the function. Functions help make code modular, reusable, and easier to read. In this post, we'll walk through a simple Python script that uses network-related examples to demonstrate how functions work. This knowledge is foundational for automating repetitive network tasks.
 
----
-
 ## **Function Basics**
 
 Let's begin with the simplest kind of function. Here's how you define and call a function:
@@ -30,6 +28,10 @@ def connect_device():
     print("Connected to network device!")
 
 connect_device()
+```
+
+```text
+Connected to network device!
 ```
 
 This function doesn't take any input and simply prints a message. It represents a basic operation like confirming a device is online.
@@ -45,8 +47,6 @@ Every function has several components:
 - **Function body**: The code that executes
 - **Return statement**: Optional output
 
----
-
 ## **Passing Parameters**
 
 To make a function more flexible, you can pass data into it using parameters:
@@ -57,6 +57,10 @@ def connect_device(hostname):
     print(f"Connected to {hostname.upper()}!")
 
 connect_device("192.168.1.1")
+```
+
+```text
+Connected to 192.168.1.1!
 ```
 
 Here, we pass an IP address as a string. The `.upper()` call is used to standardize the output format.
@@ -76,7 +80,15 @@ device_info("192.168.1.1")
 device_info("switch-01", 2222, False)
 ```
 
----
+```text
+Device: 192.168.1.1
+SSH Port: 22
+Status: Active
+
+Device: switch-01
+SSH Port: 2222
+Status: Inactive
+```
 
 ## **Positional Arguments**
 
@@ -92,9 +104,18 @@ configure_interface("switch", "192.168.1.2")
 configure_interface("192.168.1.1", "router")  # Incorrect order
 ```
 
-If the order is wrong, the output will be misleading or incorrect. This is a common source of bugs.
+```text
+Configuring a router.
+My router's IP is 192.168.1.1.
 
----
+Configuring a switch.
+My switch's IP is 192.168.1.2.
+
+Configuring a 192.168.1.1.
+My 192.168.1.1's IP is router.
+```
+
+If the order is wrong, the output will be misleading or incorrect. This is a common source of bugs.
 
 ## **Keyword Arguments**
 
@@ -102,6 +123,11 @@ To avoid issues with argument order, use **keyword arguments**:
 
 ```python
 configure_interface(device_type="switch", hostname="192.168.1.2")
+```
+
+```text
+Configuring a switch.
+My switch's IP is 192.168.1.2.
 ```
 
 This method improves code clarity and helps prevent mistakes.
@@ -124,7 +150,10 @@ configure_interface(
 )
 ```
 
----
+```text
+Configuring GigabitEthernet0/1 on switch at 192.168.1.2
+Assigning to VLAN 100
+```
 
 ## **Default Values in Functions**
 
@@ -136,6 +165,12 @@ def configure_interface(hostname, device_type="router"):
 
 configure_interface(hostname="192.168.1.1")
 configure_interface(hostname="192.168.1.2", device_type="switch")
+```
+
+```text
+My router's IP is 192.168.1.1.
+
+My switch's IP is 192.168.1.2.
 ```
 
 This is particularly helpful when a certain value (like "router") is common and expected.
@@ -152,7 +187,13 @@ ssh_connect("192.168.1.1")  # Uses all defaults
 ssh_connect("192.168.1.2", username="netadmin", port=2222)
 ```
 
----
+```text
+Connecting to 192.168.1.1:22 as admin
+Timeout: 30 seconds
+
+Connecting to 192.168.1.2:2222 as netadmin
+Timeout: 30 seconds
+```
 
 ## **Error Handling**
 
@@ -160,6 +201,14 @@ If you forget to provide required arguments, Python will raise an error:
 
 ```python
 configure_interface()
+```
+
+```text
+Traceback (most recent call last):
+  File "<python-input-24>", line 1, in <module>
+    configure_interface()
+    ~~~~~~~~~~~~~~~~~~~^^
+TypeError: configure_interface() missing 1 required positional argument: 'hostname'
 ```
 
 This reminds us to carefully match the function's expected inputs with our calls.
@@ -200,7 +249,10 @@ connect_device("192.168.1.1", "admin", "password123")
 connect_device("invalid.ip", "admin", "password123")  # Will show error
 ```
 
----
+```text
+Connecting to 192.168.1.1 as admin
+Invalid IP address: invalid.ip
+```
 
 ## **Key Takeaways**
 
@@ -209,8 +261,6 @@ connect_device("invalid.ip", "admin", "password123")  # Will show error
 - Be mindful of argument types: positional, keyword, and default.
 - Input validation prevents common errors in network automation.
 - These basics are critical in writing maintainable network automation scripts.
-
----
 
 ## **Final Thoughts**
 

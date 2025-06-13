@@ -48,3 +48,4 @@ generated/
 .env.development
 .env.production
 .env.test
+test.py
