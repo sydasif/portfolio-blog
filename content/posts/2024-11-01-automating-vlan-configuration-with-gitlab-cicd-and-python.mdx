@@ -12,8 +12,6 @@ status: "published"
 lastModified: "2024-11-01"
 ---
 
----
-
 ![](https://cdn-images-1.medium.com/max/800/0*IjUcaMAqnM9jj-pl)
 
 Photo by [Pankaj Patel](https://unsplash.com/@pankajpatel?utm_source=medium&utm_medium=referral) on [Unsplash](https://unsplash.com?utm_source=medium&utm_medium=referral)
@@ -75,7 +73,7 @@ sudo gitlab-runner register
 Provide the following information during the registration process:
 
 * **URL of your GitLab instance**: `https://gitlab.com/`
-* **Registration token**: Found in GitLab under **Settings > CI/CD > Runners** for your project.
+* **Registration token**: Found in GitLab under **Settings &gt; CI/CD &gt; Runners** for your project.
 * **Description**: A descriptive name for easy identification.
 * **Tags**: Relevant tags that specify which jobs this runner can handle.
 * **Executor**: Choose an executor (e.g., `shell`, `docker`) depending on your setup.
@@ -200,7 +198,7 @@ def validate_vlan_ids(vlans):
     """Validate that VLAN IDs are within a specific range (e.g., 1 to 100)."""  
     for vlan in vlans:  
         vlan_id = vlan["vlan_id"]  
-        if vlan_id < 1 or vlan_id > 100:  
+        if vlan_id &lt; 1 or vlan_id &gt; 100:  
             print(f"VLAN ID {vlan_id} is out of range.")  
             return False  
     print("All VLAN IDs are within the allowed range.")  

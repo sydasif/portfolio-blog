@@ -12,8 +12,6 @@ status: "published"
 lastModified: "2023-10-12"
 ---
 
----
-
 ![](https://cdn-images-1.medium.com/max/800/0*gpuFQC5Bsw1_eXXl)
 
 Photo by [Gabriel Heinzer](https://unsplash.com/@6heinz3r?utm_source=medium&utm_medium=referral) on [Unsplash](https://unsplash.com?utm_source=medium&utm_medium=referral)
@@ -74,7 +72,7 @@ Append ‘video=Virtual-1:1600x900@60’ (modify this according to your requirem
 GRUB_DEFAULT=0  
 GRUB_TIMEOUT_STYLE=hidden  
 GRUB_TIMEOUT=0  
-GRUB_DISTRIBUTOR=`lsb_release -i -s 2> /dev/null || echo Debian`  
+GRUB_DISTRIBUTOR=`lsb_release -i -s 2&gt; /dev/null || echo Debian`  
 GRUB_CMDLINE_LINUX_DEFAULT="quiet splash video=Virtual-1:1600x900@60"  
 GRUB_CMDLINE_LINUX=""  
 …

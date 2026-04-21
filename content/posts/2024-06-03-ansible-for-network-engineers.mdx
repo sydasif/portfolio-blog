@@ -12,8 +12,6 @@ status: "published"
 lastModified: "2024-06-03"
 ---
 
----
-
 ![](https://cdn-images-1.medium.com/max/800/0*KsW1hoHt9e96DWi7)
 
 Photo by [John Schnobrich](https://unsplash.com/@johnishappysometimes?utm_source=medium&utm_medium=referral) on [Unsplash](https://unsplash.com?utm_source=medium&utm_medium=referral)
@@ -119,7 +117,7 @@ Additionally, you can test Ansible’s connectivity and functionality by running
 
 ```
 zolo@u22s:~$ ansible localhost -m ping  
-localhost | SUCCESS => {  
+localhost | SUCCESS =&gt; {  
     "changed": false,  
     "ping": "pong"  
 }
@@ -151,7 +149,7 @@ Instead of manually connecting and running a command on the network device, you 
 ```
 zolo@u22s:~$ ansible all -i 172.16.10.12, -c network_cli -u admin -k -m ios_facts -e ansible_network_os=ios  
 SSH password:   
-172.16.10.12 | SUCCESS => {  
+172.16.10.12 | SUCCESS =&gt; {  
     "ansible_facts": {  
         "ansible_net_api": "cliconf",  
         "ansible_net_gather_network_resources": [],  
@@ -282,7 +280,7 @@ This configuration helps streamline Ansible’s operation in a controlled lab en
 
 ### [Ansible Inventory Setting](https://docs.ansible.com/ansible/latest/inventory_guide/intro_inventory.html#how-to-build-your-inventory)
 
-Inventory serves as the foundation for managing hosts within our infrastructure using Ansible. It consolidates information about target hosts, including their IP addresses or Fully Qualified Domain Names (FQDNs). The simplest inventory is a single file with a list of hosts and groups. The default location for this file is `/etc/ansible/hosts`. You can specify a different inventory file at the command line using the `-i <path>` option or in configuration using `inventory`.
+Inventory serves as the foundation for managing hosts within our infrastructure using Ansible. It consolidates information about target hosts, including their IP addresses or Fully Qualified Domain Names (FQDNs). The simplest inventory is a single file with a list of hosts and groups. The default location for this file is `/etc/ansible/hosts`. You can specify a different inventory file at the command line using the `-i &lt;path&gt;` option or in configuration using `inventory`.
 
 #### Formats for Inventory Files
 
@@ -339,7 +337,7 @@ all:
 
 In this YAML inventory, `all` is the top-level group that contains all hosts and groups. The `hosts` key under `all` lists each host along with its properties, such as `ansible_host`. The `children` key under `all` contains subgroups like `router`, `core`, and `switch`, each with their respective hosts. This structure ensures the inventory is organized and easily manageable.
 
-> *By default, we can also reference two groups without defining them. The* `all` *group targets all our hosts in the inventory, and* `ungrouped` *contains any host that isn’t part of any user-defined group.*
+&gt; *By default, we can also reference two groups without defining them. The* `all` *group targets all our hosts in the inventory, and* `ungrouped` *contains any host that isn’t part of any user-defined group.*
 
 #### Defining Host Aliases
 
@@ -492,16 +490,16 @@ ok: [r1]
 ok: [core-sw]  
   
 TASK [P1T2: Display debug message] ******************************************************************************************************************  
-ok: [r1] => {  
+ok: [r1] =&gt; {  
     "msg": "The r1 has IOS platform"  
 }  
-ok: [access1] => {  
+ok: [access1] =&gt; {  
     "msg": "The access1 has IOS platform"  
 }  
-ok: [core-sw] => {  
+ok: [core-sw] =&gt; {  
     "msg": "The core-sw has IOS platform"  
 }  
-ok: [access2] => {  
+ok: [access2] =&gt; {  
     "msg": "The access2 has IOS platform"  
 }  
   

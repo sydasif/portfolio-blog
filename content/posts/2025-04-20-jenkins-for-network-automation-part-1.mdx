@@ -12,8 +12,6 @@ status: "published"
 lastModified: "2025-04-20"
 ---
 
----
-
 ![](https://cdn-images-1.medium.com/max/800/0*_1BZ0DJBidDhnXwd)
 
 Photo by [Jordan Harrison](https://unsplash.com/@jouwdan?utm_source=medium&utm_medium=referral) on [Unsplash](https://unsplash.com?utm_source=medium&utm_medium=referral)
@@ -85,7 +83,7 @@ sudo wget -O /usr/share/keyrings/jenkins-keyring.asc \
   
 echo "deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc]" \  
   https://pkg.jenkins.io/debian-stable binary/ | sudo tee \  
-  /etc/apt/sources.list.d/jenkins.list > /dev/null
+  /etc/apt/sources.list.d/jenkins.list &gt; /dev/null
 ```
 
 #### Install Jenkins
@@ -119,7 +117,7 @@ Here’s how to access **Jenkins on the web for the first time** after installin
 
 #### ✅ Open Your Browser
 
-Go to: `http://<your_server_ip>:8080` (e.g., `http://192.168.158.130:8080`[)](http://192.168.158.130:8080%29)
+Go to: `http://&lt;your_server_ip&gt;:8080` (e.g., `http://192.168.158.130:8080`[)](http://192.168.158.130:8080%29)
 
 #### 🔐 Unlock Jenkins
 

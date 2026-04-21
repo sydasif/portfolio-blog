@@ -12,8 +12,6 @@ status: "published"
 lastModified: "2025-08-11"
 ---
 
----
-
 ![](https://cdn-images-1.medium.com/max/800/0*M3s_0cCHpP8D8jpp)
 
 Photo by [Mika Baumeister](https://unsplash.com/@kommumikation?utm_source=medium&utm_medium=referral) on [Unsplash](https://unsplash.com?utm_source=medium&utm_medium=referral)
@@ -340,16 +338,16 @@ Here are some of the most essential `virsh` commands:
 ```
 Command                        Description  
 virsh list --all               List all virtual machines (running and stopped).  
-virsh start <vm-name>          Start a virtual machine.  
-virsh shutdown <vm-name>       Gracefully shut down a virtual machine.  
-virsh destroy <vm-name>        Forcefully stop a virtual machine (like pulling the power plug).  
-virsh reboot <vm-name>         Reboot a virtual machine.  
-virsh console <vm-name>        Connect to the virtual machine’s console for direct interaction.  
-virsh dominfo <vm-name>        Show detailed information about a virtual machine.  
-virsh domifaddr <vm-name>      Show the IP address(es) of a virtual machine.  
+virsh start &lt;vm-name&gt;          Start a virtual machine.  
+virsh shutdown &lt;vm-name&gt;       Gracefully shut down a virtual machine.  
+virsh destroy &lt;vm-name&gt;        Forcefully stop a virtual machine (like pulling the power plug).  
+virsh reboot &lt;vm-name&gt;         Reboot a virtual machine.  
+virsh console &lt;vm-name&gt;        Connect to the virtual machine’s console for direct interaction.  
+virsh dominfo &lt;vm-name&gt;        Show detailed information about a virtual machine.  
+virsh domifaddr &lt;vm-name&gt;      Show the IP address(es) of a virtual machine.  
 virsh net-list --all           List all virtual networks configured in Libvirt.  
 virsh pool-list --all          List all storage pools.  
-virsh vol-list <pool-name>     List all volumes (disks) in a specified storage pool.
+virsh vol-list &lt;pool-name&gt;     List all volumes (disks) in a specified storage pool.
 ```
 
 ### Connecting to the System Libvirt

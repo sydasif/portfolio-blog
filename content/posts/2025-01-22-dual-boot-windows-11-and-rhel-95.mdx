@@ -12,8 +12,6 @@ status: "published"
 lastModified: "2025-01-22"
 ---
 
----
-
 ![](https://cdn-images-1.medium.com/max/800/0*N_kUc6TXJrry4q7z)
 
 Photo by [Arthur Reeder](https://unsplash.com/@arthurreeder?utm_source=medium&utm_medium=referral) on [Unsplash](https://unsplash.com?utm_source=medium&utm_medium=referral)
@@ -123,7 +121,7 @@ sudo rpm --import https://packages.microsoft.com/keys/microsoft.asc
 1. Add the Visual Studio Code repository:
 
 ```
-sudo sh -c 'echo -e "[code]\nname=Visual Studio Code\nbaseurl=https://packages.microsoft.com/yumrepos/vscode\nenabled=1\ngpgcheck=1\ngpgkey=https://packages.microsoft.com/keys/microsoft.asc" > /etc/yum.repos.d/vscode.repo'
+sudo sh -c 'echo -e "[code]\nname=Visual Studio Code\nbaseurl=https://packages.microsoft.com/yumrepos/vscode\nenabled=1\ngpgcheck=1\ngpgkey=https://packages.microsoft.com/keys/microsoft.asc" &gt; /etc/yum.repos.d/vscode.repo'
 ```
 
 1. Update the package cache and install Visual Studio Code:

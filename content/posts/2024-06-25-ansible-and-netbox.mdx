@@ -12,8 +12,6 @@ status: "published"
 lastModified: "2024-06-25"
 ---
 
----
-
 ![](https://cdn-images-1.medium.com/max/800/1*66sJP1MB13-Oi3rvADiR5Q.png)
 
 GNS3 Lab
@@ -216,18 +214,18 @@ ok: [R1]
 ok: [VYOS1]  
   
 TASK [Display hostname] *****************************************************************  
-ok: [SW1] => {  
+ok: [SW1] =&gt; {  
     "msg": "SW1"  
 }  
-ok: [VYOS1] => {  
+ok: [VYOS1] =&gt; {  
     "msg": "vyos"  
 }  
-ok: [R1] => {  
+ok: [R1] =&gt; {  
     "msg": "R1"  
 }  
   
 TASK [Display OS] ***********************************************************************  
-ok: [RHEL] => {  
+ok: [RHEL] =&gt; {  
     "msg": "RedHat"  
 }  
   

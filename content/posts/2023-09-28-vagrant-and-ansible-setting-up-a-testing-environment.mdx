@@ -12,8 +12,6 @@ status: "published"
 lastModified: "2023-09-28"
 ---
 
----
-
 ![](https://cdn-images-1.medium.com/max/800/0*dTrOvif1kMlnYMjz)
 
 Photo by [Thomas Jensen](https://unsplash.com/@thomasjsn?utm_source=medium&utm_medium=referral) on [Unsplash](https://unsplash.com?utm_source=medium&utm_medium=referral)
@@ -52,25 +50,25 @@ Here’s how to set up our lab:
 # -*- mode: ruby -*-  
 # vi: set ft=ruby :  
   
-Vagrant.require_version ">= 1.6.0"  
+Vagrant.require_version "&gt;= 1.6.0"  
   
 boxes = [  
   
     {  
-        :name => "centos01",  
+        :name =&gt; "centos01",  
         # ammend as per your machine nat network setting  
-        :eth1 => "192.168.56.10",  
-        :mem => "1024",  
-        :cpu => "1",  
-        :image => "centos/7"  
+        :eth1 =&gt; "192.168.56.10",  
+        :mem =&gt; "1024",  
+        :cpu =&gt; "1",  
+        :image =&gt; "centos/7"  
     },  
     {  
-        :name => "ubuntu01",  
+        :name =&gt; "ubuntu01",  
         # ammend as per your machine nat network setting  
-        :eth1 => "192.168.56.11",  
-        :mem => "1024",  
-        :cpu => "1",  
-        :image => "ubuntu/bionic64"  
+        :eth1 =&gt; "192.168.56.11",  
+        :mem =&gt; "1024",  
+        :cpu =&gt; "1",  
+        :image =&gt; "ubuntu/bionic64"  
     }  
 ]  
   
@@ -108,7 +106,7 @@ VM, run `vagrant status NAME`.
 
 5. **SSH Access**: To access the virtual machines, use the command `***vagrant ssh ubuntu01***` and `***vagrant ssh centos01***`. You can also test network connectivity between the devices using `***ping***`.
 
-> See [Permission Denied](https://stackoverflow.com/questions/36300446/ssh-permission-denied-publickey-gssapi-with-mic) guide on Stack Overflow, if you have any issue to set up ssh connection.
+&gt; See [Permission Denied](https://stackoverflow.com/questions/36300446/ssh-permission-denied-publickey-gssapi-with-mic) guide on Stack Overflow, if you have any issue to set up ssh connection.
 
 ### Configuring Ansible Client
 

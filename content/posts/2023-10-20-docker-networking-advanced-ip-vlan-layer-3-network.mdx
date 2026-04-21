@@ -12,8 +12,6 @@ status: "published"
 lastModified: "2023-10-20"
 ---
 
----
-
 ### Docker Networking Advanced — IP VLAN Layer 3 Network
 
 #### Part — 06
@@ -99,18 +97,18 @@ To create an L3 network in Docker using subnets and assign IP addresses to conta
 
 ```
 zolo@ubuntu:~$ sudo docker network create -d ipvlan \  
-> --subnet 192.168.10.0/24 \  
-> -o parent=ens33 -o ipvlan_mode=l3 \  
-> ip-vlan
+&gt; --subnet 192.168.10.0/24 \  
+&gt; -o parent=ens33 -o ipvlan_mode=l3 \  
+&gt; ip-vlan
 ```
 
 To deploy the container in the preceding created network, specify the network name and assign an IP address from the subnet.
 
 ```
 zolo@ubuntu:~$ sudo docker run -itd --rm \  
-> --network ip-vlan \  
-> --ip 192.168.10.99 \  
-> --name tor busybox
+&gt; --network ip-vlan \  
+&gt; --ip 192.168.10.99 \  
+&gt; --name tor busybox
 ```
 
 By following these steps, you can create and manage multiple Docker networks with their subnets and deploy containers within each network while specifying their IP addresses.

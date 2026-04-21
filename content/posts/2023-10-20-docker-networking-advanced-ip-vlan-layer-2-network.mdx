@@ -12,8 +12,6 @@ status: "published"
 lastModified: "2023-10-20"
 ---
 
----
-
 ### Docker Networking Advanced — IP VLAN Layer 2 Network
 
 #### Part — 05
@@ -32,10 +30,10 @@ Use the following command to create an IP VLAN network in the default L2 mode, w
 
 ```
 zolo@ubuntu:~$ sudo docker network create -d ipvlan \  
-> --subnet 192.168.8.0/24 \  
-> --gateway 192.168.8.1 \  
-> -o parent=ens33 \  
-> ip-vlan  
+&gt; --subnet 192.168.8.0/24 \  
+&gt; --gateway 192.168.8.1 \  
+&gt; -o parent=ens33 \  
+&gt; ip-vlan  
 7456fa1c8ce7a45751deeb5c8f7cbcb0daf316d1656e4db5facb8e49bad9983b
 ```
 
@@ -47,8 +45,8 @@ Now you can run your containers on the newly created network. When deploying you
 
 ```
 zolo@ubuntu:~$ sudo docker run -itd --rm --network ip-vlan \  
-> --ip 192.168.8.99 \  
-> --name tor busybox  
+&gt; --ip 192.168.8.99 \  
+&gt; --name tor busybox  
 7a1f59ebe511f2ca9b16c096b29f55f4fcdbf9d688b99f9a5ac22903e50effc6
 ```
 
@@ -87,7 +85,7 @@ Also, note that the container shares the host’s Mac address. Run the following
 
 ```
 zolo@ubuntu:~$ ip addr show ens33  
-2: ens33: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc fq_codel state UP group default qlen 1000  
+2: ens33: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu 1500 qdisc fq_codel state UP group default qlen 1000  
     link/ether 00:0c:29:63:32:58 brd ff:ff:ff:ff:ff:ff  
     altname enp2s1  
     inet 192.168.8.101/24 metric 100 brd 192.168.8.255 scope global dynamic ens33  
@@ -97,7 +95,7 @@ zolo@ubuntu:~$ ip addr show ens33
   
 zolo@ubuntu:~$ docker exec -it tor sh  
 / # ip addr show eth0  
-4: eth0@if2: <BROADCAST,MULTICAST,UP,LOWER_UP,M-DOWN> mtu 1500 qdisc noqueue  
+4: eth0@if2: &lt;BROADCAST,MULTICAST,UP,LOWER_UP,M-DOWN&gt; mtu 1500 qdisc noqueue  
     link/ether 00:0c:29:63:32:58 brd ff:ff:ff:ff:ff:ff  
     inet 192.168.8.99/24 brd 192.168.8.255 scope global eth0  
        valid_lft forever preferred_lft forever

@@ -12,8 +12,6 @@ status: "published"
 lastModified: "2023-11-04"
 ---
 
----
-
 ![](https://cdn-images-1.medium.com/max/800/0*gkTGuVomRJIiI7q-)
 
 Photo by [Taras Shypka](https://unsplash.com/@bugsster?utm_source=medium&utm_medium=referral) on [Unsplash](https://unsplash.com?utm_source=medium&utm_medium=referral)
@@ -124,7 +122,7 @@ You’ve finished editing a file and want to exit Vim. In command mode, type `:
 To open a file with Vim, use the following command:
 
 ```
-vim <file name>
+vim &lt;file name&gt;
 ```
 
 If the file doesn’t exist, Vim will create a new file with the specified name. This is a handy way to quickly start editing a new document or an existing one. For example, you want to open a file called “mydocument.txt.” In your terminal, type `vim mydocument.txt` and press `enter`.
@@ -151,7 +149,7 @@ This command helps you navigate to a specific part of the file without manual sc
 Vim allows you to run shell or bash commands directly from the editor. This can be handy for performing tasks like compiling code, running scripts, or executing system commands. To run a shell or bash command in Vim, use the following syntax:
 
 ```
-:!<command>
+:!&lt;command&gt;
 ```
 
 For example, you can run shell commands like `ls`, `gcc`, or any other command your operating system supports. If you are editing a code file in Vim and want to compile it. In command mode, type `:!gcc myfile.c` to compile the code.

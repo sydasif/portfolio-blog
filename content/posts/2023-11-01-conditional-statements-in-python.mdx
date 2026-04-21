@@ -12,8 +12,6 @@ status: "published"
 lastModified: "2023-11-01"
 ---
 
----
-
 ![](https://cdn-images-1.medium.com/max/800/1*PLN7aos6Xu-UqNM-1oktiA.jpeg)
 
 ### Conditional Statements in Python
@@ -64,7 +62,7 @@ Let’s illustrate this with a Python code snippet:
 ssh_timeout = 20  
 if ssh_timeout == 10:  
     print("SSH TimeOut: 10 sec")  
-elif ssh_timeout > 30:  
+elif ssh_timeout &gt; 30:  
     print("SSH TimeOut Greater Than: 30 sec")  
 else:  
     print("Unexpected SSH TimeOut")
@@ -82,10 +80,10 @@ These operators are fundamental building blocks of conditional statements, enabl
 
 * `==` (equal)
 * `!=` (not equal)
-* `<` (less than)
-* `>` (greater than)
-* `<=` (less than or equal to)
-* `>=` (greater than or equal to)
+* `&lt;` (less than)
+* `&gt;` (greater than)
+* `&lt;=` (less than or equal to)
+* `&gt;=` (greater than or equal to)
 
 Let’s revisit the previous Python example:
 
@@ -93,13 +91,13 @@ Let’s revisit the previous Python example:
 ssh_timeout = 20  
 if ssh_timeout == 10:  
     print("SSH TimeOut: 10 sec")  
-elif ssh_timeout > 30:  
+elif ssh_timeout &gt; 30:  
     print("SSH TimeOut Greater Than: 30 sec")  
 else:  
     print("Unexpected SSH TimeOut")
 ```
 
-In this instance, the `==` and `>` comparison operators are employed to assess whether the value of `ssh_timeout` aligns with specific criteria. Comparison operators provide a means to compare values in conditions.
+In this instance, the `==` and `&gt;` comparison operators are employed to assess whether the value of `ssh_timeout` aligns with specific criteria. Comparison operators provide a means to compare values in conditions.
 
 ### Logical Operators
 
@@ -112,7 +110,7 @@ ssh_timeout = 20
 ip_addr = "10.1.1.1"  
 host_reachable = True  
   
-if host_reachable and ssh_timeout >= 10:  
+if host_reachable and ssh_timeout &gt;= 10:  
     print("Try to connect")  
 elif not host_reachable or ip_addr == "10.1.1.1":  
     print("Invalid host, do not try connection")  

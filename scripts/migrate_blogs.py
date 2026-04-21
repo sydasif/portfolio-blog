@@ -40,6 +40,70 @@ def download_image(url, dest_folder):
         return None
 
 
+def clean_markdown(md_text):
+    # Remove leading/trailing whitespace
+    md_text = md_text.strip()
+
+    # 1. Fix the <url> issue: convert <http...> to [http...](http...)
+    # We look for patterns like <http://...> or <https://...>
+    md_text = re.sub(
+        r"<https?://[^>]+>",
+        lambda m: f"[{m.group(0).strip('<>')}]({m.group(0).strip('<>')})",
+        md_text,
+    )
+
+    # 2. Remove redundant leading horizontal rules that might come from <hr>
+    # This avoids the "--- \n ---" issue at the top of files
+    while md_text.startswith("---"):
+        md_text = md_text.lstrip("-").strip()
+
+    # 3. Fix the <> issue: escape < and > to prevent MDX from seeing them as JSX tags
+    # We want to escape < and > that are NOT part of a markdown link [text](url)
+    # A simple way is to escape all < and > and then fix the links back.
+    # Or more simply, escape all < and > that aren't part of a link.
+    # Let's use a regex to find < and > that are not part of a link.
+    # This is tricky. A safer way for MDX is to replace < and > with their HTML entities.
+    # But we must NOT break the links we just created.
+
+    # Let's try this: escape all < and >
+    # Then find all [text](url) and "un-escape" the URL part.
+
+    md_text = md_text.replace("<", "&lt;").replace(">", "&gt;")
+
+    # Fix the links we just created (and any existing ones)
+    # A link looks like [text](url)
+    # We want to find [text](&lt;url&gt;) and change it back to [text](url)
+    # The url part is between the last ( and the last )
+
+    def unescape_link(match):
+        full_link = match.group(0)
+        # Find the part inside the parentheses
+        parts = full_link.split("(")
+        if len(parts) < 2:
+            return full_link
+
+        url_part = parts[-1].rstrip(")")
+        # Unescape the URL part
+        unescaped_url = url_part.replace("&lt;", "<").replace("&gt;", ">")
+
+        # Reconstruct the link
+        prefix = full_link[:full_len_of_url_part_in_original_match]  # This is hard
+        # Let's try a simpler approach:
+        return full_link.replace(f"({url_part})", f"({unescaped_url})")
+
+    # Actually, let's use a better regex for links to avoid complex reconstruction
+    # [text](url) -> where url might contain &lt; or &gt;
+    md_text = re.sub(
+        r"\[([^\]]+)\]\(([^)]+)\)",
+        lambda m: (
+            f"[{m.group(1)}]({m.group(2).replace('&lt;', '<').replace('&gt;', '>')})"
+        ),
+        md_text,
+    )
+
+    return md_text
+
+
 def convert_html_to_mdx(html_file, blogs_dir, posts_dir, images_dir):
     print(f"Processing {html_file}...")
 
@@ -87,11 +151,13 @@ def convert_html_to_mdx(html_file, blogs_dir, posts_dir, images_dir):
         local_image_path = download_image(image_url, images_dir)
         if local_image_path:
             # Update the image URL in the HTML content before converting to MDX
-            # Note: markdownify might handle this, but it's safer to do it manually or replace in soup
             img_tag["src"] = local_image_path
 
     # Convert HTML to Markdown
     content_md = md(str(content_section), heading_style="ATX")
+
+    # Apply cleaning and formatting
+    content_md = clean_markdown(content_md)
 
     # Construct frontmatter
     # We'll use the same fields as the existing .mdx files
@@ -170,13 +236,7 @@ def main():
 
     for html_file in html_files:
         try:
-            # Note: blogs_dir is no longer needed as we use absolute paths from html_file
-            convert_html_to_mdx(
-                html_file,
-                input_path.parent if input_path.is_dir() else input_path.parent,
-                posts_dir,
-                images_dir,
-            )
+            convert_html_to_mdx(html_file, input_path.parent, posts_dir, images_dir)
         except Exception as e:
             print(f"Failed to convert {html_file}: {e}")
 

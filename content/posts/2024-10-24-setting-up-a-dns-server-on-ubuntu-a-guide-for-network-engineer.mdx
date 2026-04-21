@@ -12,8 +12,6 @@ status: "published"
 lastModified: "2024-10-24"
 ---
 
----
-
 ![](https://cdn-images-1.medium.com/max/800/0*EJG-hbhLgipHFQ6S)
 
 Photo by [U. Storsberg](https://unsplash.com/@ekiam14?utm_source=medium&utm_medium=referral) on [Unsplash](https://unsplash.com?utm_source=medium&utm_medium=referral)
@@ -177,7 +175,7 @@ network:
 To enable communication between two networks, you must enable IP forwarding on your gateway device. This allows the server to forward packets from one network interface to another.
 
 * **To enable IP forwarding temporarily**, run:
-* `echo 1 > /proc/sys/net/ipv4/ip_forward`
+* `echo 1 &gt; /proc/sys/net/ipv4/ip_forward`
 * **To make IP forwarding permanent**, edit the `/etc/sysctl.conf` file and uncomment the following line:
 * `net.ipv4.ip_forward=1`
 * Then, apply the changes using:

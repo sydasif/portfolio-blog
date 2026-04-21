@@ -12,8 +12,6 @@ status: "published"
 lastModified: "2023-09-15"
 ---
 
----
-
 ![](https://cdn-images-1.medium.com/max/800/1*PLN7aos6Xu-UqNM-1oktiA.jpeg)
 
 ### Control Flow in Python: Boolean and Operators
@@ -31,12 +29,12 @@ Boolean represent one of two built-in data types:
 * *True*, and
 * *False*
 
-> These are case-sensitive, so make sure to use the proper capitalization.
+&gt; These are case-sensitive, so make sure to use the proper capitalization.
 
 The *bool()* built-in function creates a Boolean value and allows the program to evaluate any logic or expression, and give a Boolean value in return. This is because in Boolean logic, all values are reduced to either *True* or *False*.
 
 ```
-[$] <> bool(1 + 1 == 2)
+[$] &lt;&gt; bool(1 + 1 == 2)
 ```
 
 ```
@@ -46,7 +44,7 @@ True
 Let’s see another comparison expression that checks if the sum of *2* and *2* is equal to *5*. Since 2 + 2 is equal to 4, this expression evaluates to *False*.
 
 ```
-[$] <> bool(2 + 2 == 5)
+[$] &lt;&gt; bool(2 + 2 == 5)
 ```
 
 ```
@@ -64,8 +62,8 @@ Truthy values are those that evaluate to *True* in a boolean context, while fals
 Strings are considered to be *True*, when they are **non-empty**, and *False* when they are **empty**. This means that a string containing at least one character is treated as *True*, and an empty string (`""`) is treated as *False* when used in conditions or boolean expressions.
 
 ```
- >>> non_empty_string = "Hello, World!"  
- >>> print(bool(non_empty_string))
+ &gt;&gt;&gt; non_empty_string = "Hello, World!"  
+ &gt;&gt;&gt; print(bool(non_empty_string))
 ```
 
 ```
@@ -75,8 +73,8 @@ True
 As you see, that **non-empty** string variable is *True*, in the next example below, the **empty-string** variable contains an empty string, so it evaluates to *False.*
 
 ```
->>> empty_string = ""  
->>> bool(empty_string)
+&gt;&gt;&gt; empty_string = ""  
+&gt;&gt;&gt; bool(empty_string)
 ```
 
 ```
@@ -178,10 +176,10 @@ Comparison operators are fundamental tools in Python programming, enabling the e
 
 * Equals: ==
 * Not Equals: !=
-* Less than: <
-* Greater than: >
-* Greater than or equal to: >=
-* Less than or equal to: >=
+* Less than: &lt;
+* Greater than: &gt;
+* Greater than or equal to: &gt;=
+* Less than or equal to: &gt;=
 
 Here’s a simple example of how comparison operators can be used:
 
@@ -189,7 +187,7 @@ Here’s a simple example of how comparison operators can be used:
 port_number = 22  
   
 # Check if the port number is within a valid range  
-if port_number <= 1023:  
+if port_number &lt;= 1023:  
     print(f"The port number {port_number} is valid.")  
 else:  
     print(f"The port number {port_number} is not valid.")

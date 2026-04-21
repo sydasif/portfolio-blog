@@ -12,8 +12,6 @@ status: "published"
 lastModified: "2025-11-20"
 ---
 
----
-
 ![](https://cdn-images-1.medium.com/max/800/0*IrVb4MPvk0AZxRAt)
 
 Photo by [Growtika](https://unsplash.com/@growtika?utm_source=medium&utm_medium=referral) on [Unsplash](https://unsplash.com?utm_source=medium&utm_medium=referral)
@@ -50,7 +48,7 @@ LangGraph is used to build a small state machine with three parts:
 
 ```
 +-----------------+      +-----------------+      +-----------------+  
-|   Understand    +---->     Execute     +---->     Respond        |  
+|   Understand    +----&gt;     Execute     +----&gt;     Respond        |  
 +-----------------+      +-----------------+      +-----------------+
 ```
 
@@ -172,7 +170,7 @@ def clear_device_cache():
     _CACHED_DEVICE_NAMES = None  
   
   
-def understand_node(state: dict[str, Any]) -> dict[str, Any]:  
+def understand_node(state: dict[str, Any]) -&gt; dict[str, Any]:  
     """Processes user input and determines if network commands need to be executed."""  
     global _CACHED_DEVICE_NAMES  
   
@@ -208,7 +206,7 @@ def understand_node(state: dict[str, Any]) -> dict[str, Any]:
 This part connects to the device using Netmiko and runs the command. It also tries structured output first and falls back to raw output if needed.
 
 ```
-def should_execute_tools(state: dict[str, Any]) -> str:  
+def should_execute_tools(state: dict[str, Any]) -&gt; str:  
     """Determines if the workflow should execute tools or respond directly."""  
     last = state["messages"][-1]  
     if hasattr(last, "tool_calls") and last.tool_calls:  
@@ -216,7 +214,7 @@ def should_execute_tools(state: dict[str, Any]) -> str:
     return "respond"  
   
   
-def execute_node(state: dict[str, Any]) -> dict[str, Any]:  
+def execute_node(state: dict[str, Any]) -&gt; dict[str, Any]:  
     """Executes network commands on specified devices based on tool calls."""  
     messages = state["messages"]  
     last = messages[-1]  
@@ -244,7 +242,7 @@ def execute_node(state: dict[str, Any]) -> dict[str, Any]:
 The final part of the workflow is the “respond” node, which formats and returns the final response to the user:
 
 ```
-def respond_node(state: dict[str, Any]) -> dict[str, Any]:  
+def respond_node(state: dict[str, Any]) -&gt; dict[str, Any]:  
     """Formats and returns the final response to the user."""  
     messages = state["messages"]  
     last = messages[-1]  
@@ -341,7 +339,7 @@ from utils.devices import load_devices, DeviceConfig
   
   
 @tool  
-def run_command(device: str | list[str], command: str) -> str:  
+def run_command(device: str | list[str], command: str) -&gt; str:  
     """Execute a command on one or more network devices."""  
     all_devices = load_devices()  
   
@@ -363,7 +361,7 @@ def run_command(device: str | list[str], command: str) -> str:
   
     results = {}  
   
-    def execute_on_device(dev_name: str) -> tuple[str, Dict[str, Any]]:  
+    def execute_on_device(dev_name: str) -&gt; tuple[str, Dict[str, Any]]:  
         """Helper function to execute a command on a single device."""  
         cfg: DeviceConfig = all_devices[dev_name]  
         try:  

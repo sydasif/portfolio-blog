@@ -12,8 +12,6 @@ status: "published"
 lastModified: "2026-01-21"
 ---
 
----
-
 ![](https://cdn-images-1.medium.com/max/800/0*bWcAIwPeb1FnrUrM)
 
 Photo by [May Cloud](https://unsplash.com/@maycloudbackup?utm_source=medium&utm_medium=referral) on [Unsplash](https://unsplash.com?utm_source=medium&utm_medium=referral)
@@ -58,7 +56,7 @@ def search_web(
     region: str | None = None,     # e.g., 'us-en'  
     safesearch: str = "moderate",  
     page: int = 1  
-) -> dict:  
+) -&gt; dict:  
     """Search for general web content using DuckDuckGo."""  
     return ddg_search(query, "text", max_results, time_range, region, safesearch, page)
 ```
@@ -102,7 +100,7 @@ To use this with **Claude Desktop**, simply add the following to your ~/.claude.
 
 Once you restart, you can now ask questions like:
 
-> *Find the latest news about the release of Python 3.14 and search for a logo image for it.*
+&gt; *Find the latest news about the release of Python 3.14 and search for a logo image for it.*
 
 Claude will autonomously orchestrate calls to search\_news and search\_images to fulfill your request.
 

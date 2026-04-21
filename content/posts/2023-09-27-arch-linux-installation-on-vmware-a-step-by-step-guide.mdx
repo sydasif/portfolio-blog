@@ -12,8 +12,6 @@ status: "published"
 lastModified: "2023-09-27"
 ---
 
----
-
 ![](https://cdn-images-1.medium.com/max/800/0*AW3RHpVDxMdi4OIf)
 
 Photo by [E Merk](https://unsplash.com/@emerkley?utm_source=medium&utm_medium=referral) on [Unsplash](https://unsplash.com?utm_source=medium&utm_medium=referral)
@@ -69,7 +67,7 @@ ls /usr/share/kbd/keymaps/**/*.map.gz
 Set your preferred keyboard layout:
 
 ```
-loadkeys <your_layout>
+loadkeys &lt;your_layout&gt;
 ```
 
 ### Step 3: Connect to the Internet
@@ -121,7 +119,7 @@ pacstrap -i /mnt base
 Generate the `fstab` file to configure disk mounting:
 
 ```
-genfstab -U -p /mnt >> /mnt/etc/fstab
+genfstab -U -p /mnt &gt;&gt; /mnt/etc/fstab
 ```
 
 ### Step 8: Chroot into the New System
@@ -171,7 +169,7 @@ locale-gen
 ### Step 11: Set the Hostname
 
 ```
-echo <your_hostname> > /etc/hostname
+echo &lt;your_hostname&gt; &gt; /etc/hostname
 ```
 
 ### Step 12: Create the Hosts File
@@ -181,7 +179,7 @@ Edit the `/etc/hosts` file and add the following lines:
 ```
 127.0.0.1     localhost  
 ::1           localhost  
-127.0.1.1     <your_hostname>.localdomain <your_hostname>
+127.0.1.1     &lt;your_hostname&gt;.localdomain &lt;your_hostname&gt;
 ```
 
 ### Step 13: Set the Root Password

@@ -12,8 +12,6 @@ status: "published"
 lastModified: "2023-10-17"
 ---
 
----
-
 ![](https://cdn-images-1.medium.com/max/800/0*QvZOaCSHfPnXutP1)
 
 Photo by [Rubaitul Azad](https://unsplash.com/@rubaitulazad?utm_source=medium&utm_medium=referral) on [Unsplash](https://unsplash.com?utm_source=medium&utm_medium=referral)
@@ -54,10 +52,10 @@ In this example, the final command looks like this:
 
 ```
 zolo@ubuntu-vm:~$ sudo docker network create -d macvlan \  
-> --subnet 192.168.8.0/24 \  
-> --gateway 192.168.8.1 \  
-> -o parent=ens33 \        
-> new-net  
+&gt; --subnet 192.168.8.0/24 \  
+&gt; --gateway 192.168.8.1 \  
+&gt; -o parent=ens33 \        
+&gt; new-net  
 7d0733ca52c9917265d3415d830bf402df09b5e67702af2c3164f0c8731ce8fd
 ```
 
@@ -74,8 +72,8 @@ Use the below command to attach **Tor** to our newly created Mac VLAN network. H
 
 ```
 zolo@ubuntu-vm:~$ sudo docker run -itd --rm --network new-net \  
-> --ip 192.168.8.99 \  
-> --name tor busybox  
+&gt; --ip 192.168.8.99 \  
+&gt; --name tor busybox  
 2fa52aa0be6747eae42446b2b53aeaecd71831053e24224e9f5728122b4bd5e9
 ```
 
@@ -132,10 +130,10 @@ The command looks like this:
 
 ```
 zolo@ubuntu-vm:~$ sudo docker network create -d macvlan \  
-> --subnet 192.168.20.0/24 \  
-> --gateway 192.168.20.1 \  
-> -o parent=ens33.20 \      
-> macvlan20  
+&gt; --subnet 192.168.20.0/24 \  
+&gt; --gateway 192.168.20.1 \  
+&gt; -o parent=ens33.20 \      
+&gt; macvlan20  
 19f7a084145279099e62a5cf66dcdfe6bc661c09fb7eac4d4c2d3d2dd2708a5f
 ```
 

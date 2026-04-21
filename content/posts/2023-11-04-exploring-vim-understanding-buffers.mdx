@@ -12,8 +12,6 @@ status: "published"
 lastModified: "2023-11-04"
 ---
 
----
-
 ![](https://cdn-images-1.medium.com/max/800/0*idQf4x1wxFE5KHUM)
 
 Photo by [Luca Bravo](https://unsplash.com/@lucabravo?utm_source=medium&utm_medium=referral) on [Unsplash](https://unsplash.com?utm_source=medium&utm_medium=referral)
@@ -28,7 +26,7 @@ Today, we’re going to look into Vim buffers, a fundamental concept that plays 
 
 Vim has a useful feature that allows you to seamlessly import content from other files. Picture this: you have a text file open in Vim, and you want to add content from another file.
 
-No problem! Just use the `:r <file name>` command, and like magic, the content of the specified file will be inserted into your current buffer.
+No problem! Just use the `:r &lt;file name&gt;` command, and like magic, the content of the specified file will be inserted into your current buffer.
 
 This feature is incredibly handy when you need to combine or reference text from various sources.
 
@@ -40,7 +38,7 @@ Vim has you covered with the `:wq` command. This command writes your modificati
 
 #### Creating a New File with Merged Content
 
-But what if you want to keep your original files intact and create a new file with the combined content? Vim offers a solution with the `:wq <file name>` command.
+But what if you want to keep your original files intact and create a new file with the combined content? Vim offers a solution with the `:wq &lt;file name&gt;` command.
 
 Here’s an example: You have two text files, “file1.txt” and “file2.txt,” and you want to combine their contents into a new file named “combined.txt.” You can use `:wq combined.txt`, and it will create a new file with the merged content, while leaving “file1.txt” and “file2.txt” unchanged.
 
@@ -48,7 +46,7 @@ Here’s an example: You have two text files, “file1.txt” and “file2.txt,�
 
 Vim truly shines when it comes to working with multiple buffers. It’s a feature that becomes essential when you’re managing and editing multiple files simultaneously.
 
-* To open additional files in separate buffers, use the `:e <file name>` command. This command opens a new buffer for the specified file, allowing you to work on multiple files concurrently.
+* To open additional files in separate buffers, use the `:e &lt;file name&gt;` command. This command opens a new buffer for the specified file, allowing you to work on multiple files concurrently.
 
 For example, if you’re working on a project with multiple source code files, you can use `:e file2.c` to open “file2.c” in a separate buffer while keeping your current file open in the background.
 
@@ -60,14 +58,14 @@ For instance, if you’ve finished editing a file and want to remove it from you
 
 #### Creating and Editing Empty Buffers
 
-Vim also allows you to open empty buffers when needed. To open an empty buffer, utilize the `:enew` command. You can then insert and edit text in this buffer. To save your changes to a new file, employ the `:w <new file name>` command, providing a name for the new file and ensuring your content is stored securely.
+Vim also allows you to open empty buffers when needed. To open an empty buffer, utilize the `:enew` command. You can then insert and edit text in this buffer. To save your changes to a new file, employ the `:w &lt;new file name&gt;` command, providing a name for the new file and ensuring your content is stored securely.
 
 ### Splitting and Opening Files
 
 Vim offers various commands for splitting and opening files:
 
-* To open a file horizontally in the current buffer, use the `:split <file name>` command, or the shorthand `:sp <file name>`.
-* For vertical splits in the same buffer, use the `:vsplit <file name>` command, or the shorthand `:vs <file name>`.
+* To open a file horizontally in the current buffer, use the `:split &lt;file name&gt;` command, or the shorthand `:sp &lt;file name&gt;`.
+* For vertical splits in the same buffer, use the `:vsplit &lt;file name&gt;` command, or the shorthand `:vs &lt;file name&gt;`.
 
 Let’s say you’re writing a report and need to refer to a figure from a separate file. You can use `:vsplit filename` to open “filename” in a vertical split within the same buffer.
 
