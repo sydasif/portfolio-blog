@@ -1,0 +1,239 @@
+---
+title: "Vagrant and Ansible: Setting Up a Testing Environment"
+date: "2023-09-28"
+excerpt: "In this lab tutorial, we’ll explore the powerful combination of Vagrant and Ansible to create a seamless testing environment. Our aim is to help you u..."
+description: "In this lab tutorial, we’ll explore the powerful combination of Vagrant and Ansible to create a seamless testing environment. Our aim is to help you understand the key steps involved in setting up thi..."
+category: "Uncategorized"
+tags: []
+image: ""
+author: "Syed Asif"
+readingTime: "5 min read"
+status: "published"
+lastModified: "2023-09-28"
+---
+
+![](https://cdn-images-1.medium.com/max/800/0*dTrOvif1kMlnYMjz)
+
+Photo by [Thomas Jensen](https://unsplash.com/@thomasjsn?utm_source=medium&utm_medium=referral) on [Unsplash](https://unsplash.com?utm_source=medium&utm_medium=referral)
+
+### Vagrant and Ansible: Setting Up a Testing Environment
+
+In this lab tutorial, we’ll explore the powerful combination of Vagrant and Ansible to create a seamless testing environment. Our aim is to help you understand the key steps involved in setting up this lab and how it can benefit your automation and testing needs.
+
+### Introduction to Ansible
+
+Ansible is an open-source automation tool renowned for its simplicity and effectiveness in managing client-server and network device automation. What sets Ansible apart is its agent-less nature; you only require Python and SSH enabled on the remote host to get started.
+
+Here’s a brief overview of how Ansible works:
+
+1. **Generate a Python script**: Ansible generates Python scripts for the tasks you specify.
+2. **Copy the script to the remote node**: These scripts are then copied to the target remote nodes.
+3. **Execute the script on a remote node**: The scripts are executed on the remote nodes, carrying out the tasks.
+4. **Wait for script completion**: Ansible waits for all hosts to complete the task before moving on.
+5. **Remove the script**: Once the task is complete, Ansible removes the script from the remote node.
+
+It’s essential to note that Ansible runs tasks in parallel across all hosts, waits for all hosts to finish a task before proceeding, and follows the order of tasks as specified.
+
+### Requirements for the Lab
+
+To create our testing environment, we’ll need the following:
+
+[Vagrant](https://www.vagrantup.com/) is an exceptional open-source tool for managing virtual machines. It allows you to create and manage Linux virtual machines easily.
+
+Here’s how to set up our lab:
+
+1. **Install Vagrant**: Head to the [**Vagrant website**](https://www.vagrantup.com/), download the software, and install it on your machine.
+2. **VirtualBox**: Ensure you have VirtualBox installed on your system.
+3. **Download Vagrant File**: Download the [Vagrant file](https://gitlab.com/sydasif/my-vagrant-lab/-/blob/main/lab/Vagrantfile?ref_type=heads) required for this lab.
+
+```
+# -*- mode: ruby -*-  
+# vi: set ft=ruby :  
+  
+Vagrant.require_version "&gt;= 1.6.0"  
+  
+boxes = [  
+  
+    {  
+        :name =&gt; "centos01",  
+        # ammend as per your machine nat network setting  
+        :eth1 =&gt; "192.168.56.10",  
+        :mem =&gt; "1024",  
+        :cpu =&gt; "1",  
+        :image =&gt; "centos/7"  
+    },  
+    {  
+        :name =&gt; "ubuntu01",  
+        # ammend as per your machine nat network setting  
+        :eth1 =&gt; "192.168.56.11",  
+        :mem =&gt; "1024",  
+        :cpu =&gt; "1",  
+        :image =&gt; "ubuntu/bionic64"  
+    }  
+]  
+  
+Vagrant.configure(2) do |config|  
+  boxes.each do |opts|  
+    config.vm.define opts[:name] do |config|  
+      config.vm.box = opts[:image]  
+      config.vm.hostname = opts[:name]  
+      config.vm.provider "virtualbox" do |v|  
+        v.customize ["modifyvm", :id, "--memory", opts[:mem]]  
+        v.customize ["modifyvm", :id, "--cpus", opts[:cpu]]  
+      end  
+      config.vm.network :private_network, ip: opts[:eth1]  
+    end  
+  end    
+end
+```
+
+1. **Create a Directory**: Create a directory on your machine where you want to set up the lab. In this example, we’ll use “ansible-lab” as the directory name.
+2. **Copy the Vagrant File**: Copy the downloaded Vagrant file to your lab directory.
+3. **Boot the Vagrant Devices**: Open PowerShell or Bash, navigate to your lab directory, and run the command `***vagrant up***`. This command will create and boot two virtual machines: `***centos01***` and `***ubuntu01***`.
+4. **Check Device Status**: You can verify the status of your devices by running `***vagrant status***`.
+
+```
+$ vagrant status  
+Current machine states:  
+  
+centos01                  running (virtualbox)  
+ubuntu01                  running (virtualbox)  
+  
+This environment represents multiple VMs. The VMs are all listed  
+above with their current state. For more information about a specific  
+VM, run `vagrant status NAME`.
+```
+
+5. **SSH Access**: To access the virtual machines, use the command `***vagrant ssh ubuntu01***` and `***vagrant ssh centos01***`. You can also test network connectivity between the devices using `***ping***`.
+
+&gt; See [Permission Denied](https://stackoverflow.com/questions/36300446/ssh-permission-denied-publickey-gssapi-with-mic) guide on Stack Overflow, if you have any issue to set up ssh connection.
+
+### Configuring Ansible Client
+
+With our Vagrant hosts ready, we need to configure Ansible on our control node (Host PC) and manage hosts.
+
+Here are the steps:
+
+1. **Edit the Hosts File**: On the control node (your PC), open the hosts file for IP-to-name resolution.
+
+```
+$ sudo nano /etc/hosts
+```
+
+2. **Add IP and Hostname**: Add the following IP and hostname mappings to the file:
+
+```
+192.168.56.10 centos01  
+192.168.56.11 ubuntu01
+```
+
+3. **Create an SSH Key**: On your control node, create an SSH key pair using `***ssh-keygen***`. Ensure you accept the default settings.
+
+4. **Copy SSH Key**: Copy the public key to the client’s machine using `***ssh-copy-id***`.
+
+```
+ssh-copy-id -i .ssh/id_rsa.pub vagrant@ubuntu01  
+ssh-copy-id -i .ssh/id_rsa.pub vagrant@centos01
+```
+
+5. **SSH Configuration on Managed Nodes**: On the managed nodes (e.g., Ubuntu and CentOS), configure them to allow SSH access without a password prompt. Use `***sudo visudo***` to edit the ***sudoers*** file and add the line below to the bottom of the file:
+
+```
+vagrant ALL=(ALL) NOPASSWD: ALL
+```
+
+### Ansible Installation
+
+Before diving into our lab setup, you’ll need to ensure Ansible is installed. Here are the requirements:
+
+* **Control Node**: Any machine with Python 2.7 or Python 3.5 (or higher) installed.
+* **Managed Nodes**: These nodes require SSH access and Python installed.
+
+#### Ansible Installation on Ubuntu
+
+To install Ansible on Ubuntu, follow these steps:
+
+1. **Create a Virtual Environment**: Create a virtual environment to isolate Ansible.
+
+```
+$ virtualenv ansible2.9
+```
+
+2. **Activate the Environment**: Activate the virtual environment.
+
+```
+$ source ansible2.9/bin/activate
+```
+
+3. **Upgrade Pip**: Upgrade pip to the latest version.
+
+```
+$ pip install - upgrade pip
+```
+
+4. **Install Ansible**: Install Ansible version 2.9.9.
+
+```
+$ pip install ansible==2.9.9
+```
+
+5. **Verify Installation**: Check Ansible’s installation by running the command:
+
+```
+$ ansible - version
+```
+
+6. **Test Ansible**: Test Ansible by running an ad-hoc command, for example:
+
+```
+$ ansible localhost -m ping
+```
+
+This command should return a “***pong***” response.
+
+### Ansible Configuration Set-Up
+
+To configure Ansible, create the necessary configuration and inventory files:
+
+1. **Create Ansible Configuration Directory**:
+
+```
+$ sudo mkdir /etc/ansible
+```
+
+2. **Create ansible.cfg file**:
+
+```
+$ sudo nano /etc/ansible/ansible.cfg
+```
+
+In `***ansible.cfg***`, define the location of the inventory file:
+
+```
+inventory = ./hosts
+```
+
+3. **Create an inventory file**: Create the `***hosts***` file in the same directory and organize your hosts into groups. For example:
+
+```
+   [ubuntu]  
+   ubuntu01  
+  
+   [centos]  
+   centos01  
+  
+   [linux:children]  
+   ubuntu  
+   centos  
+  
+   [linux:vars]  
+   ansible_usr=vagrant
+```
+
+### Conclusion
+
+Congratulations! You’ve successfully set up a testing lab using Vagrant and configured Ansible for automation. You’re now ready to create and run playbooks, execute ad-hoc commands, and explore the power of Ansible in your environment.
+
+---
+
+*Originally published at* [*Gitlab*](https://gitlab.com/sydasif/my-vagrant-lab/-/blob/main/lab/README.md?ref_type=heads)*.*

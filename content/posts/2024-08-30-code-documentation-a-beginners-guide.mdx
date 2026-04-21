@@ -1,0 +1,77 @@
+---
+title: "Code Documentation — A Beginner’s Guide"
+date: "2024-08-30"
+excerpt: "When writing code, it’s essential to make it as clear and understandable as possible. This not only benefits you but also anyone else who might work w..."
+description: "When writing code, it’s essential to make it as clear and understandable as possible. This not only benefits you but also anyone else who might work with your code in the future. There are two main wa..."
+category: "Uncategorized"
+tags: []
+image: ""
+author: "Syed Asif"
+readingTime: "5 min read"
+status: "published"
+lastModified: "2024-08-30"
+---
+
+![](https://cdn-images-1.medium.com/max/800/0*osaF1JVOkfYibOKW)
+
+Photo by [Pankaj Patel](https://unsplash.com/@pankajpatel?utm_source=medium&utm_medium=referral) on [Unsplash](https://unsplash.com?utm_source=medium&utm_medium=referral)
+
+### Code Documentation — A Beginner’s Guide
+
+When writing code, it’s essential to make it as clear and understandable as possible. This not only benefits you but also anyone else who might work with your code in the future. There are two main ways to improve the readability of your code:
+
+**Self-Documenting Code**: Use descriptive names for your variables, functions, and classes.  
+**Comments**: Add comments where necessary to explain parts of your code.
+
+### What are Comments?
+
+Comments are lines of text within your code that are meant for you or other developers — they are ignored by the computer when the code is run. Comments are useful for explaining what a particular piece of code does, why you made certain choices, or to leave notes for yourself.
+
+#### Examples of Comments
+
+Here is a simple example of a comment in Python:
+
+```
+# This is a comment  
+num = 10
+```
+
+In the above code, the comment *# This is a comment* is ignored by Python. It serves as a note for anyone reading the code.
+
+You can also create in-line comments:
+
+```
+x = 10 # 10 is being assigned to x
+```
+
+In this case, the comment explains what the code on that line is doing.
+
+#### Multi-line Comments
+
+Sometimes, you may need to write a comment that spans multiple lines. In Python, you can achieve this by using triple-quoted strings:
+
+```
+"""This is a  
+multiline comment"""
+```
+
+Alternatively, you can use triple single quotes:
+
+```
+'''This is also a  
+multiline comment'''
+```
+
+### Documenting Functions with Doc-strings
+
+In addition to regular comments, Python provides a special type of comment called a *doc-string*. Doc-strings are used to document what a function, class, or module does. They are written as the first statement inside a function, class, or module using triple double-quotes.
+
+Here’s an example of a function with a doc-string:
+
+```
+def my_function():  
+ """This is the function's docstring"""  
+ pass
+```
+
+Doc-strings are helpful because they can be accessed by tools and frameworks that generate documentation from your code.

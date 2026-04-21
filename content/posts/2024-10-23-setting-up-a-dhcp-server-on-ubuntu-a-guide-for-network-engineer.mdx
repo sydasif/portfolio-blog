@@ -1,0 +1,156 @@
+---
+title: "Setting Up a DHCP Server on Ubuntu — A Guide for Network Engineer"
+date: "2024-10-23"
+excerpt: "In this guide, we’ll walk through setting up a DHCP server using the isc-dhcp-server package on Ubuntu 22. Our goal is to automate IP address allocati..."
+description: "In this guide, we’ll walk through setting up a DHCP server using the isc-dhcp-server package on Ubuntu 22. Our goal is to automate IP address allocation for devices in a small network, making network ..."
+category: "Uncategorized"
+tags: []
+image: ""
+author: "Syed Asif"
+readingTime: "5 min read"
+status: "published"
+lastModified: "2024-10-23"
+---
+
+![](https://cdn-images-1.medium.com/max/800/0*m6H1DbyCWNHcNEuh)
+
+Photo by [Jordan Harrison](https://unsplash.com/@jouwdan?utm_source=medium&utm_medium=referral) on [Unsplash](https://unsplash.com?utm_source=medium&utm_medium=referral)
+
+### Setting Up a DHCP Server on Ubuntu — A Guide for Network Engineer
+
+In this guide, we’ll walk through setting up a DHCP server using the `isc-dhcp-server` package on Ubuntu 22. Our goal is to automate IP address allocation for devices in a small network, making network management simpler and more efficient. This guide assumes you have basic networking knowledge and access to an Ubuntu server. The setup is based on the following network topology:
+
+![](https://cdn-images-1.medium.com/max/800/1*P0HoODR4no-YzfZIq9lt2A.png)
+
+Lab Topology
+
+### Topology Overview
+
+* **Ubuntu 22**: Acts as the DHCP server and DNS server with two network interfaces:
+* `ens3`: Connected to the ISP and configured via DHCP.
+* `ens4`: Serves the LAN network with a static IP (192.168.100.1).
+* **Switch**: Connects various devices in the network, forwarding DHCP requests from clients.
+* **Fedora 39** & **VPC**: Clients that will obtain IP addresses automatically through DHCP.
+
+**IP Address Scheme**: `192.168.100.0/24`
+
+### Why Use a DHCP Server?
+
+A DHCP server simplifies network administration by automatically assigning IP addresses to devices as they join the network. Without it, each new device would need to be manually configured, which is time-consuming and prone to errors. In a network like ours, the DHCP server on Ubuntu 22 will handle IP distribution, letting Fedora 39 and other clients join the LAN without manual setup.
+
+---
+
+### Setting Up the DHCP Server for IP Management
+
+#### Step 1: Assign a Static IP to the Ubuntu Server’s LAN Interface
+
+Since the DHCP server requires a fixed IP on the LAN to function properly, we need to set a static IP for `ens4`. Edit the Netplan configuration:
+
+```
+network:  
+  version: 2  
+  ethernets:  
+    ens3:  
+      dhcp4: yes  
+    ens4:  
+      dhcp4: no  
+      addresses: [192.168.100.1/24]
+```
+
+Apply the configuration with:
+
+```
+sudo netplan apply
+```
+
+This configuration sets `ens3` to receive an IP from the ISP dynamically while assigning `192.168.100.1` to `ens4` for the internal LAN network.
+
+#### Step 2: Install the ISC DHCP Server
+
+To manage dynamic IP allocation, install the `isc-dhcp-server` package:
+
+```
+sudo apt install isc-dhcp-server
+```
+
+After installation, check the service status:
+
+```
+sudo systemctl status isc-dhcp-server
+```
+
+The service may not start initially as it requires further configuration. Let’s proceed with that.
+
+#### Step 3: Configure `dhcpd.conf`
+
+The configuration file for the DHCP server is located at `/etc/dhcp/dhcpd.conf`. To keep a backup of the original file:
+
+```
+sudo mv /etc/dhcp/dhcpd.conf /etc/dhcp/dhcpd.conf.orig
+```
+
+Create a new configuration:
+
+```
+sudo nano /etc/dhcp/dhcpd.conf
+```
+
+Add the following content:
+
+```
+default-lease-time 43200;  
+max-lease-time 86400;  
+option subnet-mask 255.255.255.0;  
+option broadcast-address 192.168.100.255;  
+option domain-name "local.lan";  
+authoritative;  
+subnet 192.168.100.0 netmask 255.255.255.0 {  
+  range 192.168.100.100 192.168.100.200;  
+  option routers 192.168.100.1;  
+  option domain-name-servers 192.168.100.1;  
+}
+```
+
+**Explanation of Key Parameters**
+
+* `default-lease-time` and `max-lease-time`: Specify how long an IP is assigned before needing renewal. We use 12 hours by default and a maximum of 24 hours.
+* `authoritative`: Declares this server as the primary DHCP server for the network.
+* `subnet` block: Defines the IP range (`192.168.100.100` to `192.168.100.200`), subnet mask, gateway (`option routers`), and DNS server (`option domain-name-servers`) for the clients.
+
+#### Step 4: Set the Listening Interface
+
+Specify which interface the DHCP server should use by editing `/etc/default/isc-dhcp-server`:
+
+```
+INTERFACESv4="ens4"
+```
+
+This tells the DHCP server to operate on the LAN interface `ens4`, where it will manage IP allocation.
+
+#### Step 5: Start and Verify the DHCP Service
+
+Start the DHCP service:
+
+```
+sudo systemctl start isc-dhcp-server
+```
+
+Verify that it’s running:
+
+```
+sudo systemctl status isc-dhcp-server
+```
+
+To ensure that IP addresses are being assigned correctly, you can check the lease file:
+
+```
+cat /var/lib/dhcp/dhcpd.leases
+```
+
+This file keeps track of all IP addresses currently or previously leased to devices.
+
+### Conclusion
+
+With this setup, your Ubuntu 22 server provides automatic IP address allocation to devices like Fedora 39 and VPC clients in the `192.168.100.0/24` network. The dual-interface setup allows the server to connect to the ISP while maintaining a managed internal network. This setup reduces manual IP configuration efforts and makes network management more efficient.
+
+In the next part of this series, we’ll cover setting up DNS services on the same server, enabling it to act as an internet gateway for the LAN. By automating IP assignments with `isc-dhcp-server`, you’re taking a crucial step toward building a scalable and easily managed network.

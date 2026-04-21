@@ -1,0 +1,341 @@
+---
+title: "Python Control Flow Explained: Decision-Making and Loops"
+date: "2023-09-10"
+excerpt: "Control flow in Python refers to the order in which statements and instructions are executed in a script. It is specified by conditional statements an..."
+description: "Control flow in Python refers to the order in which statements and instructions are executed in a script. It is specified by conditional statements and loops, allowing you to control the flow of your ..."
+category: "Uncategorized"
+tags: []
+image: ""
+author: "Syed Asif"
+readingTime: "5 min read"
+status: "published"
+lastModified: "2023-09-10"
+---
+
+![](https://cdn-images-1.medium.com/max/800/1*PLN7aos6Xu-UqNM-1oktiA.jpeg)
+
+### Python Control Flow: Decision-Making and Loops
+
+Control flow in Python refers to the order in which statements and instructions are executed in a script. It is specified by conditional statements and loops, allowing you to control the flow of your program’s execution based on conditions and logic.
+
+Let's first explore a conditional statement, in Python, a conditional statement is a programming construct that allows you, to execute different blocks of code based on whether a condition is true or false. The primary conditional statements in Python are:
+
+1. ***if* statement:** It allows you to execute a block of code if a given condition is true, and is mandatory.
+2. ***elif* statement:** This is used to check multiple conditions one by one, and if one of them is true, the corresponding block of code is executed.
+3. ***else* statement:** It provides a default block of code to execute when none of the previous conditions is true.
+
+```
+number = 10  
+  
+if number &gt; 5:  
+    print("number is greater than 5")  
+elif number == 5:  
+    print("number is equal to 5")  
+else:  
+    print("number is less than 5")
+```
+
+```
+number is greater than 5
+```
+
+In this example, the program checks the value of the variable *(number)* and executes the block of code that matches the first true condition it meets.
+
+Conditional statements are essential in network automation scripts to make decisions based on the state of the network or specific conditions. You can use conditional statements for network automation to do different things on a network device:
+
+* Use to check if you can establish a connection to a network device.
+* Authentication methods and conditions based on the device type or user credentials.
+* Implement conditionals to check the health of network devices and services or error messages in logs.
+* Trigger alerts or actions based on network health conditions, like sending notifications if a device goes offline.
+* Automatically adjust routing configurations or firewall rules in response to specific events or conditions.
+* Create conditional logic for scheduled tasks, such as backups or updates, to run at specific times or under certain conditions.
+* Use conditionals to update or maintain your network device inventory based on changes in the network topology.
+
+```
+user = input("Enter your username: ")  
+if user == "ali":  
+  print("You are authorized to proceed...")  
+elif user == "bob":  
+  print("You are not authorized to proceed...")  
+else:  
+  print("Sometings goes wrong...")
+```
+
+```
+Enter your username: ali  
+You are authorized to proceed...
+```
+
+The code provided prompts the user to enter their *username* and then checks if the entered *username* matches specific values, depending on the input, it provides different responses. Here’s a breakdown of how the code works:
+
+So, depending on the username entered, the code will output one of the three messages:
+
+* If the user enters *ali,* it will print “You are authorized to proceed…”
+* If the user enters *bob,* it will print “You are not authorized to proceed…”
+* If the user enters any other username, it will print “Something goes wrong…”
+
+This code is a simple example of using conditional statements to make decisions based on user input.
+
+---
+
+Loops are an essential programming technique that are found in all programming languages, a loop is a set of instructions or statement that are executed and repeated, until a certain condition is meet. Python programming language provides the following types of loops to handle these requirements.
+
+* For loop
+* while loop
+
+#### For loop
+
+A for loop is used in which the user wants to continuously repeat the execution of a given block of code or statements a known number of times. You can use for loop for iterating over a collection (that is either a list, a tuple, a dictionary, a set, or a string).
+
+```
+ip_list = ["192.168.10.10", "192.168.10.11", "192.168.10.12"]  
+  
+for ip in ip_list:  
+  print(ip)
+```
+
+```
+192.168.10.10  
+192.168.10.11  
+192.168.10.12
+```
+
+Here’s a breakdown of how a for loop works:
+
+1. The `for` keyword is used to start the loop.
+2. `variable` is a placeholder variable that takes on the value of each item in the `sequence` during each iteration of the loop.
+3. `sequence` is the collection of items over which you want to iterate.
+
+In network automation, for loops are commonly used to automate repetitive tasks across network devices, such as routers and switches.
+
+```
+# IP list for network device  
+devices =['192.168.10.11', '192.168.10.12']  
+  
+# For loop and list to connect multiple devices  
+for device in devices:  
+  print ('#### Connecting to the device ' + device + ' ####\n' )
+```
+
+```
+#### Connecting to the device 192.168.10.11 ####  
+#### Connecting to the device 192.168.10.12 ####
+```
+
+For loop, make it possible to automate a wide range of network management tasks, such as configuration changes, data collection, and monitoring, across multiple network devices efficiently and consistently.
+
+#### Nested Loop
+
+Nested for loops are handy when you need to perform tasks that involve combinations or permutations of elements from multiple lists, or when you want to apply a specific set of actions to multiple network devices with different configurations. In a network automation can be very useful when you need to perform actions on multiple devices while also iterating through specific configurations or tasks for each device. Here’s an example of how nested for loops can be used in network automation:
+
+```
+""" Nested loop to configure network devices"""  
+  
+device_list = ["192.168.10.11", "192.168.10.12"]  
+intf_list = ["interface gig0/0", "interface gig0/1"]  
+  
+for device in device_list:  
+    print(f"#### Connecting to the device {device} ####\n")  
+    for interfac in intf_list:  
+        print(f"{interfac}\n description {interfac}\n")
+```
+
+```
+#### Connecting to the device 192.168.10.11 ####  
+  
+interface gig0/0  
+ description interface gig0/0  
+  
+interface gig0/1  
+ description interface gig0/1  
+  
+#### Connecting to the device 192.168.10.12 ####  
+  
+interface gig0/0  
+ description interface gig0/0  
+  
+interface gig0/1  
+ description interface gig0/1
+```
+
+Nested for loops are handy when you need to perform tasks to apply a specific set of actions to multiple network devices with different configurations.
+
+---
+
+#### range() Function
+
+The `range()` function in Python is used to generate a sequence of numbers. It is often used in for loops to specify the number of iterations or to create a range of values. The `range()` function can take up to three arguments:
+
+```
+range(start, stop, step)
+```
+
+1. `start` (optional): The starting value of the sequence (default is 0).
+2. `stop`: The exclusive ending value of the sequence.
+3. `step` (optional): The step or increment between values in the sequence (default is 1).
+
+The `range()` function returns a sequence-like object, which is iterable. You can convert it to a list or iterate over it directly using a for loop.
+
+```
+for n in range (2,6):  
+  print ("VLAN " + str(n))
+```
+
+```
+VLAN 2  
+VLAN 3  
+VLAN 4  
+VLAN 5
+```
+
+This loop iterates through the numbers from *2* (inclusive) to *6* (exclusive) and prints each number prefixed with *VLAN*. The `str(n)` is used to convert the integer `n` into a string so that it can be concatenated with the *VLAN* string for printing.
+
+---
+
+#### Break and Continue Statement
+
+In Python, the `break` and `continue` statements are used to control the flow of loops, specifically in `for` and `while` loops.
+
+**Break Statement**:
+
+* The `break` statement is used to exit a loop prematurely, before the loop condition has been met.
+* When a `break` statement is encountered within a loop, the loop has immediately terminated, and the program continues with the next statement after the loop.
+* It is often used to exit a loop when a certain condition has met.
+
+```
+for i in range(1, 11):  
+    if i == 5:  
+        break  # Exit the loop when i equals 5  
+    print(i)
+```
+
+```
+1  
+2  
+3  
+4
+```
+
+In this example, the loop will print numbers from 1 to 4, and when `i` becomes 5, the `break` statement is executed, and the loop terminates.
+
+**Continue Statement**:
+
+* The `continue` statement is used to skip the current iteration of a loop and move on to the next iteration.
+* When a `continue` statement is encountered, the remaining code inside the current iteration is skipped, and the loop proceeds to the next iteration.
+
+```
+""" Nested loop to configure network devices"""  
+  
+device_list = ["R1", "R2", "R3"]  
+intf_list = ["interface gig0/0", "interface gig0/1"]  
+  
+for device in device_list:  
+    if device == "R2":  
+        continue  
+    print(f"#### Connecting to the device {device} ####\n")  
+    for interfac in intf_list:  
+        print(f"{interfac}\n description {interfac}\n")
+```
+
+```
+#### Connecting to the device R1 ####  
+  
+interface gig0/0  
+ description interface gig0/0          
+  
+interface gig0/1  
+ description interface gig0/1          
+  
+#### Connecting to the device R3 ####  
+  
+interface gig0/0  
+ description interface gig0/0          
+  
+interface gig0/1  
+ description interface gig0/1
+```
+
+As you can see, the code skips *R2* as specified by the `if device == "R2": continue` statement, and it configures the other devices in the `device_list` with the interface descriptions from the `intf_list`.
+
+---
+
+#### While Loop
+
+The while loop is another kind of loop structure in Python. The while loop executes a given block of code repeatedly if certain requirements are met or based on a boolean condition, and stop the while loop when the condition is *False*. With the while loop, we can execute a set of statements as long as a condition is *True*.
+
+```
+num = 1  
+while num &lt; 5:  
+  print(f"The number {num} is less than 5")  
+  num += 1
+```
+
+```
+The number 1 is less than 5  
+The number 2 is less than 5  
+The number 3 is less than 5  
+The number 4 is less than 5
+```
+
+In this code above, I first initialize the variable *num* to *1*. Then, use a while loop to execute the code block as long as the condition *num &lt; 5* is true. Inside the loop, we print the statement “*The number {num} is less than 5*” using an *f-string*. Then increment the value of *num* by *1* using the += operator. This process continues until *num* is no longer less than *5*.
+
+Basic rules for using the while loop:
+
+* Initialized the variables.
+* While the loop executes, update the variable.
+* The code at some time return a *False* condition to avoid an infinite loop.
+
+With the *break* statement, we can stop the loop even, if the condition is *True*.
+
+```
+i = 1  
+while True:  
+  print(i)  
+  i = i + 1  
+  if i &gt; 5:  
+    break
+```
+
+```
+1  
+2  
+3  
+4  
+5
+```
+
+**For loop**, If you know, prior to the start of the loop, how many times you want to repeat the loop.
+
+**While loop,** if you don't know how many attempts you'll make, and want to specify the requirements that must be met to stop the loop.
+
+```
+password = "Passw@rd"  
+  
+while True:  
+    user = input("Enter Password: ")  
+    if user != password:  
+        print("You are not allowed.")  
+    if user == password:  
+        print("You are allowed.")  
+        break
+```
+
+```
+Enter Password: cisco  
+You are not allowed.  
+Enter Password: Passw@rd  
+You are allowed.
+```
+
+If the entered password matches the correct password, it prints “You are allowed” and breaks out of the loop using the `break` statement.
+
+If you like the blog, please share it with others, thank you.
+
+### In Plain English
+
+*Thank you for being a part of our community! Before you go:*
+
+* *Be sure to* ***clap*** *and* ***follow*** *the writer! 👏*
+* *You can find even more content at* [***PlainEnglish.io***](https://plainenglish.io/) ***🚀***
+* *Sign up for our* [***free weekly newsletter***](http://newsletter.plainenglish.io/)*. 🗞️*
+* *Follow us on* [***Twitter***](https://twitter.com/inPlainEngHQ)***(X***), [***LinkedIn***](https://www.linkedin.com/company/inplainenglish/), [***YouTube***](https://www.youtube.com/channel/UCtipWUghju290NWcn8jhyAw), and [***Discord***](https://discord.gg/GtDtUAvyhW)***.***

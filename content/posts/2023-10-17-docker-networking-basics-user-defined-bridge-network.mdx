@@ -1,0 +1,214 @@
+---
+title: "Docker Networking Basics — User-defined Bridge Network"
+date: "2023-10-17"
+excerpt: "Imagine, that the default bridge is like your trustworthy buddy, but Docker is quietly pushing you not to rely on it too heavily. They encourage you t..."
+description: "Imagine, that the default bridge is like your trustworthy buddy, but Docker is quietly pushing you not to rely on it too heavily. They encourage you to understand the world of user-defined networks. Y..."
+category: "Uncategorized"
+tags: []
+image: ""
+author: "Syed Asif"
+readingTime: "5 min read"
+status: "published"
+lastModified: "2023-10-17"
+---
+
+![](https://cdn-images-1.medium.com/max/800/0*GxnBCpDxBM2qDeQd)
+
+Photo by [Rubaitul Azad](https://unsplash.com/@rubaitulazad?utm_source=medium&utm_medium=referral) on [Unsplash](https://unsplash.com?utm_source=medium&utm_medium=referral)
+
+### Docker Networking Basics — User-defined Bridge Network
+
+#### Part — 02
+
+Imagine, that the default bridge is like your trustworthy buddy, but Docker is quietly pushing you not to rely on it too heavily. They encourage you to understand the world of user-defined networks. You might wonder why, and the answer is simple, Docker wants you to take control and create your networks.
+
+The user-defined bridge network is remarkably similar to the default bridge, with one key distinction — you’re in charge. Just execute a single command, `docker network create`. Give it a name, something like *my-net*, and hit enter, your network is born.
+
+```
+zolo@ubuntu-vm:~$ sudo docker network create my-net  
+[sudo] password for zolo:   
+fddfab4624248cf472ece1d83868eca5f618490353d6f528b16ca8d69c96b511
+```
+
+If you look at your network interfaces using, `ip address show`you'll notice a new virtual bridge with a different network range. It's a real demonstration of how Docker is all about empowering you to customize and orchestrate your container environments to perfection.
+
+```
+zolo@ubuntu-vm:~$ ip addr show  
+1: lo: &lt;LOOPBACK,UP,LOWER_UP&gt; mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000  
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00  
+    inet 127.0.0.1/8 scope host lo  
+       valid_lft forever preferred_lft forever  
+    inet6 ::1/128 scope host  
+       valid_lft forever preferred_lft forever  
+2: ens33: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu 1500 qdisc fq_codel state UP group default qlen 1000      
+    link/ether 00:0c:29:34:c1:8b brd ff:ff:ff:ff:ff:ff  
+    altname enp2s1  
+    inet 192.168.8.101/24 brd 192.168.8.255 scope global dynamic noprefixroute ens33  
+       valid_lft 85738sec preferred_lft 85738sec  
+    inet6 fe80::eb23:3b19:676a:d63c/64 scope link noprefixroute  
+       valid_lft forever preferred_lft forever  
+3: docker0: &lt;NO-CARRIER,BROADCAST,MULTICAST,UP&gt; mtu 1500 qdisc noqueue state DOWN group default  
+    link/ether 02:42:00:dc:f1:f7 brd ff:ff:ff:ff:ff:ff  
+    inet 172.17.0.1/16 brd 172.17.255.255 scope global docker0  
+       valid_lft forever preferred_lft forever  
+4: br-fddfab462424: &lt;NO-CARRIER,BROADCAST,MULTICAST,UP&gt; mtu 1500 qdisc noqueue state DOWN group default   
+    link/ether 02:42:bd:54:45:fd brd ff:ff:ff:ff:ff:ff  
+    inet 172.18.0.1/16 brd 172.18.255.255 scope global br-fddfab462424  
+       valid_lft forever preferred_lft forever
+```
+
+But there’s more to discover, We’ll uncover the user-defined networks and how they can elevate your Docker experience to new heights.
+
+#### Adding Containers, and Checking IP Addresses
+
+First, we’ll confirm that our network is officially part of the Docker landscape. A quick `docker network ls` will reveal it, complete with its bridge driver type.
+
+```
+zolo@ubuntu-vm:~$ sudo docker network ls  
+NETWORK ID     NAME      DRIVER    SCOPE  
+b59f9f89b80a   bridge    bridge    local  
+05ce1ba19b67   host      host      local  
+d536ef1ff6ca   my-net    bridge    local  
+ceebbf717d1b   none      null      local
+```
+
+Adding containers to this network is simple, with just one new switch in the command. Since we’re stepping out of the default world, we need to specify the network we want to use. So, we’ll add `--network my-net` to the command. In this example, we'll name the container **Loki** and use the **busybox** image.
+
+```
+zolo@ubuntu-vm:~$ sudo docker run -itd --rm --network my-net --name loki busybox  
+dff01ae757c8b69da00756ec710df2979f0a4259754c18b54b682bfa946b8671
+```
+
+Let’s do it one more time, this time adding a friend to *my-net*. Change the name from **Loki** to **Odin**. And as you’d expect, with a little Docker magic, **Odin** will join *my-net*.
+
+```
+zolo@ubuntu-vm:~$ sudo docker run -itd --rm --network my-net --name odin busybox  
+999df9e9856b5fe37322e74c10e2d5786bbaae61a20cff5a9eed5de3b7223ba8
+```
+
+Now, to ensure everything is in order, use `ip address show` as before. You'll see the IP addresses assigned to both Loki and Odin, all within the secure realm of the *my-net* network.
+
+```
+zolo@ubuntu-vm:~$ ip addr show  
+.....  
+  
+4: br-fddfab462424: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu 1500 qdisc noqueue state UP group default  
+    link/ether 02:42:bd:54:45:fd brd ff:ff:ff:ff:ff:ff  
+    inet 172.18.0.1/16 brd 172.18.255.255 scope global br-fddfab462424  
+       valid_lft forever preferred_lft forever  
+    inet6 fe80::42:bdff:fe54:45fd/64 scope link  
+       valid_lft forever preferred_lft forever  
+6: vethad11988@if5: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu 1500 qdisc noqueue master br-fddfab462424 state UP group default  
+    link/ether 66:3e:97:e5:58:bc brd ff:ff:ff:ff:ff:ff link-netnsid 0  
+    inet6 fe80::643e:97ff:fee5:58bc/64 scope link  
+       valid_lft forever preferred_lft forever  
+8: veth7d1bba9@if7: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu 1500 qdisc noqueue master br-fddfab462424 state UP group default  
+    link/ether ee:75:06:2a:d1:3a brd ff:ff:ff:ff:ff:ff link-netnsid 1  
+    inet6 fe80::ec75:6ff:fe2a:d13a/64 scope link  
+       valid_lft forever preferred_lft forever
+```
+
+With your newfound skills in creating user-defined networks and adding containers to them, you’re well on your way to crafting a networked Docker world that suits your needs perfectly.
+
+#### Virtual Interfaces — For Isolation and Protection
+
+Now that we’ve set up our *my-net* network and introduced some container inhabitants like **Loki** and **Odin**, it’s time to understand why this approach is preferred and how it adds a layer of isolation and protection to your Docker network.
+
+![](https://cdn-images-1.medium.com/max/800/1*wQUEkBglHIBQvlyh8GrrbQ.png)
+
+User-defined bridge network
+
+By using the `bridge link` command, we can inspect the virtual interfaces that were created for this network. These interfaces are tightly connected to the virtual bridge we established earlier.
+
+```
+zolo@ubuntu-vm:~$ bridge link  
+6: vethad11988@if5: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu 1500 master br-fddfab462424 state forwarding priority 32 cost 2   
+8: veth7d1bba9@if7: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu 1500 master br-fddfab462424 state forwarding priority 32 cost 2
+```
+
+The `docker inspect my-net` command provides a comprehensive view of what IP addresses have been assigned to our inhabitants, **Loki** and **Odin**, within the *172.18.0.0*/16 network.
+
+```
+zolo@ubuntu-vm:~$ sudo docker inspect my-net  
+[  
+    {  
+        "Name": "my-net",  
+        "Id": "fddfab4624248cf472ece1d83868eca5f618490353d6f528b16ca8d69c96b511",  
+        "Created": "2023-10-16T06:30:11.67486193-04:00",  
+        "Scope": "local",  
+        "Driver": "bridge",  
+        "EnableIPv6": false,  
+        "IPAM": {  
+            "Driver": "default",  
+            "Options": {},  
+            "Config": [  
+                {  
+                    "Subnet": "172.18.0.0/16",  
+                    "Gateway": "172.18.0.1"  
+                }  
+            ]  
+        },  
+        "Internal": false,  
+        "Attachable": false,  
+        "Ingress": false,  
+        "ConfigFrom": {  
+            "Network": ""  
+        },  
+        "ConfigOnly": false,  
+        "Containers": {  
+            "999df9e9856b5fe37322e74c10e2d5786bbaae61a20cff5a9eed5de3b7223ba8": {  
+                "Name": "odin",  
+                "EndpointID": "212b8af7c4e3d5437871a2eb2337c88843490f726d3f0d9337ab86fa7898c838",  
+                "MacAddress": "02:42:ac:12:00:03",  
+                "IPv4Address": "172.18.0.3/16",  
+                "IPv6Address": ""  
+            },  
+            "dff01ae757c8b69da00756ec710df2979f0a4259754c18b54b682bfa946b8671": {  
+                "Name": "loki",  
+                "EndpointID": "c8c8a71d50fd234b67f8236a9b935726e0e43a271fe5a171fb75ae32ce1049e7",  
+                "MacAddress": "02:42:ac:12:00:02",  
+                "IPv4Address": "172.18.0.2/16",  
+                "IPv6Address": ""  
+            }  
+        },  
+        "Options": {},  
+        "Labels": {}  
+    }  
+]
+```
+
+The key here is indeed *isolation*. *My-net*, the user-defined bridge network we’ve created, enjoys a level of isolation and protection from the default network. The beauty of it is that these two realms can’t communicate with each other by default.
+
+For example, if we were to jump into **Tor** (from our earlier adventures) and attempt to ping **Odin** or **Loki**, the response would be silence.
+
+This isolation provides security and ensures that containers within one network can’t inadvertently interfere with those in another network. It’s a powerful feature that adds a significant layer of protection and peace of mind in the world of Docker networking.
+
+#### Advantages of User-Defined Bridges in Docker
+
+User-defined bridges are considered one of the best networking solutions in Docker, especially if you’re planning to use Docker in a production environment. They offer greater control and flexibility when it comes to defining your networks. The user-defined bridges also have a compelling benefit: container-to-container DNS.
+
+Thanks to the user-defined bridge network, we can easily do this. In Loki’s environment, all we have to do is ping **Odin** by name, it resolves. This container-to-container DNS resolution is one of the perks of using user-defined bridges.
+
+```
+zolo@ubuntu-vm:~$   
+zolo@ubuntu-vm:~$ sudo docker exec -it loki sh  
+/ # ping odin -c 2  
+PING odin (172.18.0.3): 56 data bytes  
+64 bytes from 172.18.0.3: seq=0 ttl=64 time=0.715 ms  
+64 bytes from 172.18.0.3: seq=1 ttl=64 time=0.299 ms  
+  
+--- odin ping statistics ---  
+2 packets transmitted, 2 packets received, 0% packet loss  
+round-trip min/avg/max = 0.299/0.507/0.715 ms  
+/ #
+```
+
+This capability simplifies communication between containers, making it easier to orchestrate your applications and services. It’s like giving your containers the ability to call each other by name, making the entire networking experience in Docker smoother and more intuitive.
+
+Container IP addresses often change, especially as you redeploy your workloads. In a custom network, this is no longer a concern, as the DNS resolves container names to their respective IP addresses.
+
+This feature is particularly valuable in scenarios where you need predictable and stable communication between containers. The custom network provides you with this functionality, making it a preferred choice over the default bridge network.
+
+---
+
+That’s the end of this blog, in the next blog we’ll explore Docker networking further, so stay tuned for more.

@@ -1,0 +1,157 @@
+---
+title: "Building a Cost-Effective AI Proxy: How to Use Claude Code CLI"
+date: "2025-12-21"
+excerpt: "As developers, we’re always looking for ways to optimize our workflows while managing costs. While Qwen offers a generous free tier of 2000 requests p..."
+description: "As developers, we’re always looking for ways to optimize our workflows while managing costs. While Qwen offers a generous free tier of 2000 requests per day, the native Qwen CLI doesn’t provide the sa..."
+category: "Uncategorized"
+tags: []
+image: ""
+author: "Syed Asif"
+readingTime: "5 min read"
+status: "published"
+lastModified: "2025-12-21"
+---
+
+![](https://cdn-images-1.medium.com/max/800/0*r2GPZI6_PTss5aPf)
+
+Photo by [Cash Macanaya](https://unsplash.com/@cashmacanaya?utm_source=medium&utm_medium=referral) on [Unsplash](https://unsplash.com?utm_source=medium&utm_medium=referral)
+
+### Building a Cost-Effective AI Proxy: How to Use Claude Code CLI
+
+As developers, we’re always looking for ways to optimize our workflows while managing costs. While Qwen offers a generous free tier of 2000 requests per day, the native Qwen CLI doesn’t provide the same developer experience as more specialized tools. (may be wrong!)
+
+In this article, I’ll walk you through building a lightweight proxy that combines the best of both worlds: the cost-effectiveness of Qwen’s Code with the superior developer experience of Claude Code CLI.
+
+### The Problem: Cost vs. Developer Experience
+
+The Qwen platform offers an impressive free tier with 2000 requests per day, making it an attractive option for developers looking to minimize costs. However, the native Qwen CLI lacks many of the advanced features that make modern AI coding assistants truly productive.
+
+Meanwhile, the Claude Code CLI provides an exceptional coding experience with features like:
+
+* **Contextual file awareness** that automatically understands your project structure
+* **Intelligent code suggestions** that align with your coding patterns
+* **Seamless workflow integration** with popular IDEs and editors
+* **Advanced conversation management** for complex coding tasks
+* **Better memory and context retention** across interactions
+
+The challenge is bridging these two ecosystems — maintaining the excellent Claude Code CLI experience while leveraging Qwen’s cost-effective backend.
+
+### Our Solution: A Translation Proxy
+
+I’ve developed a lightweight, Dockerized middleware that acts as a translation layer between the Claude Code CLI and Qwen’s API. This proxy:
+
+1. Translates Anthropic API requests to OpenAI-compatible format
+2. Routes all model requests to Qwen3-Coder-Plus
+3. Handles authentication seamlessly
+4. Filters incompatible parameters
+5. Provides retry logic and graceful shutdown
+
+The result? You get the superior developer experience of Claude Code CLI with the cost-effectiveness of Qwen’s generous free tier.
+
+### Architecture Overview
+
+![](https://cdn-images-1.medium.com/max/800/1*Q94vp_dRqToxlnxuABsvgg.png)
+
+The proxy leverages LiteLLM, an open-source AI gateway that serves as an OpenAI-compatible proxy server. The architecture consists of:
+
+* **Python Application Wrapper** — Manages the LiteLLM proxy with robust error handling
+* **LiteLLM Proxy Server** — Runs inside a Docker container on port 3455
+* **API Translation Layer** — Converts between Anthropic and OpenAI API formats
+* **Credential Manager**— Securely accesses Qwen OAuth credentials with thread-safe caching
+* **Model Router** — Routes all Claude model requests to Qwen3-Coder-Plus
+
+### Setting Up and Using the Proxy
+
+#### Prerequisites
+
+1. **Docker & Docker Compose**: Installed and running
+2. **Claude Code CLI**: Installed on your host machine with console login (free)
+3. **Qwen Credentials**: You must be logged into the Qwen Code on your machine
+
+### Installation Steps
+
+1. Clone the repository: `git clone &lt;url&gt; && cd claude-code-proxy`
+2. Configure the Claude CLI to use the proxy: `export ANTHROPIC_BASE_URL="http://127.0.0.1:3455"`
+3. Start the proxy: `docker compose up -d --bulid`
+4. Start using Claude with the Qwen backend: `claude`
+
+### Docker Compose Configuration
+
+The proxy uses Docker Compose for easy deployment:
+
+```
+services:  
+  qwen-proxy:  
+    build: .  
+    container_name: qwen-proxy  
+    ports:  
+      - "3455:3455"  
+    volumes:  
+      # Mount config  
+      - ./config.yaml:/app/config.yaml  
+        
+      # Mount the entire Qwen folder to /app/secrets  
+      - ${HOME}/.qwen:/app/secrets:ro  
+        
+    # Environment variable to tell Python where to look  
+    environment:  
+      - QWEN_CREDS_PATH=/app/secrets/oauth_creds.json  
+        
+    restart: unless-stopped
+```
+
+This configuration:
+
+* Maps the container port to the host
+* Mounts the configuration file
+* Securely mounts the Qwen credentials as read-only
+* Sets the credentials path via an environment variable
+* Ensures the container restarts automatically
+
+### Key Benefits of This Approach
+
+1. **Cost Savings**: Leverage Qwen’s generous free tier of 2000 requests per day
+2. **Superior Developer Experience**: Claude Code CLI’s advanced features and workflow integration
+3. **Contextual Awareness**: Better understanding of your project structure and coding patterns
+4. **Easy Deployment**: Dockerized for consistent environments
+5. **Flexibility**: Easy to extend for other AI providers
+
+### Frequently Asked Questions
+
+#### Q: How do I view the server logs?
+
+A: Run `docker compose logs -f qwen-proxy`. This is useful for debugging connection issues or verifying that requests are hitting the Qwen API.
+
+#### Q: How do I update the project?
+
+A: Pull the latest changes (if any), then rebuild the container:
+
+```
+docker compose up -d --build
+```
+
+#### Q: I’m getting API errors or authentication issues. How can I refresh my token?
+
+A: If you encounter API errors, try refreshing your token by navigating to the project folder and running:
+
+```
+cd /path/to/qwen-code-proxy  # Navigate to project directory  
+qwen "Hello" && docker compose restart
+```
+
+This will restart the proxy container and refresh the token from your credentials file. The proxy implements thread-safe caching with file modification monitoring, automatically picking up updated tokens when the credentials file changes.
+
+### Future Improvements
+
+Potential enhancements to the proxy could include:
+
+1. **Multi-Provider Support**: Adding support for other AI providers
+2. **Load Balancing**: Distributing requests across multiple providers
+3. **Usage Analytics**: Adding detailed usage tracking and reporting
+
+This proxy demonstrates how we can leverage the strengths of different AI ecosystems to create more flexible and cost-effective solutions. By bridging the Claude Code CLI with Qwen’s backend, we can maintain a familiar workflow while potentially reducing costs.
+
+The complete source code is available in the repository, and I welcome feedback from the community.
+
+[**GitHub - sydasif/claude-code-proxy: Claude Code Router (LiteLLM)**  
+*Claude Code Router (LiteLLM). Contribute to sydasif/claude-code-proxy development by creating an account on GitHub.*github.com](https://github.com/sydasif/claude-code-proxy "https://github.com/sydasif/claude-code-proxy")

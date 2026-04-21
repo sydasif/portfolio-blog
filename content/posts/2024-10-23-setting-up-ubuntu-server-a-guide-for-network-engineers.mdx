@@ -1,0 +1,156 @@
+---
+title: "Setting Up Ubuntu Server — A Guide for Network Engineers"
+date: "2024-10-23"
+excerpt: "When setting up servers for network management, establishing reliable connectivity and remote management is essential. This guide will walk you throug..."
+description: "When setting up servers for network management, establishing reliable connectivity and remote management is essential. This guide will walk you through the basics of network connectivity for your Ubun..."
+category: "Uncategorized"
+tags: []
+image: ""
+author: "Syed Asif"
+readingTime: "5 min read"
+status: "published"
+lastModified: "2024-10-23"
+---
+
+![](https://cdn-images-1.medium.com/max/800/1*P0HoODR4no-YzfZIq9lt2A.png)
+
+Linux lab
+
+### Setting Up Ubuntu Server — A Guide for Network Engineers
+
+When setting up servers for network management, establishing reliable connectivity and remote management is essential. This guide will walk you through the basics of network connectivity for your Ubuntu server. In our next guide, *Setting Up Network Services*, we’ll build upon this by configuring additional components, ensuring smooth communication between your servers, and laying the groundwork for a solid network infrastructure that will support your needs for years to come.
+
+#### Topics Covered
+
+In this part of our Ubuntu journey, we will focus on the following topics:
+
+* Setting the hostname
+* Managing network interfaces
+* Assigning static IP addresses
+
+#### Setting the Hostname
+
+When using OpenSSH for remote server management, the hostname appears on the command line, making it easier to identify which server you are connected to. This becomes especially important when managing multiple servers, as having identical hostnames can create confusion.
+
+#### Viewing the Hostname
+
+You can view your current hostname directly from the shell prompt or by using the `hostname` command:
+
+```
+zolo@dns:~$ hostname  
+dns
+```
+
+To see the fully qualified domain name (FQDN):
+
+```
+zolo@dns:~$ hostname -f  
+dns.local.lan
+```
+
+#### Changing the Hostname
+
+To change the hostname, use the `hostnamectl` command with root privileges or `sudo`. For example, to change the hostname to `dns.local.lan`, run:
+
+```
+sudo hostnamectl set-hostname dns.local.lan
+```
+
+This command will not update the `/etc/hosts` file automatically, so you’ll need to edit it manually to reflect the new hostname. Here's an example of an `/etc/hosts` file:
+
+```
+127.0.0.1 localhost  
+127.0.0.1 dns.local.lan dns  
+  
+# The following lines are desirable for IPv6 capable hosts  
+::1     ip6-localhost ip6-loopback  
+fe00::0 ip6-localnet  
+ff00::0 ip6-mcastprefix  
+ff02::1 ip6-allnodes  
+ff02::2 ip6-allrouters
+```
+
+Depending on your server setup (physical, virtual, or cloud), the second line may or may not be present. If it’s missing, you can add it. If you don’t have a domain name, it’s okay to leave out the fully qualified domain name.
+
+### Managing Network Interfaces
+
+Networking is crucial for server functionality. Without a network connection, servers cannot communicate, and users cannot access them. Servers typically come with a standard Ethernet adapter, but automatic configuration may not always suit your needs. You might want to set custom IP addresses or adjust other network settings.
+
+#### Viewing Network Interfaces
+
+You can check the details of your network interfaces using the `ip` command:
+
+```
+zolo@dns:~$ ip addr show  
+1: lo: &lt;LOOPBACK,UP,LOWER_UP&gt; mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000  
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00  
+    inet 127.0.0.1/8 scope host lo  
+       valid_lft forever preferred_lft forever  
+    inet6 ::1/128 scope host   
+       valid_lft forever preferred_lft forever  
+2: ens3: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu 1500 qdisc fq_codel state UP group default qlen 1000  
+    link/ether 00:50:00:00:01:00 brd ff:ff:ff:ff:ff:ff  
+    altname enp0s3  
+    inet 172.16.141.130/24 metric 100 brd 172.16.141.255 scope global dynamic ens3  
+       valid_lft 1641sec preferred_lft 1641sec  
+    inet6 fe80::250:ff:fe00:100/64 scope link   
+       valid_lft forever preferred_lft forever
+```
+
+This output provides valuable information such as the IP address and MAC address for each network interface.
+
+#### Assigning Static IP Addresses
+
+For servers, it’s critical to maintain a fixed IP address to avoid outages and service interruptions that can occur with changing IPs. There are two main methods for achieving this: static IP assignment or setting up a DHCP reservation.
+
+#### Configuring a Static IP with Netplan
+
+On Ubuntu, network configuration files are stored in the `/etc/netplan` directory and use YAML format. Here’s an example of a basic DHCP configuration:
+
+```
+# This is the network config written by 'subiquity'  
+network:  
+  ethernets:  
+    ens3:  
+      dhcp4: true  
+  version: 2
+```
+
+The comment mentions `subiquity`, which is the official Ubuntu Server installer. In this example, the server uses DHCP for automatic IP configuration.
+
+#### Backing Up and Editing Configuration Files
+
+Before making changes, back up the existing configuration file:
+
+```
+sudo cp /etc/netplan/00-installer-config.yaml /etc/netplan/00-installer-config.yaml.bak
+```
+
+If an error occurs, you can revert to the original file by renaming the backup. To set a static IP, edit the file with details specific to your setup. Here’s an example:
+
+```
+# This is the network config written by 'subiquity'  
+network:  
+  ethernets:  
+    ens3:  
+      addresses:  
+        - 192.168.1.247/24  
+      nameservers:  
+        addresses: [192.168.100.1, 192.168.100.2]  
+      routes:  
+        - to: default  
+          via: 192.168.1.1  
+  version: 2
+```
+
+After editing, apply the changes using `netplan`:
+
+```
+sudo netplan apply
+```
+
+The command will validate the YAML file and apply the changes if there are no errors. The static IP will take effect immediately, and you can verify the change with the `ip a` command. If you encounter connection issues, check the configuration file for errors.
+
+---
+
+By following these steps, you can establish a solid foundation for network connectivity and management on your Ubuntu server. This will pave the way for a more robust and scalable network setup as we proceed to advanced configurations in the next blog. Stay tuned for *Setting Up Network Services*, where we’ll expand on these concepts and further enhance your network infrastructure. Happy networking!

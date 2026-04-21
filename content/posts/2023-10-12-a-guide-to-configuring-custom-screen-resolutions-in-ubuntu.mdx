@@ -1,0 +1,109 @@
+---
+title: "A Guide to Configuring Custom Screen Resolutions in Ubuntu"
+date: "2023-10-12"
+excerpt: "Ubuntu 21.04 has made a significant shift by using Wayland as the default display server, rendering the previous method of setting custom screen resol..."
+description: "Ubuntu 21.04 has made a significant shift by using Wayland as the default display server, rendering the previous method of setting custom screen resolutions with Xrandr ineffective...."
+category: "Uncategorized"
+tags: []
+image: ""
+author: "Syed Asif"
+readingTime: "5 min read"
+status: "published"
+lastModified: "2023-10-12"
+---
+
+![](https://cdn-images-1.medium.com/max/800/0*gpuFQC5Bsw1_eXXl)
+
+Photo by [Gabriel Heinzer](https://unsplash.com/@6heinz3r?utm_source=medium&utm_medium=referral) on [Unsplash](https://unsplash.com?utm_source=medium&utm_medium=referral)
+
+### A Guide to Configuring Custom Screen Resolutions in Ubuntu
+
+Ubuntu 21.04 has made a significant shift by using Wayland as the default display server, rendering the previous method of setting custom screen resolutions with Xrandr ineffective.
+
+This article explores an alternative approach to add a custom screen resolution if it’s not readily available in the Display settings. I’m working with Ubuntu 22.04.3 running in VMware, where my default resolution is 1600x900 (16:9), which is not an option in the settings.
+
+### Getting Started: Determining the Display Name
+
+Before we proceed with configuring custom screen resolutions, you’ll need to identify the current display name, an essential step for this process. To find this information, follow these simple steps:
+
+* Open the terminal from the system application launcher.
+* Once the terminal is open, execute the following command:
+
+```
+for p in /sys/class/drm/*/status; do con=${p%/status}; \  
+echo -n "${con#*/card?-}: "; cat $p; done
+```
+
+This command scans the sub-folders under the ‘/sys/class/drm’ directory and identifies the display devices connected to your system. The folder name that doesn’t include ‘card?-’ is the display device name you require.
+
+```
+zolo@ubuntu-vm:~$ for p in /sys/class/drm/*/status; do con=${p%/status}; \  
+echo -n "${con#*/card?-}: "; cat $p; done  
+Virtual-1: connected  
+Virtual-2: disconnected  
+Virtual-3: disconnected  
+Virtual-4: disconnected  
+Virtual-5: disconnected  
+Virtual-6: disconnected  
+Virtual-7: disconnected  
+Virtual-8: disconnected
+```
+
+In this example, the display device name is ‘Virtual-1.’
+
+### How to Configure Video Mode Kernel Parameters
+
+Now that we have identified the display name, we can proceed with configuring the video mode kernel parameters. This approach works seamlessly on both Wayland and Xorg. Here’s a step-by-step guide to setting up the video mode kernel parameters:
+
+* Open the terminal from the system application launcher.
+* In the terminal, run the following command to open the Grub configuration file for editing:
+
+```
+sudo vim /etc/default/grub
+```
+
+If you prefer an alternative text editor for Ubuntu-based systems, feel free to replace ‘vim’ with your editor of choice.
+
+In the configuration file, locate the line that begins with ‘GRUB\_CMDLINE\_LINUX\_DEFAULT.’
+
+Append ‘video=Virtual-1:1600x900@60’ (modify this according to your requirements) to the end of the line. Here’s what it should look like:
+
+```
+GRUB_DEFAULT=0  
+GRUB_TIMEOUT_STYLE=hidden  
+GRUB_TIMEOUT=0  
+GRUB_DISTRIBUTOR=`lsb_release -i -s 2&gt; /dev/null || echo Debian`  
+GRUB_CMDLINE_LINUX_DEFAULT="quiet splash video=Virtual-1:1600x900@60"  
+GRUB_CMDLINE_LINUX=""  
+…
+```
+
+**In the added parameter:**
+
+* ‘Virtual-1’ is the Display Device Name, as determined earlier.
+* ‘1600x900’ is the desired screen resolution. to be sure, replace this with your preferred resolution.
+* ‘60’ denotes the refresh rate. You can omit it, resulting in ‘video=Virtual-1:1600x900.’
+
+The video mode kernel parameter offers more flags; for further details, please refer to the documentation.
+
+After making these changes, save the configuration file, and apply the changes by executing the following command:
+
+```
+sudo update-grub
+```
+
+If you are using a physical Ubuntu machine, the issue should now be resolved. However, in the case of a virtual Ubuntu environment, the final step involves installing VMware tools.
+
+Execute the command below to install these tools:
+
+```
+sudo apt install open-vm-tools-desktop
+```
+
+Once the installation is complete, remember to reboot the system for the changes to take effect.
+
+Thank you for reading, and stay tuned for more informative content on Ubuntu and system configuration.
+
+---
+
+*Originally published at* [*https://networklabguide.blogspot.com*](https://networklabguide.blogspot.com/2023/10/a-guide-to-configuring-custom-screen.html)*.*

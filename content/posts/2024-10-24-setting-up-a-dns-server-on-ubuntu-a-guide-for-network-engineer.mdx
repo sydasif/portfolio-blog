@@ -1,0 +1,195 @@
+---
+title: "Setting Up a DNS Server on Ubuntu: A Guide for Network Engineer"
+date: "2024-10-24"
+excerpt: "A Domain Name System (DNS) server translates domain names into IP addresses, making it easier to navigate the internet. For example, rather than memor..."
+description: "A Domain Name System (DNS) server translates domain names into IP addresses, making it easier to navigate the internet. For example, rather than memorizing the IP address of Google’s servers, you can ..."
+category: "Uncategorized"
+tags: []
+image: ""
+author: "Syed Asif"
+readingTime: "5 min read"
+status: "published"
+lastModified: "2024-10-24"
+---
+
+![](https://cdn-images-1.medium.com/max/800/0*EJG-hbhLgipHFQ6S)
+
+Photo by [U. Storsberg](https://unsplash.com/@ekiam14?utm_source=medium&utm_medium=referral) on [Unsplash](https://unsplash.com?utm_source=medium&utm_medium=referral)
+
+### Setting Up a DNS Server on Ubuntu: A Guide for Network Engineer
+
+A **Domain Name System (DNS) server** translates domain names into IP addresses, making it easier to navigate the internet. For example, rather than memorizing the IP address of Google’s servers, you can type `https://www.google.com`. This translation is crucial for internet connectivity, as DNS queries occur continuously during browsing.
+
+When a device connects to the internet, it typically relies on an external DNS server to resolve domain names. However, running a **local DNS server** can provide additional benefits within an organization, such as resolving internal hostnames that external DNS servers wouldn’t know about. For instance, if you have an intranet website for co-workers, using a local domain (e.g., `intranet.local`) is far more convenient than having everyone memorize its IP address.
+
+A local DNS server can also forward unresolved queries to an external DNS server. For example, if a local DNS server doesn’t have information about a requested external website, it will pass the request to an external DNS server to resolve it.
+
+### Topology Overview
+
+Below is the lab setup that demonstrates this DNS and gateway configuration:
+
+* **Ubuntu 22** (labeled as `ns`): Acts as the DHCP server and DNS server with two network interfaces:
+* `e0`: Connected to the ISP for internet access.
+* `e1`: Serves the LAN network with a static IP (`192.168.100.1`).
+* **Switch (sw)**: Connects various devices in the network, forwarding DHCP requests.
+* **Fedora 39**: A client device obtaining IP addresses automatically through DHCP.
+* **VPC**: Another client device in the same network, configured to receive an IP address through DHCP.
+
+**IP Address Scheme**: `192.168.100.0/24`
+
+![](https://cdn-images-1.medium.com/max/800/1*P0HoODR4no-YzfZIq9lt2A.png)
+
+### Setting Up External DNS with BIND
+
+To set up a DNS server, we need to install the Berkeley Internet Name Daemon (BIND):
+
+```
+sudo apt install bind9
+```
+
+This will install and start the BIND service. Initially, BIND functions as a **Caching Name Server**, which caches DNS responses from external servers to improve query performance. To configure it as a caching name server, edit the `/etc/bind/named.conf.options` file:
+
+```
+options {  
+    directory "/var/cache/bind";  
+    forwarders {  
+      8.8.8.8;  
+    };  
+    dnssec-validation auto;  
+    listen-on-v6 { any; };  
+    recursion yes;  
+    listen-on port 53 {192.168.100.1;};  
+    allow-query {any;};  
+};
+```
+
+This configuration uses Google’s DNS servers (`8.8.8.8`) as a forwarder. Save the changes and restart the service:
+
+```
+sudo systemctl restart bind9
+```
+
+Verify the service status:
+
+```
+systemctl status bind9
+```
+
+Now, configure your network’s devices (like Fedora 39 and the VPC) to use this DNS server by adjusting the `isc-dhcp-server` configuration:
+
+```
+subnet 192.168.100.0 netmask 255.255.255.0 {  
+    range 192.168.100.100 192.168.100.240;  
+    option routers 192.168.100.1;  
+    option domain-name-servers 192.168.100.1;  
+}
+```
+
+This setup directs clients to use `192.168.100.1` as their DNS server, allowing local and external DNS resolution.
+
+### Setting Up Internal DNS and Adding Hosts
+
+You need to create a zone file to enable the DNS server to resolve local hostnames. Edit the `/etc/bind/named.conf.local` file and add:
+
+```
+zone "local.lan" IN {  
+    type master;  
+    file "/etc/bind/zones/net.local.lan";  
+};
+```
+
+Next, create the `zones` directory (if it doesn't exist) and the zone file `/etc/bind/zones/net.local.lan` with the following content:
+
+```
+$TTL 1D  
+@       IN      SOA     local.lan. hostmaster.local.lan. (  
+                        202310241; serial  
+                        8H ; refresh  
+                        4H ; retry  
+                        4W ; expire  
+                        1D ; minimum  
+                        )  
+        IN      NS      dns.local.lan.  
+dns     IN      A       192.168.100.1  
+vpc     IN      A       192.168.100.100  
+fs      IN      A       192.168.100.101
+```
+
+### Explanation of Key Parameters
+
+* **$TTL 1D**: Specifies how long DNS records should be cached.
+* **SOA (Start of Authority) Record**: Designates `local.lan` as the authoritative source for DNS information.
+* `hostmaster.local.lan`: Contact email (formatted for BIND).
+* **Serial Number (**`202310241`**)**: A unique identifier for the zone file version.
+* **Why Increment It**: When you make changes to the zone file (e.g., add a new host), you must increase the serial number. This change ensures that the DNS server recognizes the updated version of the zone.
+* **Format**: Commonly written as `YYYYMMDDX`, where `X` represents changes made on the same day.
+* **Refresh, Retry, Expire, Minimum**: Control how frequently secondary DNS servers check for updates.
+* **NS Record**: Specifies the DNS server for the zone (`dns.local.lan`).
+* **A Records**: Map hostnames (`dns`, `vpc`, `fs`) to their respective IP addresses.
+
+### Final Steps
+
+1. **Restart BIND** after editing the zone file:
+
+* `sudo systemctl restart bind9`
+
+1. **Check the Status**:
+
+* `systemctl status bind9`
+
+1. Look for `active (running)` and verify that the serial number loaded correctly.
+2. **Troubleshoot**:
+
+* Use logs to diagnose issues:
+* `cat /var/log/syslog | grep bind9`
+* Common issues include forgetting to increment the serial number or incorrect IP addresses.
+* Verify configuration using:
+
+```
+sudo named-checkconf /etc/bind/named.conf.local   
+sudo named-checkzone local.lan /etc/bind/zones/net.local.lan
+```
+
+### Gateway Configuration
+
+The gateway is an essential part of network communication. It connects internal devices with the internet and enables routing between different networks. Here’s a detailed explanation of setting up a gateway, including IP forwarding and NAT (Network Address Translation).
+
+#### Network Interface Overview
+
+* `e0`: Connects to your ISP and should be configured with DHCP (or a static IP from the ISP).
+* `e1`: Connects to your LAN (e.g., 192.168.100.0/24) with a static IP (e.g., 192.168.100.1).
+* Make sure your `/etc/netplan/` configuration for the interfaces looks something like this:
+
+```
+network:  
+  ethernets:  
+    e0:  
+      dhcp4: true  
+    e1:  
+      addresses: [192.168.100.1/24]  
+  version: 2
+```
+
+#### IP Forwarding
+
+To enable communication between two networks, you must enable IP forwarding on your gateway device. This allows the server to forward packets from one network interface to another.
+
+* **To enable IP forwarding temporarily**, run:
+* `echo 1 &gt; /proc/sys/net/ipv4/ip_forward`
+* **To make IP forwarding permanent**, edit the `/etc/sysctl.conf` file and uncomment the following line:
+* `net.ipv4.ip_forward=1`
+* Then, apply the changes using:
+* `sysctl -p`
+
+#### Network Address Translation (NAT)
+
+NAT is used to allow multiple devices on a local network to share a single public IP address when accessing the internet. It translates internal IP addresses into the public IP address of the gateway.
+
+* **Configure NAT** using the `iptables` command:
+* `iptables -t nat -A POSTROUTING -o e0 -j MASQUERADE`
+* This command sets up a NAT rule to translate addresses for outgoing traffic on the `e0` interface.
+* **Make NAT settings persistent**: To ensure the settings remain active after a reboot, save the rules:
+* `sudo apt-get install iptables-persistent`
+* `sudo netfilter-persistent save`
+
+With these configurations, your gateway will route traffic between internal and external networks, enabling devices in the LAN to access the internet using a single public IP. This setup is crucial for small network environments, ensuring efficient connectivity and traffic management.

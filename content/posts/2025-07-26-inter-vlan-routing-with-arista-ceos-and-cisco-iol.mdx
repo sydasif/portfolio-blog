@@ -1,0 +1,142 @@
+---
+title: "Inter-VLAN Routing with Arista cEOS and Cisco IOL"
+date: "2025-07-26"
+excerpt: "This project demonstrates a basic inter-VLAN routing setup using Containerlab. The lab includes:..."
+description: "This project demonstrates a basic inter-VLAN routing setup using Containerlab. The lab includes:..."
+category: "Uncategorized"
+tags: []
+image: ""
+author: "Syed Asif"
+readingTime: "5 min read"
+status: "published"
+lastModified: "2025-07-26"
+---
+
+![](https://cdn-images-1.medium.com/max/800/0*w14Hhb6P8wCe0i32)
+
+Photo by [National Cancer Institute](https://unsplash.com/@nci?utm_source=medium&utm_medium=referral) on [Unsplash](https://unsplash.com?utm_source=medium&utm_medium=referral)
+
+### Inter-VLAN Routing with Arista cEOS and Cisco IOL
+
+This project demonstrates a basic inter-VLAN routing setup using [Containerlab](https://containerlab.dev/). The lab includes:
+
+* **Arista cEOS**: Acts as the Layer 3 router performing inter-VLAN routing.
+* **Cisco IOL switch**: Provides VLAN segmentation and access/trunk ports.
+* **Two Linux hosts**: Each connected to a separate VLAN.
+
+### ⚙️ Configuration
+
+#### Arista cEOS Configuration
+
+```
+vlan 10  
+ name USERS  
+vlan 20  
+ name SERVERS  
+  
+interface Vlan10  
+ ip address 192.168.10.1/24  
+ no shutdown  
+  
+interface Vlan20  
+ ip address 192.168.20.1/24  
+ no shutdown  
+  
+interface Ethernet1  
+ switchport trunk allowed vlan 10,20  
+ switchport mode trunk  
+ no shutdown  
+  
+ip routing  
+end  
+write memory
+```
+
+#### Cisco IOL Switch Configuration
+
+```
+vlan 10  
+ name USERS  
+vlan 20  
+ name SERVERS  
+  
+interface Ethernet0/1  
+ switchport mode access  
+ switchport access vlan 10  
+ no shutdown  
+  
+interface Ethernet0/2  
+ switchport mode access  
+ switchport access vlan 20  
+ no shutdown  
+  
+interface Ethernet0/3  
+ switchport trunk encapsulation dot1q  
+ switchport mode trunk  
+ switchport trunk allowed vlan 10,20  
+ no shutdown  
+  
+end  
+write memory
+```
+
+### How to Run
+
+Prerequisites: [Containerlab](https://containerlab.dev/) and required images (`ceos`, `IOL`, `alpine`)
+
+Clone this repository:
+
+```
+git clone https://github.com/sydasif/networking-labs  
+cd networking-labs
+```
+
+Deploy the lab:
+
+```
+sudo containerlab deploy -t topology.clab.yaml
+```
+
+Access console to configure the IOL/cEOS devices (manual step):
+
+```
+ssh admin@sw1   # password is admin  
+  
+and   
+  
+ssh admin@ceos  # password is admin
+```
+
+### Test connectivity:
+
+From **h1**:
+
+```
+ping 192.168.10.1   # cEOS gateway  
+ping 192.168.20.10  # h2
+```
+
+From **h2**:
+
+```
+ping 192.168.20.1  
+ping 192.168.10.10
+```
+
+### Cleanup
+
+```
+sudo containerlab destroy -t topology.clab.yaml
+```
+
+### Notes
+
+* Make sure your Cisco IOL image is licensed and accessible by Containerlab.
+* This lab replicates a common enterprise setup with L2 access and L3 core separation.
+
+[**GitHub - sydasif/networking-labs**  
+*Contribute to sydasif/networking-labs development by creating an account on GitHub.*github.com](https://github.com/sydasif/networking-labs "https://github.com/sydasif/networking-labs")
+
+---
+
+Thank you for your time….

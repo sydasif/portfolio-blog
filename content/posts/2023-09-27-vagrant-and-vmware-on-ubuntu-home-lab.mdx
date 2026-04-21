@@ -1,0 +1,129 @@
+---
+title: "Vagrant and VMware on Ubuntu — Home Lab"
+date: "2023-09-27"
+excerpt: "In the world of virtualization, Vagrant shines as a versatile tool that brings flexibility to developers’ fingertips. Often likened to what Docker is ..."
+description: "In the world of virtualization, Vagrant shines as a versatile tool that brings flexibility to developers’ fingertips. Often likened to what Docker is for containers, Vagrant focuses on virtual machine..."
+category: "Uncategorized"
+tags: []
+image: ""
+author: "Syed Asif"
+readingTime: "5 min read"
+status: "published"
+lastModified: "2023-09-27"
+---
+
+![](https://cdn-images-1.medium.com/max/800/0*wBEwCDcC6_kURS1X)
+
+Photo by [Christin Hume](https://unsplash.com/@christinhumephoto?utm_source=medium&utm_medium=referral) on [Unsplash](https://unsplash.com?utm_source=medium&utm_medium=referral)
+
+### Vagrant and VMware on Ubuntu — Home Lab
+
+In the world of virtualization, Vagrant shines as a versatile tool that brings flexibility to developers’ fingertips. Often likened to what Docker is for containers, Vagrant focuses on virtual machines. It acts as a versatile wrapper for various hypervisor programs, including VMware Workstation Pro, VMware Player, VirtualBox, Hyper-V, and VMware vSphere.
+
+In this article, we’ll walk you through installing and configuring Vagrant on Ubuntu 20.04 LTS, using VMware Workstation Pro 16 as your virtual machine provider. Let’s dive right into creating a powerful home lab!
+
+### Meeting Prerequisites
+
+Before we embark on our Vagrant journey, let’s ensure you have all the necessary tools in your toolkit.
+
+#### Updating APT Package Repository
+
+Begin by refreshing the APT package repository cache:
+
+```
+$ sudo apt update
+```
+
+#### Installing curl
+
+You’ll need the ***curl*** tool, so install it using this command:
+
+```
+$ sudo apt install curl -y
+```
+
+#### Installing Vagrant
+
+Let’s get Vagrant up and running. Start by downloading the HashiCorp GPG key and adding it to your APT package manager:
+
+```
+$ curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo apt-key add -
+```
+
+Next, integrate the official Vagrant package repository and install Vagrant:
+
+```
+$ sudo apt-add-repository "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main"
+```
+
+```
+$ sudo apt update && sudo apt install vagrant
+```
+
+You should now have the latest Vagrant version installed on your Ubuntu system. If you need installation instructions for other operating systems, visit the [official website](https://www.vagrantup.com/downloads).
+
+To confirm the successful installation, execute the following command:
+
+```
+$ vagrant --version
+```
+
+#### Setting Up Vagrant VMware Utility
+
+To harness the power of VMware Workstation Pro 16 with Vagrant, you’ll need the Vagrant VMware Utility.
+
+1. Download the latest version of Vagrant VMware Utility from [VMware Utility Downloads](https://www.vagrantup.com/vmware/downloads).  
+2. Opt for Debian &gt; 64-bit.  
+3. Your browser should initiate the download of ***vagrant-vmware-utility-\*.deb***.  
+4. Navigate to the ***~/Downloads*** directory with ***cd ~/Downloads***.
+
+Now, let’s install the downloaded package:
+
+```
+$ sudo apt install ./vagrant-vmware-utility_1.0.20_x86_64.deb
+```
+
+#### Adding Vagrant VMware Desktop Provider
+
+With both Vagrant and Vagrant VMware Utility in place, enhance your setup with the Vagrant plugin:
+
+```
+$ vagrant plugin install vagrant-vmware-desktop
+```
+
+You’re now all set to leverage Vagrant with VMware Workstation Pro. For the most up-to-date information, refer to the [VMware Provider Page](https://www.vagrantup.com/docs/providers/vmware/installation).
+
+### Creating Your Vagrant Project in Your Home Lab
+
+1. Start by creating a fresh directory for your home lab project.
+
+2. Navigate to the project directory and craft a new `***Vagrantfile***`. We’ll configure it to use the Vagrant Box `***hashicorp/bionic64***`, an Ubuntu 20.04 LTS Vagrant Box.
+
+```
+$ nano Vagrantfile
+```
+
+Add the following lines to your ***Vagrantfile***:
+
+```
+Vagrant.configure("2") do |config|  
+  config.vm.box = "generic/ubuntu2004"  
+  config.vm.provider "vmware_desktop" do |vb|  
+     vb.memory = "1024"
+```
+
+To save the file, press ***Ctrl + X***, then ***Y***, and finally, ***Enter***.
+
+To commence your Vagrant project, execute:
+
+![](https://cdn-images-1.medium.com/max/800/1*z2GR3uMTFEBwyBo9kwYpRA.png)
+
+If this is your first time using the `***hashicorp/bionic64***` Vagrant Box, Vagrant will fetch it from the internet. Once downloaded, Vagrant will create the required virtual machines for your project. That’s your initiation into the world of Vagrant and VMware. Should you face any issues, a simple reboot of your Ubuntu machine often does the trick?
+
+For an array of Vagrant command options, explore the [Vagrant Commands Page](https://www.vagrantup.com/docs/cli).
+
+The combination of Vagrant and VMware equips you with a potent solution for managing virtual environments. With this setup, you’ll gain the ability to efficiently create, configure, and manage virtual machines. Embrace the endless possibilities that Vagrant offers to supercharge your development workflow within your home lab.
+
+---
+
+*Originally published at* [*Gitlab*](https://gitlab.com/sydasif/my-vagrant-lab/-/blob/main/vmware/README.md?ref_type=heads)*.*

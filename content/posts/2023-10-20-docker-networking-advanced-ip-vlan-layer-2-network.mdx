@@ -1,0 +1,108 @@
+---
+title: "Docker Networking Advanced — IP VLAN Layer 2 Network"
+date: "2023-10-20"
+excerpt: "We’ve seen how Mac VLAN connect containers directly to the network, providing them with their own Mac and IP addresses. However, the downside has been..."
+description: "We’ve seen how Mac VLAN connect containers directly to the network, providing them with their own Mac and IP addresses. However, the downside has been that the network interface’s dependence on promis..."
+category: "Uncategorized"
+tags: []
+image: ""
+author: "Syed Asif"
+readingTime: "5 min read"
+status: "published"
+lastModified: "2023-10-20"
+---
+
+### Docker Networking Advanced — IP VLAN Layer 2 Network
+
+#### Part — 05
+
+We’ve seen how Mac VLAN connect containers directly to the network, providing them with their own Mac and IP addresses. However, the downside has been that the network interface’s dependence on promiscuous mode can create some issues.
+
+In this setup, each of your containers a dedicated LAN on the networking highway. No more issues with multiple Mac addresses on a single network port.
+
+It’s another reminder of how Docker continues to evolve and refine its networking features to provide an even smoother and more efficient experience for its users. 🚀🐳🌐
+
+In IP VLAN mode, containers can share the host’s Mac address while still having individual IP addresses. This approach retains the advantage of directly connecting containers to your network and assigns them real IP addresses, which is fantastic. But here’s the game-changer: the containers now use the same Mac address as the host.
+
+#### Create the IP VLAN Network
+
+Use the following command to create an IP VLAN network in the default L2 mode, which enables containers to share the host’s Mac address.
+
+```
+zolo@ubuntu:~$ sudo docker network create -d ipvlan \  
+&gt; --subnet 192.168.8.0/24 \  
+&gt; --gateway 192.168.8.1 \  
+&gt; -o parent=ens33 \  
+&gt; ip-vlan  
+7456fa1c8ce7a45751deeb5c8f7cbcb0daf316d1656e4db5facb8e49bad9983b
+```
+
+Be sure to replace with your specific network details.
+
+#### Launch Containers on the New Network
+
+Now you can run your containers on the newly created network. When deploying your containers, be sure to specify the network and assign a unique IP address within your subnet. This is important to avoid conflicts and maintain control over IP assignments. For example:
+
+```
+zolo@ubuntu:~$ sudo docker run -itd --rm --network ip-vlan \  
+&gt; --ip 192.168.8.99 \  
+&gt; --name tor busybox  
+7a1f59ebe511f2ca9b16c096b29f55f4fcdbf9d688b99f9a5ac22903e50effc6
+```
+
+To confirm that your network setup is working as expected, jump into one of your containers, such as **Tor**, to check if it can ping the gateway (usually your router) and access the internet.
+
+```
+zolo@ubuntu:~$ sudo docker exec -it tor sh  
+/ # ping 192.168.8.1 -c 2  
+PING 192.168.8.1 (192.168.8.1): 56 data bytes  
+64 bytes from 192.168.8.1: seq=0 ttl=64 time=1004.404 ms  
+64 bytes from 192.168.8.1: seq=1 ttl=64 time=3.625 ms  
+  
+--- 192.168.8.1 ping statistics ---  
+2 packets transmitted, 2 packets received, 0% packet loss  
+round-trip min/avg/max = 3.625/504.014/1004.404 ms  
+/ # ping google.com -c 2  
+PING google.com (142.250.201.142): 56 data bytes  
+64 bytes from 142.250.201.142: seq=0 ttl=55 time=113.736 ms  
+64 bytes from 142.250.201.142: seq=1 ttl=55 time=86.736 ms  
+  
+--- google.com ping statistics ---  
+2 packets transmitted, 2 packets received, 0% packet loss  
+round-trip min/avg/max = 86.736/100.236/113.736 ms  
+/ #
+```
+
+This setup should resolve the issue, as each container will have its own IP within the specified subnet, and they’ll share the same Mac address as the host.
+
+![](https://cdn-images-1.medium.com/max/800/1*F7rziCOKoOZ8U7UgBlzDrg.png)
+
+IP VALN Topology
+
+#### Check IP Address and Mac Address
+
+Also, note that the container shares the host’s Mac address. Run the following commands:
+
+```
+zolo@ubuntu:~$ ip addr show ens33  
+2: ens33: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu 1500 qdisc fq_codel state UP group default qlen 1000  
+    link/ether 00:0c:29:63:32:58 brd ff:ff:ff:ff:ff:ff  
+    altname enp2s1  
+    inet 192.168.8.101/24 metric 100 brd 192.168.8.255 scope global dynamic ens33  
+       valid_lft 83782sec preferred_lft 83782sec  
+    inet6 fe80::20c:29ff:fe63:3258/64 scope link  
+       valid_lft forever preferred_lft forever  
+  
+zolo@ubuntu:~$ docker exec -it tor sh  
+/ # ip addr show eth0  
+4: eth0@if2: &lt;BROADCAST,MULTICAST,UP,LOWER_UP,M-DOWN&gt; mtu 1500 qdisc noqueue  
+    link/ether 00:0c:29:63:32:58 brd ff:ff:ff:ff:ff:ff  
+    inet 192.168.8.99/24 brd 192.168.8.255 scope global eth0  
+       valid_lft forever preferred_lft forever
+```
+
+With IP VLAN mode L2, you enjoy the benefits of both shared Mac addresses and independent IP addresses, simplifying your Docker networking experience.
+
+---
+
+That’s the end of this blog, in the next blog I’ll explore IP VLAN Layer 3 Network. Stay tuned for more Docker networking adventures!

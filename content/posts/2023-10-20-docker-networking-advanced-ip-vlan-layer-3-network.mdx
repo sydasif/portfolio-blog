@@ -1,0 +1,139 @@
+---
+title: "Docker Networking Advanced — IP VLAN Layer 3 Network"
+date: "2023-10-20"
+excerpt: "Docker’s L3 networking is a game-changer for IP addresses and routing, offering a significant switch in container networking capabilities. The previou..."
+description: "Docker’s L3 networking is a game-changer for IP addresses and routing, offering a significant switch in container networking capabilities. The previous networking modes (bridge, Mac VLAN, and IP VLAN ..."
+category: "Uncategorized"
+tags: []
+image: ""
+author: "Syed Asif"
+readingTime: "5 min read"
+status: "published"
+lastModified: "2023-10-20"
+---
+
+### Docker Networking Advanced — IP VLAN Layer 3 Network
+
+#### Part — 06
+
+Docker’s L3 networking is a game-changer for IP addresses and routing, offering a significant switch in container networking capabilities. The previous networking modes (bridge, Mac VLAN, and IP VLAN L2) have primarily focused on layer 2 aspects, such as Mac addresses and ARP protocols.
+
+Layer 3 networking is especially valuable for more complex network configurations, including scenarios where container-to-container communication across different subnets or network segmentation is needed.
+
+Overall, this new approach to container networking simplifies the management of IP addresses, enhances routing capabilities, and adds significant flexibility to your Docker container network configurations.
+
+Here’s why this is significant:
+
+In IP VLAN L3 mode, container networking is handled as layer 3 connections. This means that the containers communicate with the host in a way similar to how devices communicate with routers.
+
+In traditional layer two networks, broadcast traffic can pose challenges, including issues related to bridging loops and spanning tree protocols. By embracing layer 3 networking, Docker minimizes broadcast traffic and enhances network stability.
+
+Layer 3 networking simplifies network management by reducing the complexity associated with layer 2 protocols and configurations. This approach can be particularly beneficial when working with larger, more intricate networks.
+
+For those familiar with networking, this transition to layer 3 networking with Docker’s IP VLAN L3 mode is a welcome change. It not only simplifies network configurations but also enhances the performance and reliability of container networking. By eliminating broadcast traffic and focusing on routing and IP addresses, Docker continues to adapt its networking capabilities to meet the needs of evolving and complex network environments. 🌐🔌🚀
+
+---
+
+### Docker Lab Setup with GNS3
+
+For this tutorial, I will change the lab setup because my home router is not configurable. Here’s how you can achieve this if you have the same issue with your home router.
+
+![Docker lab setup in GNS3](https://cdn-images-1.medium.com/max/800/1*Ym0jwu5rMEpB3cw9UmX1Vg.png)
+
+Docker lab setup in GNS3
+
+In the above network topology, I have added an Ubuntu server, a default switch, a router, and lastly, a cloud to integrate my home network with GNS3.
+
+For integrating Ubuntu with GNS3, click [here](https://docs.gns3.com/docs/emulators/adding-vmware-vms-to-gns3-topologies/) to see instructions, after adding the VM, assign a static IP address to Ubuntu as below:
+
+```
+network:  
+  ethernets:  
+    ens33:  
+      addresses:  
+        - 10.1.1.5/24  
+      nameservers:  
+        addressess: [4.2.2.2, 8.8.8.8]  
+      routes:  
+        - to: default  
+          via: 10.1.1.254  
+  version: 2
+```
+
+Changed switch both links to trunk:
+
+![](https://cdn-images-1.medium.com/max/800/1*t_snFY1D-rPFYhYYDCccTQ.png)
+
+dot1q Link
+
+Lastly, add the router and configure it as below:
+
+```
+conf t  
+!  
+hostname R1  
+!  
+interface FastEthernet0/0  
+ ip address 192.168.8.99 255.255.255.0  
+ ip nat outside  
+!  
+interface FastEthernet0/1  
+ ip address 10.1.1.254 255.255.255.0  
+ ip nat inside  
+!  
+ip route 0.0.0.0 0.0.0.0 192.168.8.1  
+ip route 192.168.10.0 255.255.255.0 10.1.1.5  
+!  
+ip nat inside source list 10 interface FastEthernet0/0 overload  
+!  
+access-list 10 permit any  
+!  
+end
+```
+
+Make sure to replace the IP address on the ***interface* *FastEthernet0/0***as per your home router settings.
+
+To create an L3 network in Docker using subnets and assign IP addresses to containers, follow these steps:
+
+```
+zolo@ubuntu:~$ sudo docker network create -d ipvlan \  
+&gt; --subnet 192.168.10.0/24 \  
+&gt; -o parent=ens33 -o ipvlan_mode=l3 \  
+&gt; ip-vlan
+```
+
+To deploy the container in the preceding created network, specify the network name and assign an IP address from the subnet.
+
+```
+zolo@ubuntu:~$ sudo docker run -itd --rm \  
+&gt; --network ip-vlan \  
+&gt; --ip 192.168.10.99 \  
+&gt; --name tor busybox
+```
+
+By following these steps, you can create and manage multiple Docker networks with their subnets and deploy containers within each network while specifying their IP addresses.
+
+This approach allows for network isolation and customization of IP configurations for your containers, and now you can reach the internet and your docker host.
+
+---
+
+In the world of Docker, networking is a game-changer, enabling efficient container communication. Let’s explore two remaining network modes:
+
+#### Overlay Network: Seamless Multi-Host Communication
+
+The overlay network is used in Docker Swarm for multi-host setups and simplifies container communication across hosts. It’s your solution for building complex, distributed applications effortlessly.
+
+#### None Network: Maximum Isolation
+
+For sensitive scenarios, the *null* network provides complete isolation within the container, ensuring it remains cut off from external influences.
+
+#### When to Use Each Network
+
+* Overlay Network: Perfect for multi-host setups and distributed applications.
+* None Network: Ideal for isolating sensitive workloads.
+
+Experiment with these networks to enhance your Docker skills. Docker networking isn’t just a technical concept; it’s a fun and rewarding part of your journey, offering endless possibilities.
+
+Mastering Docker networking optimizes performance, security, and scalability in containerized environments. It’s about connecting the dots in your journey toward becoming a containerization expert.
+
+Explore the Docker networking realm and make it a valuable addition to your skill set. Enjoy your networking adventures. 🐳🌐

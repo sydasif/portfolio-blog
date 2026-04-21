@@ -1,0 +1,94 @@
+---
+title: "Setting Up Your First GitLab CI/CD Pipeline"
+date: "2024-11-02"
+excerpt: "In today’s application development process, CI/CD pipelines are essential for automating code testing, building, and deployment. This blog is a hands-..."
+description: "In today’s application development process, CI/CD pipelines are essential for automating code testing, building, and deployment. This blog is a hands-on guide to setting up your first pipeline in GitL..."
+category: "Uncategorized"
+tags: []
+image: ""
+author: "Syed Asif"
+readingTime: "5 min read"
+status: "published"
+lastModified: "2024-11-02"
+---
+
+![](https://cdn-images-1.medium.com/max/800/0*2StjwUWsOVYh5-0P)
+
+Photo by [Pankaj Patel](https://unsplash.com/@pankajpatel?utm_source=medium&utm_medium=referral) on [Unsplash](https://unsplash.com?utm_source=medium&utm_medium=referral)
+
+### Setting Up Your First GitLab CI/CD Pipeline
+
+In today’s application development process, CI/CD pipelines are essential for automating code testing, building, and deployment. This blog is a hands-on guide to setting up your first pipeline in GitLab. Following on from our previous [introduction to CI/CD](https://medium.com/@sydasif78/introduction-to-ci-cd-platforms-gitlab-d478414e46eb), here we’ll dive into practical steps to create and execute a simple GitLab pipeline for a specific project.
+
+You’ll learn to define pipeline stages, from testing to deployment, and see how GitLab CI/CD can help streamline your workflow by running tasks automatically. This approach enhances reliability and ensures each code update is production-ready. Let’s get started on building a basic pipeline that will set the stage for more advanced configurations in the future.
+
+#### Step 1: Creating Your Project Repository on GitLab
+
+To start building a CI/CD pipeline on GitLab, the first step is to create a project repository. Head to [gitlab.com](https://gitlab.com "https://gitlab.com") and log in. Once you’re logged in, create a new repository for your project where all the code and pipeline configurations will be stored.
+
+![](https://cdn-images-1.medium.com/max/800/1*y9ReAGpvJTmVt49mq1rV8A.png)
+
+Demo Project
+
+#### Step 2: Setting Up the `.gitlab-ci.yml` File
+
+Once the repository is created, go to the root folder of the project and add a new file called `.gitlab-ci.yml`. This file defines the pipeline logic for your application. Here’s an example configuration:
+
+```
+run_tests:  
+  before_script:  
+    - echo "Preparing test data..."  
+  script:  
+    - echo "Running test..."  
+  after_script:  
+    - echo "Cleaning up temporary files..."  
+  
+build_image:  
+  script:  
+    - echo "Building the docker image..."  
+  
+push_image:  
+  script:  
+    - echo "Logging into docker registry..."  
+    - echo "Pushing docker image to registry..."
+```
+
+In this setup:
+
+* `before_script` contains commands that run before the main tasks, like preparing necessary test data.
+* `script` defines the main commands for each job, such as running tests in `run_tests` or building a Docker image in `build_image`.
+* `after_script` specifies cleanup commands that execute once the main script is completed, ensuring a tidy and efficient pipeline.
+
+This YAML file instructs GitLab on how to test, build, and deploy the application. As soon as this file is committed to the repository, GitLab will detect it and automatically initiate the defined jobs in the pipeline.
+
+![](https://cdn-images-1.medium.com/max/800/1*8n-iLWfUxefEnCBR33CYSA.png)
+
+.gitlab-ci.yml File
+
+GitLab also checks the file’s syntax upon committing; if the syntax is valid, the pipeline runs smoothly. This approach aligns with the *Infrastructure as Code (IaC)* principle, where the pipeline logic becomes part of the application code itself, enabling better version control and automated deployment.
+
+### Pipeline Execution
+
+Once you’ve added the pipeline configuration file (`.gitlab-ci.yml`) to your project repository, GitLab automatically begins executing the jobs without needing any additional setup. To monitor this process, navigate to **Build** &gt; **Pipelines** within your project repository on GitLab.
+
+![](https://cdn-images-1.medium.com/max/800/1*WOzjFWBncJrO7rTTCf8sKg.png)
+
+pipelines status
+
+In this view, you can see the overall status of the pipeline. For a deeper look at each job, go to **Build** &gt; **Jobs**, which provides details on individual job statuses, their names, and the time taken for each job.
+
+![](https://cdn-images-1.medium.com/max/800/1*-b-_YwXT7oH6BDM5WfkcTg.png)
+
+jobs list
+
+Clicking on a job’s status, such as a green **passed** indicator, opens a detailed view of the job’s process.
+
+![](https://cdn-images-1.medium.com/max/800/1*HoftLwHP2dkylWXK4aHORQ.png)
+
+Job Status
+
+GitLab CI/CD offers real-time feedback during pipeline execution, so you can review logs and troubleshoot any failed jobs by examining the output directly in the console. This visibility helps in diagnosing issues and understanding what is happening at each stage of the pipeline.
+
+### Conclusion
+
+In this tutorial, you set up a basic GitLab CI/CD pipeline, configured in a way that GitLab automatically detects and executes the pipeline jobs. You learned how to monitor your pipeline’s progress, check job statuses, and access detailed logs for troubleshooting. This pipeline setup provides an essential framework for future CI/CD processes, aligning with the *Infrastructure as Code* approach by keeping all configurations in code.

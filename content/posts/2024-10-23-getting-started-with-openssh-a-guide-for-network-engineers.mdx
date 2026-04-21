@@ -1,0 +1,295 @@
+---
+title: "Getting Started with OpenSSH: A Guide for Network Engineers"
+date: "2024-10-23"
+excerpt: "OpenSSH is an essential tool for managing Linux servers, making it a must-learn for network engineers. It allows you to open a command shell on remote..."
+description: "OpenSSH is an essential tool for managing Linux servers, making it a must-learn for network engineers. It allows you to open a command shell on remote servers, enabling you to run commands as if you w..."
+category: "Uncategorized"
+tags: []
+image: ""
+author: "Syed Asif"
+readingTime: "5 min read"
+status: "published"
+lastModified: "2024-10-23"
+---
+
+![](https://cdn-images-1.medium.com/max/800/1*M0j7pnxeFNY5dtWYoPRaTQ.png)
+
+Ansible lab
+
+### Getting Started with OpenSSH: A Guide for Network Engineers
+
+OpenSSH is an essential tool for managing Linux servers, making it a must-learn for network engineers. It allows you to open a command shell on remote servers, enabling you to run commands as if you were physically present in front of them. With OpenSSH, you can manage multiple servers without even needing to leave your desk.
+
+In this guide, we’ll walk through the essentials of using OpenSSH, including:
+
+* Installing OpenSSH
+* Managing SSH keys
+* Simplifying SSH connections with a configuration file
+
+---
+
+#### Installing OpenSSH
+
+OpenSSH has two key components: the server daemon, which runs in the background on a server and accepts SSH connections, and the client, which you use to connect to the server. Most modern operating systems include the OpenSSH client by default, but you can verify its presence by running:
+
+```
+zolo@dns:~$ which ssh  
+/usr/bin/ssh
+```
+
+If the command returns a path like the one above, the SSH client is already installed. If you receive no output, you can install the client with:
+
+```
+sudo apt install openssh-client
+```
+
+To see if the server component is installed and running, use:
+
+```
+zolo@dns:~$ systemctl status ssh  
+● ssh.service - OpenBSD Secure Shell server  
+     Loaded: loaded (/lib/systemd/system/ssh.service; enabled; vendor preset: enabled)  
+     Active: active (running) since Wed 2024-10-23 08:30:32 UTC; 25min ago  
+       Docs: man:sshd(8)  
+             man:sshd_config(5)  
+   Main PID: 860 (sshd)  
+      Tasks: 1 (limit: 2219)  
+     Memory: 6.6M  
+        CPU: 2.985s  
+     CGroup: /system.slice/ssh.service  
+             └─860 "sshd: /usr/sbin/sshd -D [listener] 0 of 10-100 startups"
+```
+
+If the SSH server is not installed, you can add it with:
+
+```
+sudo apt install openssh-server
+```
+
+#### Starting the OpenSSH Server
+
+After installing `openssh-server`, you may need to start the service manually, though it often starts automatically:
+
+```
+sudo systemctl start ssh
+```
+
+To ensure the SSH server starts automatically when your server boots, run:
+
+```
+sudo systemctl enable ssh
+```
+
+Verify that your SSH server is listening for connections by listing the open ports:
+
+```
+zolo@dns:~$ sudo ss -tunlp | grep ssh  
+[sudo] password for zolo:   
+tcp   LISTEN 0      128                0.0.0.0:22        0.0.0.0:*    users:(("sshd",pid=860,fd=3))              
+tcp   LISTEN 0      128                   [::]:22           [::]:*    users:(("sshd",pid=860,fd=4))
+```
+
+By default, OpenSSH listens on port `22`, but this can be changed by editing the `/etc/ssh/sshd_config` file.
+
+---
+
+### Connecting to a Server with SSH
+
+Once your OpenSSH server is up and running, you can connect to it from any client with:
+
+```
+ssh 192.168.1.120
+```
+
+To use a different username, include it in the command:
+
+```
+ssh zolo@192.168.1.120
+```
+
+If the server listens on a port other than `22`, specify it with the `-p` option:
+
+```
+ssh -p 2242 zolo@192.168.1.120
+```
+
+After connecting, you can run commands on the remote machine as if you were working locally. When you’re done, type `exit` or press `Ctrl + d` to close the session.
+
+#### SSH Key Management
+
+Password-based authentication is standard, but using SSH keys adds security and convenience. With SSH keys, you generate a pair of files — a public and a private key. The server uses the public key to verify your identity, while the private key remains on your local machine.
+
+To generate a key pair, use:
+
+```
+zolo@dns:~$ ssh-keygen  
+Generating public/private rsa key pair.  
+Enter file in which to save the key (/home/zolo/.ssh/id_rsa):   
+Enter passphrase (empty for no passphrase):   
+Enter same passphrase again:   
+Your identification has been saved in /home/zolo/.ssh/id_rsa  
+Your public key has been saved in /home/zolo/.ssh/id_rsa.pub  
+The key fingerprint is:  
+SHA256:xOkPOd7J26Izf2qXqs6ci+eb5rRu8A0iOr2beVJ7r5w zolo@dns.local.lan  
+The key's randomart image is:  
++---[RSA 3072]----+  
+|                 |  
+|       . .       |  
+|        +        |  
+|       o .       |  
+|        S        |  
+|    . +..* .     |  
+|   o o =oo=  .   |  
+|  o ooo*O=+o+    |  
+|   .==.XE%**.    |  
++----[SHA256]-----+
+```
+
+By default, this creates two files in the `.ssh` directory: `id_rsa` (private key) and `id_rsa.pub` (public key). The private key should remain on your local machine, while the public key is shared with the server.
+
+To add your public key to a remote server, use:
+
+```
+ssh-copy-id -i ~/.ssh/id_rsa.pub 192.168.1.150
+```
+
+You’ll be prompted for your password one last time, after which SSH key-based authentication will be enabled.
+
+```
+zolo@dns:~$ ssh-copy-id -i ~/.ssh/id_rsa.pub 192.168.100.101  
+/usr/bin/ssh-copy-id: INFO: Source of key(s) to be installed: "/home/zolo/.ssh/id_rsa.pub"  
+The authenticity of host '192.168.100.101 (192.168.100.101)' can't be established.  
+ED25519 key fingerprint is SHA256:fakzCAF+7NWUux77oYdoIrOSvV42QLZbrRxXBkqzmqw.  
+Are you sure you want to continue connecting (yes/no/[fingerprint])? yes  
+/usr/bin/ssh-copy-id: INFO: attempting to log in with the new key(s), to filter out any that are already installed  
+/usr/bin/ssh-copy-id: INFO: 1 key(s) remain to be installed -- if you are prompted now it is to install the new keys  
+zolo@192.168.100.101's password:
+```
+
+---
+
+### Simplifying SSH Connections with a Config File
+
+For frequently accessed servers, you can simplify SSH commands using a configuration file. Create a `config` file in your `~/.ssh` directory:
+
+```
+nano ~/.ssh/config
+```
+
+Add the following content to the file:
+
+```
+Host myserver  
+  Hostname 192.168.1.23  
+  Port 22  
+  User zolo  
+Host dns  
+  Hostname dns.local.lan  
+  Port 2222  
+  User user
+```
+
+With this setup, you can now connect to these servers with short commands like:
+
+```
+ssh dns
+```
+
+This approach saves time and reduces the chance of errors in typing out full commands.
+
+---
+
+### Utilizing an SSH Agent for Convenient Key Management
+
+Using an SSH agent allows you to store your private key’s passphrase in memory, eliminating the need to re-enter it each time you connect to a remote server during a session. Here’s how to use it:
+
+#### 1. Start the SSH Agent
+
+First, start the SSH agent using the following command:
+
+```
+zolo@dns:~$ eval $(ssh-agent)  
+Agent pid 15639
+```
+
+This command initializes the SSH agent and returns the process ID (pid).
+
+#### 2. Add SSH Key to the Agent
+
+After starting the agent, add your private SSH key:
+
+```
+zolo@dns:~$ ssh-add ~/.ssh/id_rsa  
+Enter passphrase for /home/zolo/.ssh/id_rsa:   
+Identity added: /home/zolo/.ssh/id_rsa (zolo@dns.local.lan)
+```
+
+You’ll be prompted for your passphrase, which is cached for the duration of the session.
+
+#### 3. Verify the Added Key
+
+To ensure that the SSH key has been successfully added, list the identities managed by the agent:
+
+```
+zolo@dns:~$ ssh-add -l  
+3072 SHA256:Z5XX1W0tct54hfJ5LlkdsfJN2jTdeI+NV1DVI/0gHs8 /home/zolo/.ssh/id_rsa (RSA)
+```
+
+The output confirms that the SSH key is being managed by the agent.
+
+#### 4. Connect to the Remote Server
+
+With the SSH agent handling your key, you can now connect to a remote server without needing to re-enter the passphrase:
+
+```
+zolo@dns:~$ ssh 192.168.100.101          
+Web console: https://localhost:9090/ or https://192.168.100.101:9090/  
+  
+Last login: Wed Oct 23 05:05:29 2024 from 192.168.100.1  
+[zolo@localhost ~]$ exit  
+logout  
+Connection to 192.168.100.101 closed.
+```
+
+The SSH agent automatically manages the authentication, simplifying the connection process.
+
+#### 5. Remove a Key from the SSH Agent
+
+To remove a specific key from the agent:
+
+```
+zolo@dns:~$ ssh-add -d ~/.ssh/id_rsa  
+Identity removed: /home/zolo/.ssh/id_rsa (/home/zolo/.ssh/id_rsa)
+```
+
+Or remove all keys:
+
+```
+zolo@dns:~$ ssh-add -D  
+All identities removed.
+```
+
+Utilizing an SSH agent streamlines secure connections by managing your passphrase during active sessions. This enhances both convenience and security when accessing remote servers.
+
+#### Changing the Passphrase of an OpenSSH Key
+
+At some point, you may want to change the passphrase associated with an SSH key. If so, you can use the `-p` argument with the `ssh-keygen` command. This argument is also useful if you initially created the key without a passphrase and later decided to add one. The command for changing or adding a passphrase is simple:
+
+```
+ssh-keygen -p
+```
+
+After running this command, press Enter to accept the default file (`id\_rsa`) unless the key you wish to modify is named differently. In that case, provide the path and name of the specific key. You’ll then be prompted for your current passphrase (leave it blank if there isn’t one) followed by your new passphrase, entered twice for confirmation. The process looks like this:
+
+```
+zolo@dns:~$ ssh-keygen -p  
+Enter file in which the key is (/home/zolo/.ssh/id_rsa):   
+Key has comment 'zolo@dns.local.lan'  
+Enter new passphrase (empty for no passphrase):   
+Enter same passphrase again:   
+Your identification has been saved with the new passphrase.
+```
+
+These concepts may take a bit of practice if you’re new to SSH.
+
+OpenSSH is a powerful tool that enables network engineers to manage Linux servers efficiently. By mastering SSH installation, key management, and configuration, you can secure your connections and simplify your workflow. Practicing with virtual machines is a great way to get comfortable with SSH commands and configurations.

@@ -1,0 +1,231 @@
+---
+title: "Claude Code Skill: Gemini CLI as a Research Tool"
+date: "2026-01-16"
+excerpt: "Effective AI-assisted development comes from a clear separation of responsibilities. Rather than relying on a single assistant to handle every task, b..."
+description: "Effective AI-assisted development comes from a clear separation of responsibilities. Rather than relying on a single assistant to handle every task, better results emerge when reasoning and research a..."
+category: "Uncategorized"
+tags: []
+image: ""
+author: "Syed Asif"
+readingTime: "5 min read"
+status: "published"
+lastModified: "2026-01-16"
+---
+
+![](https://cdn-images-1.medium.com/max/800/0*oY3R4sou-C_sm4qC)
+
+Photo by [Igor Omilaev](https://unsplash.com/@omilaev?utm_source=medium&utm_medium=referral) on [Unsplash](https://unsplash.com?utm_source=medium&utm_medium=referral)
+
+### Claude Code Skill: Gemini CLI as a Research Tool
+
+Effective AI-assisted development comes from a clear separation of responsibilities. Rather than relying on a single assistant to handle every task, better results emerge when reasoning and research are treated as distinct steps. One practical pattern is pairing **Claude** as the reasoning and orchestration layer with **Gemini CLI** as a structured research tool.
+
+This approach is about coordination, not comparison.
+
+### A deliberate pairing
+
+In day-to-day engineering work, questions often blend two needs:
+
+* Careful reasoning and explanation
+* External research, such as current information, version checks, or documentation review
+
+By pairing Claude with Gemini CLI, these needs are handled explicitly. Claude decides when research is relevant and how the results should be used. Gemini CLI is invoked only to gather or analyze external information. The final response remains a considered synthesis, not a raw search result.
+
+### What the code skill defines
+
+A Claude code skill acts as a behavioral contract. It does not document every option or teach tool usage. Its role is to define *when* a tool is used and *how* its output is treated.
+
+The Gemini research skill answers three questions:
+
+1. Should a research step occur?
+2. Which type of research is appropriate?
+3. How should the result be handled?
+
+By keeping the skill to the point, behavior stays predictable across different conversations and projects.
+
+### When research is triggered
+
+The skill activates Gemini CLI in situations such as:
+
+* Requests involving current or recent information
+* Questions about versions, releases, or timelines
+* Topics that depend on web search
+* Scenarios where a second analytical perspective improves confidence
+
+At the same time, the skill avoids unnecessary tool usage. Tasks that involve pure reasoning, static code already in view, or problems without external dependencies proceed without research.
+
+This balance ensures that workflows are efficient and focused.
+
+### Structured research interaction
+
+To support automation and review, the skill enforces a consistent interaction pattern with Gemini CLI:
+
+* JSON output is always used
+* Errors are checked explicitly
+* The response field is extracted as the research result
+
+This structure allows research steps to be logged, reviewed, or replayed. It also makes the pairing suitable for scripts and CI workflows, where predictability matters.
+
+Model selection follows simple defaults:
+
+* Web and current-information tasks use a search-oriented model
+* Code and architecture reviews use a deeper analysis model
+* Simple lookups use a lightweight option
+
+These defaults remove decision overhead and keep behavior stable.
+
+### Scope discipline
+
+Another important aspect of the pairing is scope control. Instead of sending entire repositories by default, the skill encourages:
+
+* Targeting specific files or directories
+* Keeping context limited to what the question requires
+* Expanding to full workspaces only when explicitly requested
+
+This improves signal quality and makes research results easier to interpret.
+
+### The skill definition
+
+The following skill file captures this behavior:
+
+```
+---  
+name: gemini-research  
+description: Uses Gemini CLI for web search, code analysis, and real-time information. Use when the user needs current information, web search, code review, or a second opinion.  
+---  
+  
+# Research Assistant with Gemini CLI  
+  
+Use Gemini CLI as a complementary research and analysis tool.  
+  
+## When to use  
+  
+Use Gemini CLI when:  
+  
+- **Web search or real-time info needed**  
+  - Current events, latest versions, releases, recent changes  
+  - Keywords: "latest", "current", "newest", "2025", "recent", "today"  
+  - Up-to-date best practices, standards, comparisons  
+  
+- **Second AI perspective valuable**  
+  - Code analysis, security reviews, architecture decisions  
+  - Cross-checking assumptions or implementation approaches  
+  
+- **Research needed**  
+  - Unfamiliar libraries, frameworks, APIs  
+  - Best practices, patterns, trade-offs  
+  
+## Basic usage  
+  
+```bash  
+# Always use JSON output for parsing  
+gemini "PROMPT" --output-format json  
+  
+# Extract response safely  
+result=$(gemini -p "Your prompt" --output-format json)  
+echo "$result" | jq -r '.response'  
+  
+# Or use the helper script  
+./scripts/run-gemini.sh "Your prompt"  
+```  
+  
+## Model selection  
+  
+- `gemini-3-flash-preview` - **Default for web search and current info**  
+- `gemini-3-pro-preview` - Deep code analysis, complex reasoning  
+- `gemini-2.5-pro` - Stable fallback  
+- `gemini-2.5-flash` - Quick, simple queries  
+  
+## File inclusion  
+  
+```bash  
+# Single file  
+gemini "@src/main.ts Review this file"  
+  
+# Directory  
+gemini "@src/components/ Find code smells"  
+  
+# Multiple paths  
+gemini "@src/ @tests/ Analyze coverage"  
+```  
+  
+&gt; Paths are relative to current directory.  
+  
+## Common patterns  
+  
+### Web search  
+  
+```bash  
+gemini "What are the latest features in React 19?" \  
+  --model gemini-3-flash-preview --output-format json | jq -r '.response'  
+```  
+  
+### Code analysis  
+  
+```bash  
+gemini "@src/auth.ts Review for security issues" \  
+  --model gemini-3-pro-preview --output-format json | jq -r '.response'  
+```  
+  
+### Second opinion  
+  
+```bash  
+gemini "@src/cache.ts Is this appropriate for high-traffic?" \  
+  --model gemini-3-pro-preview --output-format json | jq -r '.response'  
+```  
+  
+## Workflow  
+  
+1. **Decide if web search needed**  
+   - Keywords: "latest", "current", "2025", "recent"  
+   - Version/release questions  
+   - Current best practices  
+  
+2. **Execute search**  
+  
+   ```bash  
+   gemini "User's question" --model gemini-3-flash-preview --output-format json  
+   ```  
+  
+3. **Present results**  
+   - Cite Gemini CLI + web search  
+   - Include relevant URLs  
+   - Apply findings to user's context  
+  
+## Key points  
+  
+- Always use `--output-format json` for automation  
+- Check `.error` before using `.response`  
+- Gemini is a complement to Claude, not a replacement  
+- Keep `@` scopes focused to avoid context overload  
+- For details see: [reference.md](reference.md), [examples.md](examples.md)  
+  
+## Quick reference  
+  
+```bash  
+# Web search  
+gemini "query" --model gemini-3-flash-preview --output-format json | jq -r '.response'  
+  
+# Code analysis  
+gemini "@path/to/code prompt" --model gemini-3-pro-preview --output-format json | jq -r '.response'  
+  
+# Multiple paths  
+gemini "@src/ @tests/ prompt" --output-format json | jq -r '.response'  
+```  
+  
+See [scripts](scripts/run-gemini.sh) for a helper script.
+```
+
+Add `scripts` `reference` and `examples` as per your needs.
+
+Pairing Claude with Gemini CLI through a focused code skill creates a workflow that is clear, auditable, and extensible. By separating reasoning from research and defining strict rules for interaction, the system stays reliable while remaining flexible enough to grow with real-world use.
+
+---
+
+[**Agent Skills - Claude Code Docs**  
+*Create, manage, and share Skills to extend Claude's capabilities in Claude Code.*code.claude.com](https://code.claude.com/docs/en/skills "https://code.claude.com/docs/en/skills")
+
+---
+
+[**Headless mode**  
+*Headless mode allows you to run Gemini CLI programmatically from command line scripts and automation tools without any…*geminicli.com](https://geminicli.com/docs/cli/headless/ "https://geminicli.com/docs/cli/headless/")

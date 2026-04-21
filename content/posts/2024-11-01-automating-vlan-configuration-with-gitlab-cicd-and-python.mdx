@@ -1,0 +1,290 @@
+---
+title: "Automating VLAN Configuration with GitLab CI/CD and Python"
+date: "2024-11-01"
+excerpt: "In networking, automation is essential for simplifying repetitive tasks and reducing manual errors. This tutorial will guide you through setting up an..."
+description: "In networking, automation is essential for simplifying repetitive tasks and reducing manual errors. This tutorial will guide you through setting up an automated workflow to configure VLANs on Cisco ne..."
+category: "Uncategorized"
+tags: []
+image: ""
+author: "Syed Asif"
+readingTime: "5 min read"
+status: "published"
+lastModified: "2024-11-01"
+---
+
+![](https://cdn-images-1.medium.com/max/800/0*IjUcaMAqnM9jj-pl)
+
+Photo by [Pankaj Patel](https://unsplash.com/@pankajpatel?utm_source=medium&utm_medium=referral) on [Unsplash](https://unsplash.com?utm_source=medium&utm_medium=referral)
+
+### Automating VLAN Configuration with GitLab CI/CD and Python
+
+In networking, automation is essential for simplifying repetitive tasks and reducing manual errors. This tutorial will guide you through setting up an automated workflow to configure VLANs on Cisco network devices using Python, Netmiko, and GitLab CI/CD. By the end of this guide, you’ll have a fully functional CI/CD pipeline that can validate and deploy VLAN configurations to your network.
+
+---
+
+#### Introduction to GitLab CI/CD for Network Automation
+
+GitLab CI/CD enables developers and network engineers to automate workflows, including those for network configuration and management. In this tutorial, we’ll utilize GitLab CI/CD to set up a pipeline that automates the configuration of VLANs on Cisco devices. Our lab will simulate a real-world environment and provide hands-on practice in network automation.
+
+#### Lab Setup on EVE-NG
+
+Our lab environment consists of the following components:
+
+* **Control Node**: An RHEL 9 server hosted in VMware. This will be used to install the GitLab Runner and manage the pipeline.
+* **Network Devices**: A Cisco router and switch set up in EVE-NG to receive VLAN configurations.
+* **Management Cloud Node**: Ensures SSH connectivity between the control node and the network devices.
+
+![](https://cdn-images-1.medium.com/max/800/1*Q5Wm3-l3G9zEOTo6pFoZAQ.png)
+
+Lab Setup
+
+With this setup, you’ll be able to configure and test VLAN automation within a controlled lab environment.
+
+#### Step-by-Step Setup: GitLab Repository and Runner
+
+To automate the pipeline, we need a GitLab repository to store the scripts and a GitLab Runner to execute CI/CD tasks. Let’s set up each component in detail.
+
+#### Step 1: Create a GitLab Repository
+
+First, create a new repository on GitLab where you’ll store your Python scripts and the CI/CD configuration file (`.gitlab-ci.yml`).
+
+#### Step 2: Install GitLab Runner on RHEL 9
+
+To handle CI/CD tasks, install GitLab Runner on the RHEL 9 control node with the following steps:
+
+1. **Add the GitLab Repository**:
+
+```
+curl -L "https://packages.gitlab.com/install/repositories/runner/gitlab-runner/script.rpm.sh" | sudo bash
+```
+
+1. **Install GitLab Runner**:
+
+* `sudo yum install gitlab-runner or sudo dnf install gitlab-runner`
+
+#### Step 3: Register the GitLab Runner
+
+To connect the GitLab Runner with your repository, run the following command:
+
+```
+sudo gitlab-runner register
+```
+
+Provide the following information during the registration process:
+
+* **URL of your GitLab instance**: `https://gitlab.com/`
+* **Registration token**: Found in GitLab under **Settings &gt; CI/CD &gt; Runners** for your project.
+* **Description**: A descriptive name for easy identification.
+* **Tags**: Relevant tags that specify which jobs this runner can handle.
+* **Executor**: Choose an executor (e.g., `shell`, `docker`) depending on your setup.
+
+*I used the shell executor without any tags in my lab setup.*
+
+#### Step 4: Start and Enable GitLab Runner
+
+Finally, start the GitLab Runner service and enable it to run at startup:
+
+```
+sudo systemctl start gitlab-runner  
+sudo systemctl enable gitlab-runner
+```
+
+Verify the installation and ensure the runner is active:
+
+```
+gitlab-runner status
+```
+
+With the runner installed and registered, you’re now ready to start building the automation scripts for VLAN configuration.
+
+#### Preparing the Project Files
+
+The following files are necessary for the pipeline:
+
+* **main.py**: The primary script for configuring VLANs on Cisco devices.
+* **validate\_vlan.py**: A script to validate VLAN IDs before deployment.
+* **vlans.py**: Contains the list of VLANs to be configured.
+* **.gitlab-ci.yml**: Configures the GitLab CI/CD pipeline stages and jobs.
+
+---
+
+### Writing the Python Scripts
+
+#### `main.py`
+
+This script connects to Cisco devices via SSH, using Netmiko to send VLAN configuration commands.
+
+```
+from netmiko import (  
+    ConnectHandler,  
+    NetmikoAuthenticationException,  
+    NetmikoTimeoutException,  
+)  
+from vlans import vlans  # Import VLAN configuration data  
+  
+# Device and credentials configuration  
+devices = [  
+    {  
+        "name": "R1",  
+        "host": "172.16.141.100",  
+        "username": "admin",  
+        "password": "cisco",  
+        "device_type": "cisco_ios",  
+    },  
+    {  
+        "name": "SW1",  
+        "host": "172.16.141.101",  
+        "username": "admin",  
+        "password": "cisco",  
+        "device_type": "cisco_ios",  
+    },  
+]  
+  
+def configure_vlan(device, vlans):  
+    """Configure VLANs on the device using Netmiko."""  
+    try:  
+        # Initialize Netmiko connection  
+        connection = ConnectHandler(  
+            device_type=device["device_type"],  
+            host=device["host"],  
+            username=device["username"],  
+            password=device["password"],  
+        )  
+        print(f"Connected to {device['name']} at {device['host']}")  
+  
+        # Loop through VLANs and send configuration commands  
+        for vlan in vlans:  
+            vlan_id = vlan["vlan_id"]  
+            vlan_name = vlan["name"]  
+            commands = [  
+                f"vlan {vlan_id}",  
+                f"name {vlan_name}",  
+                "end",  
+            ]  
+            output = connection.send_config_set(commands)  
+            print(f"Commands executed on {device['name']}:\n{output}")  
+        print(f"VLANs configured successfully on {device['name']}")  
+  
+    except NetmikoAuthenticationException:  
+        print(f"Authentication failed for {device['host']}. Check your username and password.")  
+    except NetmikoTimeoutException as timeout_exception:  
+        print(f"Connection timed out on {device['host']}: {timeout_exception}")  
+    except Exception as e:  
+        print(f"Failed to configure VLANs on {device['host']}: {e}")  
+  
+    finally:  
+        connection.disconnect()  
+  
+if __name__ == "__main__":  
+    print("Starting VLAN Configuration Process...")  
+  
+    # Deploy VLANs to each device  
+    for device in devices:  
+        configure_vlan(device, vlans)
+```
+
+* **Devices List**: Contains details like the IP address, username, and device type for each device.
+* **configure\_vlan Function**: Connects to devices, configures VLANs, and handles exceptions for authentication and timeouts.
+* **Main Section**: Iterates through the devices and deploys VLANs to each one.
+
+#### `validate_vlan.py`
+
+This script validates VLAN IDs to ensure they are within a specified range, preventing configuration errors.
+
+```
+from vlans import vlans  # Import VLAN configuration data  
+  
+def validate_vlan_ids(vlans):  
+    """Validate that VLAN IDs are within a specific range (e.g., 1 to 100)."""  
+    for vlan in vlans:  
+        vlan_id = vlan["vlan_id"]  
+        if vlan_id &lt; 1 or vlan_id &gt; 100:  
+            print(f"VLAN ID {vlan_id} is out of range.")  
+            return False  
+    print("All VLAN IDs are within the allowed range.")  
+    return True  
+  
+if __name__ == "__main__":  
+    if validate_vlan_ids(vlans):  
+        print("VLAN validation successful.")  
+    else:  
+        print("VLAN validation failed.")
+```
+
+* **validate\_vlan\_ids Function**: Checks that VLAN IDs are between 1 and 100. If a VLAN ID is outside this range, validation fails.
+* **Main Section**: Prints a success message if all IDs are valid; otherwise, it notifies of a validation failure.
+
+#### `vlans.py`
+
+Defines the VLAN configurations to be deployed on the devices.
+
+```
+# VLAN configuration data  
+vlans = [  
+    {"vlan_id": 10, "name": "cctv"},  
+    {"vlan_id": 11, "name": "voip"},  
+]
+```
+
+Contains the VLAN configuration data, listing VLAN IDs and names. For this tutorial, the VLAN IDs are set to 10 and 11 with names `cctv` and `voip`.
+
+#### Configuring the CI/CD Pipeline with `.gitlab-ci.yml`
+
+The `.gitlab-ci.yml` file specifies the pipeline stages, jobs, and commands to be executed. The pipeline includes two stages: `validate` and `deploy`.
+
+```
+# .gitlab-ci.yml  
+  
+image: python:3.12-slim  
+  
+stages:  
+  - validate  
+  - deploy  
+  
+# Validation Stage  
+validate_vlan:  
+  stage: validate  
+  script:  
+    # Run the VLAN validation script  
+    - python validate_vlan.py  
+  allow_failure: false  
+  
+# Deployment Stage  
+deploy_vlan:  
+  stage: deploy  
+  before_script:  
+    # Install dependencies  
+    - pip install netmiko pyyaml  
+  script:  
+    # Run the main script, which includes both validation and deployment  
+    - python main.py  
+  only:  
+    - main  # Runs only on the main branch
+```
+
+* **Image**: Uses a Python image (3.12-slim) as the base for the pipeline.
+* **Stages**: Defines `validate` (to check VLAN IDs) and `deploy` (to configure VLANs).
+
+**Jobs**:
+
+* **validate\_vlan**: Runs the `validate_vlan.py` script to confirm VLAN IDs are within range.
+* **deploy\_vlan**: Installs dependencies and runs `main.py` to deploy VLAN configurations if validation is successful.
+
+#### Conclusion
+
+This tutorial provides a comprehensive guide to using GitLab CI/CD for VLAN configuration automation. By setting up a GitLab Runner on RHEL 9, creating scripts to validate and deploy VLAN configurations, and defining the CI/CD pipeline, you now have a repeatable process for deploying network configurations. This approach enhances the reliability of network changes and minimizes configuration errors, making it ideal for scalable network management.
+
+The same project in Ansible is hosted in the below GitLab repository:
+
+[**Network-Autmotion / ansible\_lab · GitLab**  
+*GitLab CI/CD and Anisble*gitlab.com](https://gitlab.com/network-autmotion/ansible_lab "https://gitlab.com/network-autmotion/ansible_lab")
+
+**Note**: ChatGPT-generated scripts are used in both labs, use them with caution.
+
+See the below links for GitLab CI/CD:
+
+[**Introduction to CI/CD Platforms — GitLab**  
+*Continuous Integration (CI) and Continuous Deployment (CD) are at the heart of efficient software development today…*medium.com](https://medium.com/@sydasif78/introduction-to-ci-cd-platforms-gitlab-d478414e46eb "https://medium.com/@sydasif78/introduction-to-ci-cd-platforms-gitlab-d478414e46eb")
+
+[**Setting Up Your First GitLab CI/CD Pipeline**  
+*In today’s application development process, CI/CD pipelines are essential for automating code testing, building, and…*medium.com](https://medium.com/@sydasif78/setting-up-your-first-gitlab-ci-cd-pipeline-22e63a3bdd9d "https://medium.com/@sydasif78/setting-up-your-first-gitlab-ci-cd-pipeline-22e63a3bdd9d")

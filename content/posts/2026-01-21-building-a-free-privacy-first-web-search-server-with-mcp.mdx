@@ -1,0 +1,111 @@
+---
+title: "Building a Free, Privacy-First Web Search Server with MCP"
+date: "2026-01-21"
+excerpt: "One of the biggest limitations of Large Language Models (LLMs) is the knowledge cutoff. We’ve all seen the dreaded “I cannot browse the internet” or “..."
+description: "One of the biggest limitations of Large Language Models (LLMs) is the knowledge cutoff. We’ve all seen the dreaded “I cannot browse the internet” or “My knowledge is current up to 2023.”..."
+category: "Uncategorized"
+tags: []
+image: ""
+author: "Syed Asif"
+readingTime: "5 min read"
+status: "published"
+lastModified: "2026-01-21"
+---
+
+![](https://cdn-images-1.medium.com/max/800/0*bWcAIwPeb1FnrUrM)
+
+Photo by [May Cloud](https://unsplash.com/@maycloudbackup?utm_source=medium&utm_medium=referral) on [Unsplash](https://unsplash.com?utm_source=medium&utm_medium=referral)
+
+### Building a Free, Privacy-First Web Search Server with MCP
+
+One of the biggest limitations of Large Language Models (LLMs) is the knowledge cutoff. We’ve all seen the dreaded “I cannot browse the internet” or “My knowledge is current up to 2023.”
+
+While various search APIs exist (Google, Bing, Tavily), they usually require credit cards, API keys, and usage caps. Today, I’m excited to share a project I’ve built that solves this problem for free, using privacy-focused tech.
+
+Meet **Web Search MCP**: A robust, FastMCP-based server that gives your AI agents access to the live web via DuckDuckGo.
+
+### What is it?
+
+**Web Search MCP** is a bridge between your AI client (like Claude Desktop, Cursor, or OpenCode) and the internet. It implements the **Model Context Protocol (MCP)**, the new standard for connecting AI models to external data.
+
+Under the hood, it utilizes fastmcp for high-performance server handling and the ddgs library to interact with DuckDuckGo.
+
+### Why DuckDuckGo?
+
+* **No API Keys:** Unlike the Google Search API, you don’t need to generate a key or pay per request.
+* **Privacy:** It doesn’t track your agent’s search history.
+* **Rich Media:** It supports text, news, images, and videos out of the box.
+
+### Under the Hood: The Code
+
+The beauty of this project lies in its simplicity. By using FastMCP, the entire server logic is clean and declarative.
+
+Here is a snippet from *server.py* showing how we define a tool. Notice how we expose powerful filters like time\_range and region directly to the LLM:
+
+```
+from fastmcp import FastMCP  
+from .main import ddg_search  
+  
+mcp = FastMCP("Web Search Tools")  
+  
+@mcp.tool  
+def search_web(  
+    query: str,  
+    max_results: int = 5,  
+    time_range: str | None = None, # 'd', 'w', 'm', 'y'  
+    region: str | None = None,     # e.g., 'us-en'  
+    safesearch: str = "moderate",  
+    page: int = 1  
+) -&gt; dict:  
+    """Search for general web content using DuckDuckGo."""  
+    return ddg_search(query, "text", max_results, time_range, region, safesearch, page)
+```
+
+The server delegates the heavy lifting to a unified handler in *main.py*, ensuring consistent error handling and response formatting across all search types.
+
+### The Toolset
+
+When you install this server, your LLM gains four distinct capabilities:
+
+1. **search\_web**: The standard search. Perfect for answering general questions or fact-checking.
+2. **search\_news**: Retrieves the latest headlines. Combine this with the time\_range=”d” parameter, and your LLM can summarize *today’s* news.
+3. **search\_images**: Need a diagram or a photo? This tool returns image metadata and links.
+4. **search\_videos**: great for finding tutorials or multimedia content.
+
+### Installation & Usage
+
+I’ve optimized the project for modern Python tooling, specifically using uv (an incredibly fast Python package manager).
+
+### Quick Install
+
+You can install the tool directly from the repository without cloning it manually:
+
+```
+uv tool install git+https://github.com/sydasif/web-search-mcp.git
+```
+
+### Configuration
+
+To use this with **Claude Desktop**, simply add the following to your ~/.claude.json file:
+
+```
+{  
+  "mcpServers": {  
+    "ninja-search": {  
+      "command": "web-search-mcp"  
+    }  
+  }  
+}
+```
+
+Once you restart, you can now ask questions like:
+
+&gt; *Find the latest news about the release of Python 3.14 and search for a logo image for it.*
+
+Claude will autonomously orchestrate calls to search\_news and search\_images to fulfill your request.
+
+### Conclusion
+
+The Model Context Protocol is changing how we interact with LLMs, moving them from static text generators to active agents. **Web Search MCP** is a lightweight, free, and privacy-conscious way to empower your local AI setup.
+
+The project is open source and available on GitHub. Give it a spin and let your AI explore the web. **🔗** [View the Repository on GitHub](https://www.google.com/url?sa=E&q=https%3A%2F%2Fgithub.com%2Fsydasif%2Fweb-search-mcp)

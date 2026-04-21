@@ -1,0 +1,140 @@
+---
+title: "Beginner’s Guide: Setting Up Your Network Automation Lab"
+date: "2023-09-27"
+excerpt: "Network automation labs are a great place for beginners to enhance their skills, test a project, and gain hands-on experience. In this blog post, you ..."
+description: "Network automation labs are a great place for beginners to enhance their skills, test a project, and gain hands-on experience. In this blog post, you will look into the necessary steps to set up your ..."
+category: "Uncategorized"
+tags: []
+image: ""
+author: "Syed Asif"
+readingTime: "5 min read"
+status: "published"
+lastModified: "2023-09-27"
+---
+
+![](https://cdn-images-1.medium.com/max/800/0*X7jKhAzh4rszIFCr)
+
+Photo by [Domenico Loia](https://unsplash.com/@domenicoloia?utm_source=medium&utm_medium=referral) on [Unsplash](https://unsplash.com?utm_source=medium&utm_medium=referral)
+
+### Beginner’s Guide: Setting Up Your Network Automation Lab
+
+Network automation labs are a great place for beginners to enhance their skills, test a project, and gain hands-on experience. In this blog post, you will look into the necessary steps to set up your own network automation lab.
+
+If you’re a network engineer, an associate, or a system admin and want to increase your skill, this guide is for your help to get started with automation.
+
+### Why Network Automation?
+
+Before we set up the process, let’s understand why a network automation lab is so critical for beginners:
+
+**Hands-On Learning:** Network automation is not just theory, it’s practical implementation. A lab environment allows you to experiment without risk of breaking a production networks.
+
+**Skill Development:** You will be proficient in network automation tools, scripting, and configurations, which are in high demand in the industry.
+
+**Risk-Free Environment:** Making mistakes and learn from them in a safe and controlled environment.
+
+Now that you recognize the importance of a network automation lab, let’s proceed next to set up the lab.
+
+### Basic Lab Requirements
+
+Before you start to set up a lab environment, ensure you have the following tools and software:
+
+**Hardware:** You’ll need a computer to host your lab environment. It doesn’t need to be very powerful, but it should meet the [minimum lab requirements](https://docs.gns3.com/docs/getting-started/installation/windows/#minimum-requirements).
+
+**Virtualization Software:** Software like VMware Workstation, VirtualBox, or GNS3 allows you to create virtual machines (VMs) for your lab.
+
+**Operating Systems:** Install your preferred OS (my OS is Windows) for both host and VMs. Linux’s distributions are commonly used for network automation.
+
+**Network Devices:** Virtual routers and switches are needed for simulating network configurations.
+
+### Setting Up Your Lab Environment
+
+Now, let’s set up your network automation lab:
+
+#### Microsoft loop-back adapter
+
+1. Right-click on the window start menu icon and select **Device Manager**.
+
+2. Select **Network adapters** and **c**lick on **Action** tab, and select **Add legacy hardware.**
+
+3. Click **Next** on the welcome screen.
+
+4. Choose **“Install the hardware that I manually select from a list”** and click on **Next.**
+
+5. Select **Network adapters** from offered common hardware types and click on **Next.**
+
+6. Select **Microsoft**, and select **Microsoft KM-TEST** Loop-back adapter card model, click on **Next.**
+
+7. Click on **Next** and **Finish.**
+
+Identify your loop-back adapter, in my case Ethernet2 as shown below:
+
+![](https://cdn-images-1.medium.com/max/800/0*nINi2gaCm82VlMqX.png)
+
+#### GNS3 and Network device
+
+Start GNS3 and drop a cloud node at the workspace and configure as below:
+
+1. Right-click Cloud node, select Configure, and then select “**Show special Ethernet interfaces.**”
+2. Add the **Ethernet2** from the drop-down menu.
+3. Delete any other interfaces.
+4. Highlight the Ethernet2
+5. Click on add button.
+6. Apply OK.
+
+Change the symbol to a computer and rename cloud node to **PC**.
+
+![](https://cdn-images-1.medium.com/max/800/0*Jqx9eBFSzkb10LOM.png)
+
+Configure **Ethernet2** adapter from opening **Network and Sharing Center**, then change adopter setting and add static IP address as below:
+
+![](https://cdn-images-1.medium.com/max/800/0*FCsJ9NO9NpwCqjWS.png)
+
+Add switch and router as below:
+
+![](https://cdn-images-1.medium.com/max/800/0*i_VoBlsSHE73QKrs.png)
+
+Configure SW1 as below:
+
+```
+conf t   
+!   
+hostname SW1   
+!   
+enable secret cisco service password-encryption   
+!   
+username admin password cisco   
+!   
+no ip domain-lookup   
+!   
+interface Vlan1 ip address 9.9.9.2 255.255.255.0 no shutdown   
+!   
+line vty 0 4 logging synchronous login local transport input all   
+!   
+end   
+!   
+wr
+```
+
+Also configure router in same network.
+
+### Configuration of windows defender firewall
+
+1. You can open the **Windows Defender firewall** as shown.
+2. Open Windows defender firewall with Advanced Security and enable these two settings on the inbound rules as below:
+
+![](https://cdn-images-1.medium.com/max/800/0*Ru1IFwNFS4VDekG2.png)
+
+1. File and Printer Sharing (Echo Request — ICMPv4-In) Private
+2. File and Printer Sharing (Echo Request — ICMPv6-In) Private
+
+This allows **GNS3** to send back **ICMP** (ping) request to the host PC.
+
+By following this beginner’s guide to setting up your network automation lab, you’ll be on your way to becoming proficient in network automation.
+
+In conclusion, a network automation lab is your training ground for a successful career in network automation and IT.
+
+Ready to take the first step? Begin your network automation lab journey today!
+
+---
+
+*Originally published at* [*https://networklabguide.blogspot.com*](https://networklabguide.blogspot.com/2023/09/beginners-guide-setting-up-your-network.html)*.*

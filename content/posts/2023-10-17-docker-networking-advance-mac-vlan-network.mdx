@@ -1,0 +1,152 @@
+---
+title: "Docker Networking Advance — Mac VLAN Network"
+date: "2023-10-17"
+excerpt: "Now, let’s dive into a network type that genuinely amazes you — Mac VLAN. It’s an absolute game—changer, especially if you’re looking for a way to hav..."
+description: "Now, let’s dive into a network type that genuinely amazes you — Mac VLAN. It’s an absolute game—changer, especially if you’re looking for a way to have your Docker containers interact directly with yo..."
+category: "Uncategorized"
+tags: []
+image: ""
+author: "Syed Asif"
+readingTime: "5 min read"
+status: "published"
+lastModified: "2023-10-17"
+---
+
+![](https://cdn-images-1.medium.com/max/800/0*QvZOaCSHfPnXutP1)
+
+Photo by [Rubaitul Azad](https://unsplash.com/@rubaitulazad?utm_source=medium&utm_medium=referral) on [Unsplash](https://unsplash.com?utm_source=medium&utm_medium=referral)
+
+### Docker Networking Advance — Mac VLAN Network
+
+#### Part — 04
+
+Now, let’s dive into a network type that genuinely amazes you — Mac VLAN. It’s an absolute game—changer, especially if you’re looking for a way to have your Docker containers interact directly with your physical network, giving them their Mac and IP addresses.
+
+Mac VLAN is like the magic rod of Docker networking because it wipes away all the complexities, such as Docker networks and virtual interfaces. Instead, it empowers you to connect your Docker containers directly to your physical network, just like any other device.
+
+Imagine you could connect your containers, say, **Tor**, to a Mac VLAN network. It would be as if their Ethernet interfaces were plugging directly into your home switch. They’d even get their unique Mac addresses.
+
+This network provides direct access to the physical network, and the only downside is the lack of isolation. It’s like your containers are right there, next to the host, connected directly to your physical network.
+
+#### Mac VLAN to Your Home Network
+
+Let’s jump right into it and create our Mac VLAN network, just like with previous network creations, we’ll use the `Docker network create` command. However, this time, we need to specify the network driver. To do this, use the `-d` option followed by `macvlan` the driver.
+
+#### Subnet for Mac VLAN
+
+This step is crucial in ensuring that your containers connect seamlessly with your existing home network. We’re in the middle of creating our Mac VLAN network, and it’s essential to provide the right information for this network to work with your home setup.
+
+Using the `Docker network create` command, just as we did earlier, we need to include the `--subnet` option followed by the subnet information for your home network. In my case, it's `192.168.8.0/24`but remember to replace it with your specific home network subnet.
+
+#### Gateway and Additional Options
+
+In any network setup, a gateway is the router or device that connects your local network to the wider internet. Therefore, you must specify the gateway for your Mac VLAN network. In my case, it’s `192.168.8.1`. Make sure to replace this with the IP address of your router.
+
+Next, we need to add special configurations or options to our Mac VLAN network. To accommodate this, we’re using the `-o` flag. The Mac VLAN network needs to be associated with a physical network interface on your host machine. In my case, I used `ens33` it as the parent interface.
+
+#### Mac VLAN Network and Connecting Containers
+
+Now comes the interesting part where we bring it all together — creating our Mac VLAN network and connecting our Docker containers to it. This process will make our containers behave like virtual machines, directly interfacing with our home network.
+
+In this example, the final command looks like this:
+
+```
+zolo@ubuntu-vm:~$ sudo docker network create -d macvlan \  
+&gt; --subnet 192.168.8.0/24 \  
+&gt; --gateway 192.168.8.1 \  
+&gt; -o parent=ens33 \        
+&gt; new-net  
+7d0733ca52c9917265d3415d830bf402df09b5e67702af2c3164f0c8731ce8fd
+```
+
+Replace `ens33` with your main network interface and adjust the subnet and gateway to match your home network configuration.
+
+To complete the setup, we must stop the containers we want to connect to the Mac VLAN. For this example, we’re connecting **Tor**. You can use the following command to stop:
+
+```
+zolo@ubuntu-vm:~$ sudo docker stop tor  
+tor
+```
+
+Use the below command to attach **Tor** to our newly created Mac VLAN network. Here’s how:
+
+```
+zolo@ubuntu-vm:~$ sudo docker run -itd --rm --network new-net \  
+&gt; --ip 192.168.8.99 \  
+&gt; --name tor busybox  
+2fa52aa0be6747eae42446b2b53aeaecd71831053e24224e9f5728122b4bd5e9
+```
+
+![](https://cdn-images-1.medium.com/max/800/1*fiydxd543ADjfisTvffvBw.png)
+
+Mac VLAN network
+
+Once you’ve completed these steps, your container is now part of the Mac VLAN network and behaves as if they are directly connected to your physical home network as a standalone virtual machine. The topology now looked like this, as in the above diagram.
+
+#### Promiscuous Mode for Mac VLAN
+
+Now, we’ve come across an issue with Mac VLAN. This issue arises because the Mac VLAN network assigns each container its own Mac address. But they use the same port as used by Ubuntu, and network switches often struggle with multiple Mac addresses on a single port due to port security enabled or cannot handle more than one Mac address.
+
+To resolve this, we need to enable promiscuous mode on the host network interface and, if you’re using VirtualBox, within your virtual machine settings.
+
+This command will vary depending on your network interface name. You can find your network interface name by running `ip address show` in the terminal.
+
+```
+zolo@ubuntu-vm:~$ sudo ip link set ens33 promisc on
+```
+
+Enable Promiscuous Mode in VirtualBox from setting (If Applicable).
+
+Now, with promiscuous mode enabled, try pinging your default gateway or other devices on your network from the container, and it should work as expected. While Mac VLAN do provide direct network access, they require this extra step to function seamlessly.
+
+The Mac VLAN network behaves like a bridge network, enabling your containers to have their own IP and Mac Addresses on your home network. This eliminates the need to expose specific ports for each container, and it’s like running them as standalone devices on your network.
+
+#### DHCP Conflicts
+
+Docker usually assigns IP addresses automatically, which could lead to conflicts with your home network’s DHCP server. To avoid this, always assign specific IP addresses to your containers when deploying them in a Mac VLAN network.
+
+Or you can use an `ip-range` command to allocate a specific range of your home network when creating a Mac VLAN network.
+
+In practice, to fully leverage the benefits of Mac VLAN networks while mitigating this downside, make sure to assign static IP addresses to your containers during deployment.
+
+While we’ve covered the basics of this setup, there’s more to discover, especially regarding the two distinct modes of operation: **Bridge Mode** and **802.1Q Mode**.
+
+#### Bridge Mode
+
+In the Bridge Mode, as we did earlier, the Mac VLAN network functions much like a standard bridge network. This mode creates a compelling bridge between the world of containers and your physical network.
+
+* Containers have their IP addresses on your network.
+* Communication between containers within the same Mac VLAN.
+* Containers can access the internet and other resources.
+* Deploying web servers or services is hassle-free since you don’t need to expose specific ports.
+
+#### 802.1Q Mode — VLAN
+
+Mac VLAN networks support an advanced mode known as 802.1Q Mode. Not only can you connect your containers directly to your network, but you can also specify sub-interfaces. These sub-interfaces allow for even more control over network segmentation and organization.
+
+You can create sub-interfaces like eth0.20, eth0.3, and so on. Docker will handle the configuration, providing you with a powerful networking tool.
+
+The command looks like this:
+
+```
+zolo@ubuntu-vm:~$ sudo docker network create -d macvlan \  
+&gt; --subnet 192.168.20.0/24 \  
+&gt; --gateway 192.168.20.1 \  
+&gt; -o parent=ens33.20 \      
+&gt; macvlan20  
+19f7a084145279099e62a5cf66dcdfe6bc661c09fb7eac4d4c2d3d2dd2708a5f
+```
+
+In 802.1Q mode, we have created a link, as you may be familiar with a concept in networking, **router on a stick**.
+
+![](https://cdn-images-1.medium.com/max/800/1*ty9M1nLFigNUNZyIvh90fw.png)
+
+Router on a stick
+
+VLAN are a well-known concept in networking. They create logical segments within a physical network, enabling efficient traffic management and enhanced security. Docker takes this concept to the next level, utilizing VLAN as trunks to carry individual networks over a single link. It’s like implementing a *router on a stick* for Docker containers on a host. If you’re not deeply immersed in networking terminology, this may sound a bit complex, but to networking enthusiasts, it’s a thing of beauty.
+
+Imagine you have VLAN 20 and VLAN 30, each representing a separate network with distinct IP addresses. These VLAN are entirely isolated from each other, providing a secure and organized network environment. Docker accomplishes this by creating a VLAN for each network and forwarding them over the link as trunks, maintaining their separation.
+
+---
+
+That’s the end of this blog, in the next blog we’ll explore Docker networking further. Stay tuned for more Docker networking adventures!

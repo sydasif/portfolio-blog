@@ -1,0 +1,164 @@
+---
+title: "Jenkins for Network Automation — Part 1"
+date: "2025-04-20"
+excerpt: "Jenkins is an open-source automation server widely used for continuous integration and continuous delivery (CI/CD), and it’s becoming increasingly val..."
+description: "Jenkins is an open-source automation server widely used for continuous integration and continuous delivery (CI/CD), and it’s becoming increasingly valuable in network automation. For network engineers..."
+category: "Uncategorized"
+tags: []
+image: ""
+author: "Syed Asif"
+readingTime: "5 min read"
+status: "published"
+lastModified: "2025-04-20"
+---
+
+![](https://cdn-images-1.medium.com/max/800/0*_1BZ0DJBidDhnXwd)
+
+Photo by [Jordan Harrison](https://unsplash.com/@jouwdan?utm_source=medium&utm_medium=referral) on [Unsplash](https://unsplash.com?utm_source=medium&utm_medium=referral)
+
+### Jenkins for Network Automation — Part 1
+
+Jenkins is an open-source automation server widely used for continuous integration and continuous delivery (CI/CD), and it’s becoming increasingly valuable in network automation. For network engineers, Jenkins offers a powerful platform to automate repetitive tasks such as configuration deployment, backup, validation, and testing across network devices. By integrating with tools like Ansible, Python scripts, Git, and Nornir, Jenkins helps streamline network operations, reduce manual errors, and improve consistency and reliability in large-scale network environments. Whether managing a handful of routers or an enterprise-grade network, Jenkins brings structure and automation to the network engineer’s workflow.
+
+### Jenkins Architecture
+
+Jenkins follows a **master-agent (or controller-agent)** architecture, which allows it to scale and manage multiple tasks efficiently across different systems. Here’s a breakdown of its components:
+
+#### 🔧 Jenkins Controller (formerly called Master)
+
+* **The central brain** of Jenkins.
+* Manages:
+* Scheduling of jobs
+* Dispatching builds to agents
+* Monitoring agent states
+* Archiving build results
+* Runs the web interface and can execute jobs directly (though it’s best practice to offload builds to agents in larger setups).
+
+#### 🖥️ Jenkins Agent (formerly called Slave)
+
+* Executes build tasks sent by the controller.
+* Can be set up on any OS/platform that supports Java.
+* Communicates with the controller using **SSH**, or other protocols.
+* Useful for running jobs that require different environments or more computing power.
+
+#### 📦 Job / Pipeline
+
+* The actual tasks you want Jenkins to run — could be a shell script, a Python script for network automation, or an Ansible playbook.
+
+#### Defined using:
+
+* **Freestyle Jobs** (simple GUI-based)
+* **Pipeline Scripts** (using Groovy syntax in `Jenkinsfile`) etc
+
+#### 🔌 Plugins
+
+* Jenkins is highly modular, with thousands of plugins available.
+* For network automation, plugins for **Git**, **Ansible**, **SSH**, **Pipeline**, and **Python** are especially useful.
+
+![](https://cdn-images-1.medium.com/max/800/1*t_mmWG7EuJ6IoJjPXo3fYw.png)
+
+Jenkins Architecture
+
+### 🛠️ Jenkins Installation on Ubuntu 22.04
+
+Here’s how to install **Jenkins on Ubuntu 22.04 Server**:
+
+#### Update the system
+
+```
+sudo apt update && sudo apt upgrade -y
+```
+
+#### Install Java
+
+```
+sudo apt install fontconfig openjdk-21-jre
+```
+
+#### Add Jenkins repository and key
+
+```
+sudo wget -O /usr/share/keyrings/jenkins-keyring.asc \  
+  https://pkg.jenkins.io/debian-stable/jenkins.io-2023.key  
+  
+echo "deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc]" \  
+  https://pkg.jenkins.io/debian-stable binary/ | sudo tee \  
+  /etc/apt/sources.list.d/jenkins.list &gt; /dev/null
+```
+
+#### Install Jenkins
+
+```
+sudo apt-get update  
+sudo apt-get install jenkins -y
+```
+
+#### Start and enable Jenkins (optional)
+
+```
+sudo systemctl start jenkins  
+sudo systemctl enable jenkins
+```
+
+#### Adjust the firewall (if the Jenkins web UI is not accessible)
+
+```
+sudo ufw allow 8080  
+sudo ufw reload
+```
+
+💡 **Note:** Jenkins runs on port `8080` by default. Make sure this port is open in your firewall and not used by another service.
+
+For other operating systems (Red Hat, Fedora, Windows, macOS, etc.), refer to the official Jenkins installation [page](https://www.jenkins.io/doc/book/installing/).
+
+### 🌐 First-Time Access to Jenkins Web UI
+
+Here’s how to access **Jenkins on the web for the first time** after installing it on Ubuntu 22.04 (u22s):
+
+#### ✅ Open Your Browser
+
+Go to: `http://&lt;your_server_ip&gt;:8080` (e.g., `http://192.168.158.130:8080`[)](http://192.168.158.130:8080%29)
+
+#### 🔐 Unlock Jenkins
+
+```
+sudo cat /var/lib/jenkins/secrets/initialAdminPassword
+```
+
+![](https://cdn-images-1.medium.com/max/800/1*1fUmQEJisXRIc0bHnW8Izw.png)
+
+Unlock Jenkins
+
+Copy and paste the password into the web UI.
+
+#### 🧹 Customize Jenkins
+
+You’ll see two options:
+
+* **Install suggested plugins** (recommended)
+* **Select plugins to install**
+
+![](https://cdn-images-1.medium.com/max/800/1*fh8o54VHD_BlwSu3QaScug.png)
+
+Option
+
+Choose **“Install suggested plugins”** to get started quickly.
+
+#### 👤 4. Create First Admin User
+
+Fill in:
+
+* Username
+* Password
+* Full name
+* Email
+
+Then click **“Save and Continue”**.
+
+#### 🔧 5. Instance Configuration
+
+It will ask to confirm the Jenkins URL. Just click **“Save and Finish”** unless you’re using a custom port/domain.
+
+Click **“Start using Jenkins”** — you’ll be taken to the Jenkins dashboard.
+
+With Jenkins up and running, you’re now ready to bring automation into your network tasks. In the next part, we’ll explore how to use Jenkins for network automation workflows and some key concepts.

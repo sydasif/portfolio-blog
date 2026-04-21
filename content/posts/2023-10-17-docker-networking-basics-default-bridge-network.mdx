@@ -1,0 +1,361 @@
+---
+title: "Docker Networking Basics — Default Bridge Network"
+date: "2023-10-17"
+excerpt: "In the world of tech and software, Docker is a cool and powerful tool. It uses something called containers that work well and superfast. But there’s o..."
+description: "In the world of tech and software, Docker is a cool and powerful tool. It uses something called containers that work well and superfast. But there’s one tricky part — that is Docker networking. Normal..."
+category: "Uncategorized"
+tags: []
+image: ""
+author: "Syed Asif"
+readingTime: "5 min read"
+status: "published"
+lastModified: "2023-10-17"
+---
+
+![](https://cdn-images-1.medium.com/max/800/0*bJzpxSyFV11Kgs-x)
+
+Photo by [Rubaitul Azad](https://unsplash.com/@rubaitulazad?utm_source=medium&utm_medium=referral) on [Unsplash](https://unsplash.com?utm_source=medium&utm_medium=referral)
+
+### Docker Networking Basics — Default Bridge Network
+
+#### Part — 01
+
+In the world of tech and software, Docker is a cool and powerful tool. It uses something called containers that work well and superfast. But there’s one tricky part — that is Docker networking. Normally, when you use Docker, it connects things without you even noticing. But, how does it do that? In this series of blogs, these are the things we’re going to explore to understand Docker networking, so grab your coffee and dive in!
+
+Let’s give you the tools and knowledge to change how you think about Docker containers, there are a few things you need to do first.
+
+#### **Docker Host — Linux Virtual Machine**
+
+We’ll use a virtual machine that runs on VMware/VirtualBox. In my case, I’m using Ubuntu Desktop virtual machine, a free and versatile software.
+
+#### **Docker’s Default Bridge Network**
+
+If you haven’t installed Docker on your computer yet, don’t worry. I want to show you something important before we move on. Let’s open the command prompt together because we’re about to do something cool.
+
+Type the command `ip address show`. It will show you two things – your computer's internal connection (loopback) and the main one that connects you to your home network.
+
+```
+zolo@ubuntu-vm:~$ ip addr show  
+1: lo: &lt;LOOPBACK,UP,LOWER_UP&gt; mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000  
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00  
+    inet 127.0.0.1/8 scope host lo  
+       valid_lft forever preferred_lft forever  
+    inet6 ::1/128 scope host  
+       valid_lft forever preferred_lft forever  
+2: ens33: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu 1500 qdisc fq_codel state UP group default qlen 1000  
+    link/ether 00:0c:29:34:c1:8b brd ff:ff:ff:ff:ff:ff  
+    altname enp2s1  
+    inet 192.168.12.128/24 brd 192.168.12.255 scope global dynamic noprefixroute ens33  
+       valid_lft 83458sec preferred_lft 83458sec  
+    inet6 fe80::eb23:3b19:676a:d63c/64 scope link noprefixroute  
+       valid_lft forever preferred_lft forever
+```
+
+If you’re using VirtualBox/VMware, change your virtual machine’s network settings, and switch from NAT to a Bridge adapter.
+
+![VMware network setting](https://cdn-images-1.medium.com/max/800/1*TlUUeHOxxguYvA6BA4hYoQ.png)
+
+Here’s your host, running Ubuntu, with its interface, directly linked to your home network, your router, the internet, and, of course, you.
+
+![Docker network topology](https://cdn-images-1.medium.com/max/800/1*aTVjQmCPgCbSFQJmYSGNeA.png)
+
+Network Topology
+
+At this stage, our Ubuntu VM took IP from my home router DHCP.
+
+```
+zolo@ubuntu-vm:~$ ip addr show  
+1: lo: &lt;LOOPBACK,UP,LOWER_UP&gt; mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000  
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00  
+    inet 127.0.0.1/8 scope host lo  
+       valid_lft forever preferred_lft forever  
+    inet6 ::1/128 scope host  
+       valid_lft forever preferred_lft forever  
+2: ens33: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu 1500 qdisc fq_codel state UP group default qlen 1000  
+    link/ether 00:0c:29:34:c1:8b brd ff:ff:ff:ff:ff:ff  
+    altname enp2s1  
+    inet 192.168.8.101/24 brd 192.168.8.255 scope global dynamic noprefixroute ens33  
+       valid_lft 83458sec preferred_lft 83458sec  
+    inet6 fe80::eb23:3b19:676a:d63c/64 scope link noprefixroute  
+       valid_lft forever preferred_lft forever
+```
+
+Now, let’s get to — installing Docker. We’ll begin with a simple `sudo apt update`to ensure our repositories are up-to-date, following that, a `sudo apt install docker.io -y` is all it takes.
+
+If you return your attention to the terminal and execute `ip addr show`once more, you’ll notice something new, ***Docker zero*** has appeared.
+
+```
+3: docker0: &lt;NO-CARRIER,BROADCAST,MULTICAST,UP&gt; mtu 1500 qdisc noqueue state DOWN group default  
+    link/ether 02:42:6d:74:0e:32 brd ff:ff:ff:ff:ff:ff  
+    inet 172.17.0.1/16 brd 172.17.255.255 scope global docker0  
+       valid_lft forever preferred_lft forever  
+    inet6 fe80::42:6dff:fe74:e32/64 scope link  
+       valid_lft forever preferred_lft forever
+```
+
+***Docker zero*** is our brand-new virtual interface, the default interface and network for Docker — your gateway to Docker networking, pay close attention to its IP address, you’ll need it later.
+
+But wait, there’s more to uncover. Let’s run the command, `docker network ls` and you’ll see a list of our current Docker networks.
+
+```
+zolo@ubuntu-vm:~$ sudo docker network ls  
+NETWORK ID     NAME      DRIVER    SCOPE  
+ede0123352d4   bridge    bridge    local  
+05ce1ba19b67   host      host      local  
+ceebbf717d1b   none      null      local
+```
+
+One of them we’re already familiar with: is **Bridge**. But there are two more, and we’ll explore those in the next blogs. These networks are part of the seven default Docker networks.
+
+Let’s deploy some containers within our default network. We’ll use the`docker run`command with a few switches to make it interactive and detached, along with the `— rm`switch to ensure it cleans up after stopping itself.
+
+First, we’ll name our container, and for this one, we’ll call it Tor, and finally, we’ll specify the image; in this case, I prefer the quick, lightweight, and fast “**busy box**” image.
+
+```
+zolo@ubuntu-vm:~$ sudo docker run -itd --rm --name tor busybox  
+2ac6db9c537f8dbb5d9178ba34dd156778064ba5d097a99adf68daa299480565
+```
+
+Now, let’s add another container. Press the up arrow key, and change the name from **Tor** to **Troy**, you have now, two containers up and running.
+
+```
+zolo@ubuntu-vm:~$ sudo docker run -itd --rm --name troy busybox                
+1948a3792af1804cf8cb4318f866040b8c88fedf4eb928f963207256e1e90761
+```
+
+But we’re not done yet, our final act is, to introduce a **nginx** container, naming it **Stone**.
+
+```
+zolo@ubuntu-vm:~$ sudo docker run -itd --rm --name stone nginx  
+998d4401d287576754ed6395fa954129222e13484909616e67c2dfc4f1a0e579
+```
+
+The stage is set for an exciting and fast-paced journey through the world of Docker networking.
+
+#### Containers Deployed on the Default Bridge Network
+
+We deploy containers without explicitly specifying any networking, allowing Docker to work in its default. Let’s confirm that our containers are up and running by using `docker ps`. As you can see, they are all present and ready to go.
+
+```
+zolo@ubuntu-vm:~$ sudo docker ps  
+CONTAINER ID   IMAGE     COMMAND                  CREATED          STATUS          PORTS     NAMES  
+998d4401d287   nginx     "/docker-entrypoint.…"   2 minutes ago    Up 2 minutes    80/tcp    stone  
+1948a3792af1   busybox   "sh"                     9 minutes ago    Up 9 minutes              troy  
+2ac6db9c537f   busybox   "sh"                     11 minutes ago   Up 11 minutes             tor
+```
+
+When we deployed these containers, we have did not to deal with networking details. Docker does it all automatically, placing containers on the network.
+
+![](https://cdn-images-1.medium.com/max/800/1*wdMuBDGrLGgbXUyowGsokg.png)
+
+Docker Container and Bridge Network
+
+The ***Docker zero,*** bridge network is a virtual switch that connects containers effortlessly. Each container has its connection, letting them communicate within the Docker network. It’s all happening behind the scenes, making Docker containers truly magical.
+
+#### Docker’s Virtual Interfaces and DHCP
+
+As we explore the inner workings of Docker networking, let’s focus on the remarkable feats that Docker accomplishes behind the scenes. When containers are deployed, Docker takes care of creating virtual interfaces and assigning IP addresses within the bridge network.
+
+Each of our containers is given a *veth* interface, connecting them within the Docker bridge network, let's see it in action. When we execute `ip addr show`again, we find three new interfaces.
+
+```
+zolo@ubuntu-vm:~$ ip addr show  
+....  
+  
+17: vethb3fb657@if16: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu 1500 qdisc noqueue master docker0 state UP group default  
+    link/ether 6a:6c:ba:a5:9d:10 brd ff:ff:ff:ff:ff:ff link-netnsid 0  
+    inet6 fe80::686c:baff:fea5:9d10/64 scope link  
+       valid_lft forever preferred_lft forever  
+19: veth45cbb73@if18: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu 1500 qdisc noqueue master docker0 state UP group default  
+    link/ether 96:00:3d:b8:1f:5d brd ff:ff:ff:ff:ff:ff link-netnsid 1  
+    inet6 fe80::9400:3dff:feb8:1f5d/64 scope link  
+       valid_lft forever preferred_lft forever  
+21: veth955f59d@if20: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu 1500 qdisc noqueue master docker0 state UP group default  
+    link/ether b2:60:b1:15:d1:f4 brd ff:ff:ff:ff:ff:ff link-netnsid 2  
+    inet6 fe80::b060:b1ff:fe15:d1f4/64 scope link  
+       valid_lft forever preferred_lft forever
+```
+
+If we use the `bridge link`command, it provides us with the names of these interfaces and confirms their connection to ***Docker zero***.
+
+```
+zolo@ubuntu-vm:~$ bridge link  
+17: vethb3fb657@if16: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu 1500 master docker0 state forwarding priority 32 cost 2   
+19: veth45cbb73@if18: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu 1500 master docker0 state forwarding priority 32 cost 2   
+21: veth955f59d@if20: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu 1500 master docker0 state forwarding priority 32 cost 2
+```
+
+Now, the bridge network also plays the role of a **DHCP** server. This means it dynamically assigns IP addresses to each container. The bridge network, in essence, acts as a networking wizard.
+
+Let’s take a closer look, at a nifty command that you’ll find quite handy when working with Docker — `docker inspet`. In this case, we’re inspecting a network named ***bridge***.
+
+```
+zolo@ubuntu-vm:~$ sudo docker inspect bridge  
+[  
+    {  
+        "Name": "bridge",  
+        "Id": "ede0123352d4c14cd61d871f5f970225f734edbce7f3917d78b3a7361fa6527d",  
+        "Created": "2023-10-16T02:25:02.415049446-04:00",  
+        "Scope": "local",  
+        "Driver": "bridge",  
+        "EnableIPv6": false,      
+        "IPAM": {  
+            "Driver": "default",  
+            "Options": null,      
+            "Config": [  
+                {  
+                    "Subnet": "172.17.0.0/16",  
+                    "Gateway": "172.17.0.1"  
+                }  
+            ]  
+        },  
+        "Internal": false,  
+        "Attachable": false,  
+        "Ingress": false,  
+        "ConfigFrom": {  
+            "Network": ""  
+        },  
+        "ConfigOnly": false,  
+        "Containers": {  
+            "1948a3792af1804cf8cb4318f866040b8c88fedf4eb928f963207256e1e90761": {  
+                "Name": "troy",  
+                "EndpointID": "7f6554c9d9ba0dc7f93b9b68dd8360484c44d45b2f20e6db1b071c2092833bf9",  
+                "MacAddress": "02:42:ac:11:00:03",  
+                "IPv4Address": "172.17.0.3/16",  
+                "IPv6Address": ""  
+            },  
+            "2ac6db9c537f8dbb5d9178ba34dd156778064ba5d097a99adf68daa299480565": {  
+                "Name": "tor",  
+                "EndpointID": "6669c6903592f3f7285da1abb6b5ac8a18838cef02ae361d998ff7fdb79cc6dd",  
+                "MacAddress": "02:42:ac:11:00:02",  
+                "IPv4Address": "172.17.0.2/16",  
+                "IPv6Address": ""  
+            },  
+            "998d4401d287576754ed6395fa954129222e13484909616e67c2dfc4f1a0e579": {  
+                "Name": "stone",  
+                "EndpointID": "359183fbdcce152de448a56116d6dcfe5b7c2e6916649d38d7274e7bc7282e55",  
+                "MacAddress": "02:42:ac:11:00:04",  
+                "IPv4Address": "172.17.0.4/16",  
+                "IPv6Address": ""  
+            }  
+        },  
+        "Options": {  
+            "com.docker.network.bridge.default_bridge": "true",  
+            "com.docker.network.bridge.enable_icc": "true",  
+            "com.docker.network.bridge.enable_ip_masquerade": "true",  
+            "com.docker.network.bridge.host_binding_ipv4": "0.0.0.0",  
+            "com.docker.network.bridge.name": "docker0",  
+            "com.docker.network.driver.mtu": "1500"  
+        },  
+        "Labels": {}  
+    }  
+]
+```
+
+If you scroll up, you’ll notice the familiar names of our containers: **Troy**, **Tor**, and **Stone**. What’s truly exciting is that each of them has its IP address, residing within the same ***Docker zero*** network as we’ve discussed.
+
+#### Inter-Container Communication and Internet Access in Docker
+
+One of the enchanting aspects of Docker networking is how it allows containers to seamlessly communicate with each other and access the internet using the same DNS and network, where containers can ping the internet effortlessly.
+
+The secret to this magic lies in how Docker handles DNS. Docker takes a copy of the *resolv.conf* file from the host (Ubuntu) and place it inside each container. This means that all containers share the same DNS, ensuring consistent and reliable name resolution. But that’s just the beginning.
+
+Thanks to the ***Docker zero*** network, which acts like a virtual switch, containers can communicate with each other effortlessly, let’s see the containers in action. We can use the `docker exec`command, followed by the *-it* flag and the name of the container we want to explore.
+
+For this demonstration, let’s start with **Tor**. Once inside the container’s shell, you can execute `ip addr show`to view its IP address.
+
+```
+zolo@ubuntu-vm:~$ sudo docker exec -it tor sh  
+/ # ip addr show  
+1: lo: &lt;LOOPBACK,UP,LOWER_UP&gt; mtu 65536 qdisc noqueue qlen 1000  
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00  
+    inet 127.0.0.1/8 scope host lo  
+       valid_lft forever preferred_lft forever  
+16: eth0@if17: &lt;BROADCAST,MULTICAST,UP,LOWER_UP,M-DOWN&gt; mtu 1500 qdisc noqueue  
+    link/ether 02:42:ac:11:00:02 brd ff:ff:ff:ff:ff:ff  
+    inet 172.17.0.2/16 brd 172.17.255.255 scope global eth0  
+       valid_lft forever preferred_lft forever  
+  
+/ # ping google.com -c 2  
+PING google.com (142.250.201.142): 56 data bytes  
+64 bytes from 142.250.201.142: seq=0 ttl=106 time=201.091 ms  
+64 bytes from 142.250.201.142: seq=1 ttl=106 time=338.951 ms  
+  
+--- google.com ping statistics ---  
+2 packets transmitted, 2 packets received, 0% packet loss  
+round-trip min/avg/max = 201.091/270.021/338.951 ms  
+  
+/ # ping 172.17.0.3 -c 2  
+PING 172.17.0.3 (172.17.0.3): 56 data bytes  
+64 bytes from 172.17.0.3: seq=0 ttl=64 time=0.930 ms  
+64 bytes from 172.17.0.3: seq=1 ttl=64 time=0.524 ms  
+  
+--- 172.17.0.3 ping statistics ---  
+2 packets transmitted, 2 packets received, 0% packet loss  
+round-trip min/avg/max = 0.524/0.727/0.930 ms  
+  
+/ # ip route  
+default via 172.17.0.1 dev eth0   
+172.17.0.0/16 dev eth0 scope link  src 172.17.0.2  
+/ # exit
+```
+
+Now, here comes the exciting part. As expected, the container effortlessly pings the internet. This means that network connectivity to external websites, like ***google.com***, is established. Inside **Tor**, if you run `ip route`, you’ll see that his default route, or gateway, is set to ***Docker zero***.
+
+![Docker Container, NAT and Bridge Network](https://cdn-images-1.medium.com/max/800/1*bSDtt_njku77X9y7aK_rpQ.png)
+
+Docker Container, NAT, and Bridge Network
+
+You might wonder how ***Docker zero*** manages to connect **Tor** to the internet. This is where the magic of NAT (Network Address Translation) comes into play, which is, of course, a topic for another time.
+
+#### Exposing Docker Container Ports for Website Access
+
+Now, you might expect that you could simply navigate (from the local PC) to the IP address of the host (Ubuntu) on port 80 and access the website hosted by the Docker container. But, alas, it’s not that simple.
+
+As you probably guessed, trying *192.168.8.101:80* won’t get you anywhere, and this is one of the quirks of the bridge network.
+
+By default, Docker doesn’t allow access to services offered by containers like websites. It’s one of those little distinctivenesses, while necessary for security, can sometimes be frustrating.
+
+But there’s a solution, you can manually expose the ports of your Docker containers to access the services they offer. This process is something you might have done before, and if not, let’s explore it together right now.
+
+To make **Stone** accessible to the world, we need to take a simple but crucial step — exposing port *80*. This allows us to access our web server and experience its magic.
+
+First, let’s gracefully exit the container, now, let’s remove the stone. Docker makes it easy with a simple command: `docker stop`. The container will stop gracefully, and Docker will remove it automatically.
+
+```
+zolo@ubuntu-vm:~$ sudo docker stop stone  
+stone
+```
+
+Now — redeploying the stone. But don’t worry, it’s nothing too complicated. Instead of typing the command from scratch, we can make it even quicker. Just press the *up* arrow key, and you’ll see the previous command reappear. Now, right before specifying the container name, add a *-p* followed by *80:80*. This tells Docker to expose port *80* from the container and map it to port *80* on your host.
+
+```
+zolo@ubuntu-vm:~$ sudo docker run -itd -p 80:80 --rm --name stone nginx  
+fe2e9f22c6df77852a0584db5058b367d86c67baf35cc8ab11f2bc62e692a1c0
+```
+
+With this small but impactful change, stone’s web services will be accessible to the world. It’s a simple yet powerful demonstration of how Docker allows you to control the accessibility of your containers, turning them into dynamic and versatile components of your development and hosting environment.
+
+Simply type `docker ps`, and it will display a list of your running containers along with the exposed ports. This is a handy way to keep track of which ports are being exposed by your containers. It’s like your Docker dashboard, helping you maintain control over your containerized services.
+
+```
+zolo@ubuntu-vm:~$ sudo docker ps  
+CONTAINER ID   IMAGE     COMMAND                  CREATED          STATUS          PORTS                               NAMES  
+fe2e9f22c6df   nginx     "/docker-entrypoint.…"   8 seconds ago    Up 6 seconds    0.0.0.0:80-&gt;80/tcp, :::80-&gt;80/tcp   stone  
+1948a3792af1   busybox   "sh"                     42 minutes ago   Up 42 minutes                                       troy  
+2ac6db9c537f   busybox   "sh"                     43 minutes ago   Up 43 minutes                                       tor
+```
+
+Now, refresh your web page to see the changes in action. The web server is up and running, ready to serve its magic to the world.
+
+![](https://cdn-images-1.medium.com/max/800/1*qMQBywthYV79_MjE4zNztA.png)
+
+Welcome Page
+
+While exposing ports might seem like a routine task, it’s a good practice. It introduces a layer of isolation between your containers and your network, enhancing security and control.
+
+With the ability to expose and manage ports, Docker empowers you to fine-tune the accessibility of your containers. It’s all about finding the right balance between convenience and security. 👍
+
+---
+
+That's the end of this blog, in the next blog we’ll explore Docker networking further, so stay tuned for more.

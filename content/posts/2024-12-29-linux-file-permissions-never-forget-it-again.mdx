@@ -1,0 +1,112 @@
+---
+title: "Linux File Permissions — Never Forget it again"
+date: "2024-12-29"
+excerpt: "File permissions are a fundamental concept in Linux that helps maintain security and control over who can access, modify, or execute files. Understand..."
+description: "File permissions are a fundamental concept in Linux that helps maintain security and control over who can access, modify, or execute files. Understanding how to manage permissions is essential skill f..."
+category: "Uncategorized"
+tags: []
+image: ""
+author: "Syed Asif"
+readingTime: "5 min read"
+status: "published"
+lastModified: "2024-12-29"
+---
+
+![](https://cdn-images-1.medium.com/max/800/0*CfXaWX5OkiUDKU8b)
+
+Photo by [Gabriel Heinzer](https://unsplash.com/@6heinz3r?utm_source=medium&utm_medium=referral) on [Unsplash](https://unsplash.com?utm_source=medium&utm_medium=referral)
+
+### Linux File Permissions — Never Forget it again
+
+File permissions are a fundamental concept in Linux that helps maintain security and control over who can access, modify, or execute files. Understanding how to manage permissions is essential skill for anyone working with Linux systems. In this blog, we’ll break down the basics of Linux file permissions, explain their numeric representation, and share practical tips for beginners.
+
+### The Basics of Linux File Permissions
+
+Linux permissions are divided into three categories:
+
+1. **Owner (u)**: The user who owns the file.
+2. **Group (g)**: A group of users that share access.
+3. **Others (o)**: Everyone else on the system.
+
+Each category can have three types of permissions:
+
+* **Read (r)**: Allows viewing the file’s contents.
+* **Write (w)**: Allows modifying the file’s contents.
+* **Execute (x)**: Allows running the file as a program.
+
+Permissions are displayed using the `ls -l` command. For example:
+
+```
+-rwxr-xr--  1 user group 1234 Dec 28 12:34 filename
+```
+
+Here’s what it means:
+
+* The first character (`-`) indicates the type of file (`-` for a regular file, `d` for a directory).
+* The next nine characters (`rwxr-xr--`) represent the permissions for the owner, group, and others respectively.
+
+### Numeric Representation of Permissions
+
+Linux permissions can also be represented numerically, which is useful for quickly setting permissions with the `chmod` command. Each permission has a numeric value:
+
+* **Read (r)**: 4
+* **Write (w)**: 2
+* **Execute (x)**: 1
+
+To set permissions, you sum these values for each category:
+
+* **Owner** with read, write, and execute permissions: 4+2+1=7
+* **Group** with read and execute permissions: 4+1=5
+* **Others** with read-only permissions: 4
+
+Example:
+
+```
+chmod 755 filename
+```
+
+This sets the permissions as:
+
+* **Owner**: `rwx` (7)
+* **Group**: `r-x` (5)
+* **Others**: `r-x` (5)
+
+### Handy Mnemonic for Numeric Values
+
+Here’s a simple way to remember the numeric values:
+
+* **r** (4): Comes first alphabetically.
+* **w** (2): Comes second.
+* **x** (1): Comes last.
+
+This makes it easier to recall the numeric values when using `chmod`.
+
+### Common Permission Commands
+
+Here are some practical examples:
+
+**Set Full Access for the Owner**:
+
+```
+chmod 700 filename
+```
+
+This gives the owner all permissions (`rwx`), while the group and others have none.
+
+**Allow Read and Execute for Everyone**:
+
+```
+chmod 755 filename
+```
+
+The owner gets full access, while the group and others can only read and execute.
+
+**Restrict Write Access to the Owner**:
+
+```
+chmod 444 filename
+```
+
+Everyone can read, but no one can write or execute.
+
+Understanding Linux file permissions is essential skill for managing access and ensuring system security. By mastering both symbolic (`rwx`) and numeric representations, you can confidently manage permissions for files and directories.
