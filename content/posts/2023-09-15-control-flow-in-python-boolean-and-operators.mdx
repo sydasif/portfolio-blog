@@ -1,0 +1,294 @@
+---
+title: "Control Flow in Python: Boolean and Operators"
+date: "2023-09-15"
+excerpt: "Control flow in Python relies heavily on Boolean values and operators. You can use various operators, such as comparison operators and logical operato..."
+description: "Control flow in Python relies heavily on Boolean values and operators. You can use various operators, such as comparison operators and logical operators, to manage Boolean values. These tools allow yo..."
+category: "Uncategorized"
+tags: []
+image: ""
+author: "Syed Asif"
+readingTime: "5 min read"
+status: "published"
+lastModified: "2023-09-15"
+---
+
+---
+
+![](https://cdn-images-1.medium.com/max/800/1*PLN7aos6Xu-UqNM-1oktiA.jpeg)
+
+### Control Flow in Python: Boolean and Operators
+
+Control flow in Python relies heavily on Boolean values and operators. You can use various operators, such as comparison operators and logical operators, to manage Boolean values. These tools allow you to create conditional statements and loops, enabling you to control the execution path of your programs. Understanding how to work with Boolean and operators is fundamental to understand Python’s control flow structures.
+
+In the [previous](https://medium.com/python-in-plain-english/python-control-flow-explained-decision-making-and-loops-2203397c68c2) blog, we explore conditional statements and loops. We will now explore the basics of Boolean data types and Python Operators within conditional statements, enabling your programs to make decisions and execute different computations or actions based on whether specific conditions evaluate *True* or *False*.
+
+### Boolean Values
+
+Boolean values are the fundamental data type in Python. Their significance comes to the forefront when we combine boolean with operator, where they determine equality, inequality, and ordering, resulting in either *True* or *False*. The importance of boolean values are foundational skills for any programmer, as they are essential for shaping the logic and functionality of a script.
+
+Boolean represent one of two built-in data types:
+
+* *True*, and
+* *False*
+
+> These are case-sensitive, so make sure to use the proper capitalization.
+
+The *bool()* built-in function creates a Boolean value and allows the program to evaluate any logic or expression, and give a Boolean value in return. This is because in Boolean logic, all values are reduced to either *True* or *False*.
+
+```
+[$] <> bool(1 + 1 == 2)
+```
+
+```
+True
+```
+
+Let’s see another comparison expression that checks if the sum of *2* and *2* is equal to *5*. Since 2 + 2 is equal to 4, this expression evaluates to *False*.
+
+```
+[$] <> bool(2 + 2 == 5)
+```
+
+```
+False
+```
+
+Boolean expressions are expressions in Python programming language that produce a Boolean value when they’re evaluated, the returned value can either be *True* or *False*.
+
+#### Truthy and Falsy Values
+
+Truthy values are those that evaluate to *True* in a boolean context, while falsy values evaluate to *False*. When working with conditional statements and loops, it’s important to understand truthy and falsy values because they affect how Python evaluates expressions and make decision in your code.
+
+**Python String**
+
+Strings are considered to be *True*, when they are **non-empty**, and *False* when they are **empty**. This means that a string containing at least one character is treated as *True*, and an empty string (`""`) is treated as *False* when used in conditions or boolean expressions.
+
+```
+ >>> non_empty_string = "Hello, World!"  
+ >>> print(bool(non_empty_string))
+```
+
+```
+True
+```
+
+As you see, that **non-empty** string variable is *True*, in the next example below, the **empty-string** variable contains an empty string, so it evaluates to *False.*
+
+```
+>>> empty_string = ""  
+>>> bool(empty_string)
+```
+
+```
+False
+```
+
+**Python Numbers**
+
+Numbers are considered to be *True* when they are **non-zero** and *False* when they are **zero**. This means that any numeric value other than zero *(0)* is *True*, while the integer *0* and floating-point numbers *0.0* are treated as *False*, when used in conditions or Boolean expressions.
+
+```
+[$] non_zero_number = 42  
+$ zero_integer = 0  
+$ zero_float = 0.0  
+  
+$ print(bool(non_zero_number))  # true  
+$ print(bool(zero_integer))  # false  
+$ print(bool(zero_float))  # false
+```
+
+```
+True  
+False  
+False
+```
+
+* First example, with *non\_zero\_number* variable contains a whole number, so it evaluates to *True*.
+* In the second example, the *zero\_integer* variable contains a *0* value, so it evaluates to *False.*
+* The *zero\_float* variable contains the floating-point number *0.0,* so it is also evaluates to *False*
+
+Python considered *lists*, *tuples*, *sets*, and *dictionaries* to be *True*, when they’re **not empty**, and to be *False* when they are **empty.**
+
+Here’s a breakdown for each of these data types:
+
+**Lists**
+
+* A non-empty list is considered `True`.
+* An empty list (`[]`) is considered `False`.
+
+**Tuples**
+
+* A non-empty tuple is considered `True`.
+* An empty tuple (`()`) is considered `False`.
+
+**Sets**
+
+* A non-empty set is considered `True`.
+* An empty set (`set()`) is considered `False`.
+
+**Dictionaries**
+
+* A non-empty dictionary is considered `True`.
+* An empty dictionary (`{}` or `dict()`) is considered `False`.
+
+Individual values in Python have possessed inherent truth values, meaning they can independently evaluate to either *True* or *False* based on the language’s predefined rules. This feature makes Python different from other languages because values don’t need to be part of a bigger expression to be true, and can be directly used in conditions, making Python’s boolean evaluation system both elegant and efficient.
+
+Let’s say you have a variable `device_status` that can be either *online* or *offline*. You are explicitly checking if `device_status` is equal to the string *online* using the comparison operator, it prints *The network device is online*.
+
+```
+device_status = "online"  
+  
+if device_status == "online":  
+    print("The network device is online.")  
+else:  
+    print("The network device is offline.")
+```
+
+In the second snippet, You are using the truthiness of `device_status` itself as a condition. Since `device_status` contains a non-empty string *online*, it is considered truthy, and the code inside the `if` block is executed, which also prints *The network device is online*.
+
+```
+device_status = "online"  
+  
+if device_status:  
+    print("The network device is online.")  
+else:  
+    print("The network device is offline.")
+```
+
+See the difference, if you know the basics of boolean data type, you can produce a same result with less code. As both approaches are correct, and you can use either of them depending on your preference or the specific requirements of your code.
+
+---
+
+### Python Operators
+
+Python provides a variety of operators that allow you to perform operations on values and variables. Some of the most common Python operators:
+
+* **Arithmetic Operators**
+* **Comparison Operators**
+* **Logical Operators**
+* **Assignment Operators**
+* **Identity Operators**
+* **Membership Operators**
+
+These operators are fundamental to Python programming and are used to perform a wide range of operations, from basic arithmetic calculations to complex logical statements.
+
+#### **Comparison Operators**
+
+Comparison operators are fundamental tools in Python programming, enabling the evaluation of two values and condensing them into a single boolean result. These operators include:
+
+* Equals: ==
+* Not Equals: !=
+* Less than: <
+* Greater than: >
+* Greater than or equal to: >=
+* Less than or equal to: >=
+
+Here’s a simple example of how comparison operators can be used:
+
+```
+port_number = 22  
+  
+# Check if the port number is within a valid range  
+if port_number <= 1023:  
+    print(f"The port number {port_number} is valid.")  
+else:  
+    print(f"The port number {port_number} is not valid.")
+```
+
+```
+The port number 22 is valid.
+```
+
+These comparisons help in making decisions and performing actions based on conditions in a network automation script.
+
+#### Boolean Operator
+
+Boolean operators, also known as logical operators, and are used to perform logical operations on boolean values or expressions. These operators help control the flow of your program by evaluating conditions and determining whether they are *True* or *False*. There are three primary boolean operators:
+
+* AND
+* OR
+* NOT
+
+**AND Operation**: The *and* operator is a logical operator in Python, that is used to perform a logical *AND* operation between two or more boolean expressions / values. It returns `True` if all the operands are `True`, and `False` otherwise.
+
+```
+# Sample network device information  
+device_status = "online"  
+device_ip = "192.168.1.1"  
+  
+# Check if the device is online and its IP is in a specific subnet  
+if device_status == "online" and device_ip.startswith("192.168.1"):  
+    print("The network device is online and in the correct subnet.")  
+else:  
+    print("The network device is either offline or not in the correct subnet")
+```
+
+```
+The network device is online and in the correct subnet.
+```
+
+Here’s a breakdown of your code:
+
+* You have defined the `device_status` as *online* and `device_ip` as *192.168.1.1* as sample network device information.
+* The `if` statement uses the *and* operator to combine two conditions.
+* If both conditions are met (i.e., the device is *online* and in the specified *subnet*), it prints *The network device is online and in the correct subnet.*
+* If either condition is not met, it prints, *The network device is either offline or not in the correct subnet*.
+
+This code effectively demonstrates how you can use the *and* operator to perform multiple checks in network automation scripts to ensure that all necessary conditions are satisfied before proceeding with specific tasks.
+
+**OR Operation**: The *or* operator is a logical operator in Python, used to perform a logical *OR* operation between two or more boolean expressions / values. It returns `True` if at least one of the operands is `True`, and `False` if all operands are `False`.
+
+```
+# Sample network device information  
+device_vendor = "cisco"  
+device_ip = "192.168.1.1"  
+  
+if device_vendor == "juniper" or device_ip == "192.168.1.10":  
+    print("The network device is cisco device.")  
+else:  
+    print("The network device is not a cisco device.")
+```
+
+```
+The network device is not a cisco device.
+```
+
+Since neither condition is met, it falls into the `else` block and prints *The network device is not a Cisco device*. This code correctly identifies that the network device is not a Cisco device based on the conditions specified.
+
+**NOT Operation**: The *not* operator is a single logical operator in Python that is used to negate or reverse the value of a boolean expression / value. It transforms `True` into `False` and `False` into `True`, basically it flips the boolean value.
+
+```
+device_vendor = "cisco"  
+  
+if not device_vendor == "juniper":  
+    print("The network device is not a Juniper device.")  
+else:  
+    print("The network device is a Juniper device.")
+```
+
+```
+The network device is not a Juniper device.
+```
+
+In this code:
+
+* `device_vendor` is set to *cisco* as sample network device information.
+* The `if` statement uses the `not` operator to negate the condition `device_vendor == "juniper"`.
+* Since `device_vendor` is *cisco* (not juniper), the condition evaluates to `True`.
+
+Therefore, it prints, *The network device is not a Juniper device.*
+
+These boolean operators are fundamental in constructing conditional statements, loops, and decision-making logic in Python programs. They allow you to create neat logic by combining and manipulating boolean values and expressions to control the program’s behavior based on different conditions.
+
+You can find more information about how logical operations work in computing on the [website](https://www.computerhope.com/jargon/l/logioper.htm).
+
+If you like the blog, please share it with others, thank you.
+
+### In Plain English
+
+*Thank you for being a part of our community! Before you go:*
+
+* *Be sure to* ***clap*** *and* ***follow*** *the writer! 👏*
+* *You can find even more content at* [***PlainEnglish.io***](https://plainenglish.io/) ***🚀***
+* *Sign up for our* [***free weekly newsletter***](http://newsletter.plainenglish.io/)*. 🗞️*
+* *Follow us on* [***Twitter***](https://twitter.com/inPlainEngHQ)***(X***), [***LinkedIn***](https://www.linkedin.com/company/inplainenglish/), [***YouTube***](https://www.youtube.com/channel/UCtipWUghju290NWcn8jhyAw), and [***Discord***](https://discord.gg/XxRS92b2)***.***

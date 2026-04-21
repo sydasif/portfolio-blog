@@ -1,0 +1,57 @@
+---
+title: "Docker Networking Basics — Host Network"
+date: "2023-10-17"
+excerpt: "As we journey further into the realm of Docker networking, we encounter the host network, one of the interesting choices at your disposal. The best wa..."
+description: "As we journey further into the realm of Docker networking, we encounter the host network, one of the interesting choices at your disposal. The best way to understand it is to witness its functionality..."
+category: "Uncategorized"
+tags: []
+image: ""
+author: "Syed Asif"
+readingTime: "5 min read"
+status: "published"
+lastModified: "2023-10-17"
+---
+
+---
+
+![](https://cdn-images-1.medium.com/max/800/0*sdoEREzlAN24sxtQ)
+
+Photo by [Rubaitul Azad](https://unsplash.com/@rubaitulazad?utm_source=medium&utm_medium=referral) on [Unsplash](https://unsplash.com?utm_source=medium&utm_medium=referral)
+
+### Docker Networking Basics — Host Network
+
+#### Part — 03
+
+As we journey further into the realm of Docker networking, we encounter the ***host*** network, one of the interesting choices at your disposal. The best way to understand it is to witness its functionality in action.
+
+Let’s consider our trusty web server, **Stone**, which operates on port *80*. To explore the ***host*** network, we’ll first remove **Stone** and then redeploy it within this unique network configuration. Here’s how we do it:
+
+First, we stop **Stone** using the command `Docker stop stone`. Next, we redeploy **Stone**, but there are two key differences this time around:
+
+* We define the network name as *host*.
+* We do not expose any ports, **stone** remains configured with the same name and nginx as the container image.
+
+```
+zolo@ubuntu-vm:~$ sudo docker run -itd --rm --network host --name stone nginx  
+dd1187096e0677ea8a3cab60c0510e40f3f5e59bedb85a1aa335bc0e90119572
+```
+
+Upon deployment, you’ll notice something rather unusual. **Stone** will appear right beside its **Papa**, the host itself. That’s because when you deploy a container in the host network, it integrates directly with the host system. It doesn’t have its network, it essentially shares the host’s IP address and ports.
+
+![](https://cdn-images-1.medium.com/max/800/1*QCX15py_GBK_Mf_9H45ZFw.png)
+
+Docker Host Network
+
+Now, you might be wondering, what’s the cool part about this? Well, in the host network, there’s no need to expose ports. This means that if you access the IP address of your host, say, `192.168.8.101`, **Stone**'**s** default port (port *80*) is available to you. It's a bit like **Stone** becomes a seamless extension of your host.
+
+![nginx web page](https://cdn-images-1.medium.com/max/800/1*qMQBywthYV79_MjE4zNztA.png)
+
+nginx web page
+
+This network configuration is particularly handy in cases where you want to eliminate port mapping complexities and have containers operate in full integration mode with the host.
+
+As you explore Docker’s versatile networking options, keep in mind that each network type offers unique benefits and is suited to different use cases.
+
+---
+
+That’s the end of this blog, in the next blog we’ll explore Docker networking further. Stay tuned for more Docker networking adventures!

@@ -1,0 +1,413 @@
+---
+title: "VS Code Setup for Network Engineers"
+date: "2024-12-18"
+excerpt: "Visual Studio Code (VS Code) is one of the most powerful and customizable code editors available. Having the right settings can significantly boost pr..."
+description: "Visual Studio Code (VS Code) is one of the most powerful and customizable code editors available. Having the right settings can significantly boost productivity and make coding more enjoyable, especia..."
+category: "Uncategorized"
+tags: []
+image: ""
+author: "Syed Asif"
+readingTime: "5 min read"
+status: "published"
+lastModified: "2024-12-18"
+---
+
+---
+
+![](https://cdn-images-1.medium.com/max/800/0*U87uO9ivkaV6sFWh)
+
+Photo by [Rubaitul Azad](https://unsplash.com/@rubaitulazad?utm_source=medium&utm_medium=referral) on [Unsplash](https://unsplash.com?utm_source=medium&utm_medium=referral)
+
+### VS Code Setup for Network Engineers
+
+Visual Studio Code (VS Code) is one of the most powerful and customizable code editors available. Having the right settings can significantly boost productivity and make coding more enjoyable, especially for network automation tasks and Python development. In this guide, I’ll walk you through my personal VS Code settings, organized into clear categories. You can adapt these settings to fit your workflow and coding style.
+
+#### Table of Contents
+
+1. *Workbench Settings*
+2. *Editor Settings*
+3. *Python-Specific Settings*
+4. *Terminal Settings*
+5. *Git and Source Control Settings*
+6. *Debug Settings*
+7. *Explorer Settings*
+8. *Tree Indentation and Indent Guides*
+9. *Indent Rainbow Settings*
+10. *Useful Short Keys*
+11. *Plugins Used*
+
+#### Workbench Settings
+
+The workbench is the main interface of VS Code, including elements like sidebars, the activity bar, and the settings editor.
+
+```
+    // ----------- Workbench Settings -----------  
+    "workbench.startupEditor": "none", // Disable the welcome page on startup  
+    "workbench.sideBar.location": "right", // Place the sidebar on the right side  
+    "workbench.iconTheme": "vscode-great-icons", // Set the workbench icon theme  
+    "workbench.settings.editor": "json", // Use JSON format for settings editor  
+    "workbench.colorTheme": "One Monokai", // Set the color theme for the workbench  
+    "workbench.tree.indent": 14, // Set tree view indentation  
+    "workbench.tree.renderIndentGuides": "onHover", // Render indent guides on hover  
+    "workbench.editor.editorActionsLocation": "titleBar",
+```
+
+* **Startup Editor**: Disables the welcome page when opening VS Code.
+* **Sidebar Location**: Moves the sidebar to the right for a cleaner workspace.
+* **Icon and Color Theme**: Uses “VSCode Great Icons” and the “One Monokai” color theme for a sleek look.
+* **Settings Format**: Opens settings in JSON format for quick editing.
+* **Plugin Requirements**: Requires **One Monokai** and **vscode-great-icons** plugin.
+
+![](https://cdn-images-1.medium.com/max/800/1*9uTKWQXBPGOazIYCvpsTYA.png)
+
+Default and Custom setting both are open
+
+#### Editor Settings
+
+These settings define how the code editor behaves and looks.
+
+```
+    // ----------- Editor Settings -----------  
+    "editor.fontFamily": "JetBrains Mono Light, Fira Code", // Set the font family for the editor  
+    "editor.fontLigatures": true, // Enable font ligatures for the editor  
+    "editor.fontSize": 16, // Set the font size for the editor (in pixels)  
+    "editor.minimap.enabled": false, // Disable the minimap  
+    "editor.unicodeHighlight.nonBasicASCII": false, // Disable breadcrumbs in the editor  
+  
+    // ----------- Rulers -----------  
+    "editor.rulers": [  
+        {  
+            "column": 110,  
+            "color": "#684e4e"  
+        }  
+    ],
+```
+
+* **Font and Ligatures**: Uses **“JetBrains Mono Light”** and **“Fira Code”** with ligatures for better readability.
+* **Rulers**: Adds vertical rulers at 88 and 120 characters to maintain code width limits.
+* **Minimap**: Disables the minimap for a cleaner editor view.
+* **JetBrains Font**: Download [here](https://www.jetbrains.com/lp/mono/).
+
+![](https://cdn-images-1.medium.com/max/800/1*k_MC_wrsxHWoty9dEXT0JQ.png)
+
+Rulers Added
+
+#### Python-Specific Settings
+
+These settings ensure efficient formatting and code actions for Python, which is essential for network automation tasks.
+
+```
+    // ----------- Python-Specific Settings -----------  
+    "[python]": {  
+        "editor.formatOnSave": true, // Automatically format Python files on save  
+        "editor.defaultFormatter": "ms-python.black-formatter", // Use Black as the default formatter  
+        "editor.codeActionsOnSave": {  
+            "source.fixAll": "explicit" // Apply all explicit fixes on save  
+        },  
+        "editor.rulers": [  
+            {  
+                "column": 72,  
+                "color": "#684e4e"  
+            },  
+            {  
+                "column": 79,  
+                "color": "#4b5c59"  
+            }  
+        ]  
+    },
+```
+
+* **Format on Save**: Automatically formats Python files when you save them.
+* **Default Formatter**: Uses the **Black** formatter for consistent code style.
+* **Code Actions**: Fixes any issues when saving the file.
+* **Required Plugins**: **Ruff** Python linter and **Black** formatter.
+
+#### Terminal Settings
+
+Customizing the integrated terminal for better efficiency, is useful for running Ansible playbooks or Python scripts.
+
+```
+"terminal.integrated.cursorBlinking": true,  
+"terminal.integrated.cursorStyle": "underline",  
+"terminal.integrated.fontFamily": "FiraCode Nerd Font Mono",  
+"terminal.integrated.fontSize": 14,  
+"terminal.integrated.defaultProfile.linux": "zsh",  
+"terminal.integrated.defaultProfile.windows": "PowerShell"
+```
+
+* **Cursor Settings**: Blinking underline cursor for easy tracking.
+* **Font**: Uses **“FiraCode Nerd Font Mono”** for terminal font.
+* **Shell Profiles**: Sets `zsh` for Linux and `PowerShell` for Windows as the default terminal.
+
+#### Git and Source Control Settings
+
+Optimizing Git workflows within VS Code for network automation projects.
+
+```
+"scm.defaultViewMode": "tree",  
+"git.confirmSync": false,  
+"git.autofetch": true
+```
+
+* **View Mode**: Displays Git repositories in a tree view.
+* **Sync Confirmation**: Disables sync confirmation for faster updates.
+* **Auto Fetch**: Automatically fetches changes from remote repositories.
+
+#### Debug Settings
+
+```
+"debug.terminal.clearBeforeReusing": true
+```
+
+* **Clear Terminal**: Clears the terminal before each new debug session for clarity.
+
+#### Explorer Settings
+
+```
+"explorer.confirmDragAndDrop": false
+```
+
+* **Drag-and-Drop**: Disables confirmation dialogs when dragging and dropping files.
+
+#### Tree Indentation and Indent Guides
+
+Customizing the file explorer’s look and feel for better visualization.
+
+```
+"workbench.tree.indent": 10,  
+"workbench.tree.renderIndentGuides": "onHover",  
+"workbench.colorCustomizations": {  
+    "tree.indentGuidesStroke": "#e6e351",  
+    "editorWhitespace.foreground": "#a57b73",  
+    "editorRuler.foreground": "#6a6d64"  
+}
+```
+
+* **Indent Guides**: Renders guides on hover with a custom color.
+
+![](https://cdn-images-1.medium.com/max/800/1*Ct3TKV288OL9jZEaF7tjtw.png)
+
+Add Indent line
+
+#### Indent Rainbow Settings
+
+Colorful indentation guides to enhance code readability.
+
+```
+"indentRainbow.indicatorStyle": "light",  
+"indentRainbow.lightIndicatorStyleLineWidth": 1,  
+"indentRainbow.colors": [  
+    "rgba(255,255,64,0.3)",  
+    "rgba(127,255,127,0.3)",  
+    "rgba(255,127,255,0.3)",  
+    "rgba(79,236,236,0.3)"  
+]
+```
+
+* **Indicator Style**: Uses a 1-pixel-wide line for indent guides.
+* **Colors**: Soft, distinct colors for better visualization of indentation levels.
+* **Required Plugin**: indent-rainbow.
+
+![](https://cdn-images-1.medium.com/max/800/1*jYHVtQBCqwily3EmM_umOg.png)
+
+Indentation Level
+
+---
+
+### Plugins I Used
+
+* **Ansible**
+* **autoDocstring** — Python Docstring Generator
+* **Better Jinja**
+* **Black Formatter**
+* **Cisco IOS Syntax**
+* **Code Spell Checker**
+* **indent-rainbow**
+* **One Monokai Theme**
+* **Postman**
+* **Python**
+* **Pylance**
+* **Remote SSH**
+* **Ruff**
+* **Tabnine** — AI Chat & Autocompletion
+* **VSCode Great Icons**
+* **WSL**
+* **YAML**
+
+---
+
+#### ***The complete setting file:***
+
+```
+{  
+    // ----------- Workbench Settings -----------  
+    "workbench.startupEditor": "none", // Disable the welcome page on startup  
+    "workbench.sideBar.location": "right", // Place the sidebar on the right side  
+    "workbench.iconTheme": "vscode-great-icons", // Set the workbench icon theme  
+    "workbench.settings.editor": "json", // Use JSON format for settings editor  
+    "workbench.colorTheme": "One Monokai", // Set the color theme for the workbench  
+    "workbench.tree.indent": 14, // Set tree view indentation  
+    "workbench.tree.renderIndentGuides": "onHover", // Render indent guides on hover  
+    "workbench.editor.editorActionsLocation": "titleBar",  
+  
+    // ----------- Editor Settings -----------  
+    "editor.fontFamily": "JetBrains Mono Light, Fira Code", // Set the font family for the editor  
+    "editor.fontLigatures": true, // Enable font ligatures for the editor  
+    "editor.fontSize": 16, // Set the font size for the editor (in pixels)  
+    "editor.minimap.enabled": false, // Disable the minimap  
+    "editor.unicodeHighlight.nonBasicASCII": false, // Disable breadcrumbs in the editor  
+  
+    // ----------- Rulers -----------  
+    "editor.rulers": [  
+        {  
+            "column": 110,  
+            "color": "#684e4e"  
+        }  
+    ],  
+  
+    // ----------- Comment Styling -----------  
+    "editor.tokenColorCustomizations": {  
+        "textMateRules": [  
+            {  
+                "scope": "comment",  
+                "settings": {  
+                    "foreground": "#888a87",  
+                    "fontStyle": "italic"  
+                }  
+            }  
+        ]  
+    },  
+  
+    // ----------- Python-Specific Settings -----------  
+    "[python]": {  
+        "editor.formatOnSave": true, // Automatically format Python files on save  
+        "editor.defaultFormatter": "ms-python.black-formatter", // Use Black as the default formatter  
+        "editor.codeActionsOnSave": {  
+            "source.fixAll": "explicit" // Apply all explicit fixes on save  
+        },  
+        "editor.rulers": [  
+            {  
+                "column": 72,  
+                "color": "#684e4e"  
+            },  
+            {  
+                "column": 79,  
+                "color": "#4b5c59"  
+            }  
+        ]  
+    },  
+  
+    // ----------- Terminal Settings -----------  
+    "terminal.integrated.cursorBlinking": true, // Enable cursor blinking in the terminal  
+    "terminal.integrated.cursorStyle": "underline", // Set the cursor style to underline in the terminal  
+    "terminal.integrated.fontFamily": "FiraCode Nerd Font Mono", // Set the font family for the terminal  
+    "terminal.integrated.fontSize": 14, // Set the font size for the terminal (in pixels)  
+    "terminal.integrated.defaultProfile.linux": "zsh", // Default terminal profile for Linux  
+    "terminal.integrated.defaultProfile.windows": "PowerShell", // Default terminal profile for Windows  
+  
+    // ----------- Git and SCM Settings -----------  
+    "scm.defaultViewMode": "tree", // Use a tree view for source control management  
+    "git.confirmSync": false, // Disable confirmation dialog when syncing Git  
+    "git.autofetch": true, // Automatically fetch updates from remote repositories  
+  
+    // ----------- Debug Settings -----------  
+    "debug.terminal.clearBeforeReusing": true, // Clear the debug terminal before reusing it  
+  
+    // ----------- Explorer Settings -----------  
+    "explorer.confirmDragAndDrop": false, // Disable the drag-and-drop confirmation dialog  
+  
+    // ----------- Indent Rainbow Settings -----------  
+    "indentRainbow.indicatorStyle": "light", // Use light mode for indent guides  
+    "indentRainbow.lightIndicatorStyleLineWidth": 1, // 1-pixel wide indent guides  
+    "indentRainbow.errorColor": "rgba(102, 44, 44, 0.6)",  
+    "indentRainbow.colors": [  
+        "rgba(255,255,64,0.3)",  
+        "rgba(91, 214, 91, 0.3)",  
+        "rgba(214, 78, 214, 0.3)",  
+        "rgba(60, 216, 216, 0.3)"  
+    ],  
+  
+    // ----------- Window Settings -----------  
+    "window.density.editorTabHeight": "compact",  
+    "window.commandCenter": false,  
+    "window.menuBarVisibility": "compact",  
+    "breadcrumbs.enabled": false,  
+  
+    // ----------- Color Customizations -----------  
+    "workbench.colorCustomizations": {  
+        "tree.indentGuidesStroke": "#e2df1e",   
+        "editorWhitespace.foreground": "#cf4e4e",  
+        "editor.background": "#1f1f25",  
+        "sideBar.background": "#1e1f2c",  
+        "activityBar.background": "#35374b",  
+        "statusBar.background": "#2e2e33",  
+        "titleBar.activeBackground": "#35374b",  
+        "terminal.background": "#151620",  
+        "editorLineNumber.activeForeground": "#ad7d46",  
+        "editorLineNumber.foreground": "#486661",  
+        "tab.activeBackground": "#4d4d64",  
+        "tab.activeBorderTop": "#ad7d46",  
+        "tab.inactiveBackground": "#212124",  
+        "tab.border": "#7881df",  
+        "editorGroupHeader.tabsBackground": "#272835",  
+        "editorGroupHeader.border": "#9397cc"  
+  
+    },  
+  
+}
+```
+
+---
+
+### VSCode Short Keys:
+
+#### File Operations
+
+* **Find and Open File in Project**: `Ctrl + P`
+* **Open Folder or File**: `Ctrl + O`
+* **Open Recent Folder**: `Ctrl + R`
+* **Open Recent Closed File**: `Ctrl + E`
+* **Switch Open Tabs**: `Ctrl + Tab`
+* **Close Tabs**: `Ctrl + W`
+
+#### Explorer Navigation
+
+* **Open/Close File Explorer**: `Ctrl + B`
+* **Focus File Explorer**: `Ctrl + Shift + E`
+
+#### Editor Navigation
+
+* **Go to Line Number**: `Ctrl + G`
+* **Go to Start of Line**: `Home`
+* **Go to End of Line**: `End`
+* **Go to Start of File**: `Ctrl + Home`
+* **Go to End of File**: `Ctrl + End`
+* **Focus Editor**: `Ctrl + 1`
+
+#### Text Editing
+
+* **Multiple Selection**: `Alt + Click`
+* **Next Match and Select**: `Ctrl + D`
+* **Duplicate Line**: `Alt + Shift + Down`
+* **Move Line**: `Alt + Down`
+* **Delete Current Line**: `Ctrl + Shift + K`
+* **Add Tab**: `Ctrl + ']'`
+* **Remove Tab**: `Ctrl + '['`
+* **Comment Line**: `Ctrl + /`
+* **Format Code**: `Ctrl + Alt + L`
+
+#### Terminal
+
+* **Select Terminal**: `Ctrl + Back-tic`
+
+#### Git
+
+* **Open Git**: `Ctrl + Shift + G`
+
+#### GitHub copilot
+
+* **Open GitHub Copilot**: `Ctrl + Alt + B`
+
+---
+
+These settings are designed to streamline my coding workflow, whether for Python development or automating network tasks with Ansible. Customizing VS Code can enhance your productivity and make coding an efficient and enjoyable experience!

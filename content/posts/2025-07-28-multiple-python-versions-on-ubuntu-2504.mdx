@@ -1,0 +1,171 @@
+---
+title: "Multiple Python Versions on Ubuntu 25.04"
+date: "2025-07-28"
+excerpt: "Managing Python versions can be tricky — especially when newer OS releases like Ubuntu 25.04 ship with bleeding-edge versions like Python 3.13.3...."
+description: "Managing Python versions can be tricky — especially when newer OS releases like Ubuntu 25.04 ship with bleeding-edge versions like Python 3.13.3...."
+category: "Uncategorized"
+tags: []
+image: ""
+author: "Syed Asif"
+readingTime: "5 min read"
+status: "published"
+lastModified: "2025-07-28"
+---
+
+---
+
+![](https://cdn-images-1.medium.com/max/800/0*jz8vW477BblxUg3w)
+
+Photo by [Rubaitul Azad](https://unsplash.com/@rubaitulazad?utm_source=medium&utm_medium=referral) on [Unsplash](https://unsplash.com?utm_source=medium&utm_medium=referral)
+
+### Multiple Python Versions on Ubuntu 25.04
+
+Managing Python versions can be tricky — especially when newer OS releases like **Ubuntu 25.04** ship with bleeding-edge versions like **Python 3.13.3**.
+
+In my case, I needed **Python 3.12** for a network automation project to use **Nornir** and **NAPALM**, but ran into missing modules, virtual environment failures, and VSCode misbehavior.
+
+Here’s how I set up **multiple Python versions** using `pyenv`, configured my project to use **Python 3.12.9**, and solved virtual environment issues in VSCode — all without breaking the system Python.
+
+### The Initial Problem
+
+Running my python script gave me this error:
+
+```
+ModuleNotFoundError: No module named 'telnetlib'
+```
+
+That’s because **Python 3.13 officially removed** `telnetlib`, a module still used by some automation tools.
+
+Naturally, I tried installing Python 3.12 with `apt`:
+
+```
+sudo apt install python3.12
+```
+
+Ubuntu responded:
+
+```
+E: Unable to locate package python3.12
+```
+
+Time for a better tool.
+
+### Installing Python 3.12.9 with `pyenv`
+
+`pyenv` allows you to install and manage multiple Python versions independently of your system Python.
+
+#### Step 1: Install Build Dependencies
+
+Before using `pyenv`, make sure your system has the necessary development libraries:
+
+```
+sudo apt install -y make build-essential libssl-dev zlib1g-dev libbz2-dev \  
+libreadline-dev libsqlite3-dev wget curl llvm libncurses5-dev \  
+libncursesw5-dev xz-utils tk-dev libffi-dev liblzma-dev python3-openssl
+```
+
+#### Step 2: Install Pyenv
+
+```
+curl https://pyenv.run | bash
+```
+
+When the script ends, it should give you some instructions to follow for loading pyenv automatically.
+
+```
+# Load pyenv automatically by appending  
+# the following to   
+# ~/.bash_profile if it exists, otherwise ~/.profile (for login shells)  
+# and ~/.bashrc (for interactive shells) :  
+  
+export PYENV_ROOT="$HOME/.pyenv"  
+[[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"  
+eval "$(pyenv init -)"
+```
+
+So, edit the *.bashrc* or *.zshrc* file and put the mentioned code at the end of it.
+
+#### Step 3: Install Python 3.12.9
+
+```
+pyenv install -v 3.12.9
+```
+
+The different versions of Python you install with ***pyenv*** are located in `~/.pyenv/versions/` directory.
+
+With Python 3.12.9 installed, I expected everything to work smoothly in VSCode. It didn’t.
+
+### VSCode Fails to Create a Virtual Environment
+
+VSCode detected Python 3.12.9 from `pyenv`, but when trying to create a virtual environment:
+
+> *❌ Failed to create virtual environment.*
+
+> *⏪ VSCode defaulted back to Python 3.13.3*
+
+Even setting the interpreter manually didn’t help, to create the `.venv`.
+
+### The Real Fix: Python Environments from Microsoft
+
+Installing the [**Python Environments** extension](https://marketplace.visualstudio.com/items?itemName=ms-python.vscode-python-envs) finally solved the problem.
+
+![](https://cdn-images-1.medium.com/max/800/1*_cSqJ0dycve72AEtQfXEqg.png)
+
+Python Environments from Microsoft
+
+#### Working Steps
+
+1. Opened **Python Environments** Extension in VSCode
+2. Selected **Python 3.12.9 shell** from environment managers
+3. Confirmed with:
+
+```
+➜ python --version  
+Python 3.12.9
+```
+
+4. Created a virtual environment from terminal
+
+5. Set the new `.venv` as the **project interpreter**
+
+![](https://cdn-images-1.medium.com/max/800/1*bcBVWapR7aLv_ICz9Jr3zQ.png)
+
+Python Environments
+
+6. Closed and reopened the terminal in VSCode
+
+7. `.venv` was automatically activated and used correctly
+
+### Final Thoughts
+
+Managing Python versions on newer systems can be frustrating. But with the right tools, it’s completely manageable.
+
+Here’s the reliable setup that worked for me:
+
+* Use `pyenv` to manage multiple Python versions
+* Install dependencies before building Python
+* Use **Python Environment** in VSCode to activate venv environment
+* Always confirm your active version with `python --version`
+
+This workflow saved me hours of troubleshooting — and hopefully now it can save you some too.
+
+#### 💬 Feedback Welcome
+
+If you found this helpful or have an alternative approach, feel free to share in the comments. Thanks for reading!
+
+---
+
+[**Setting Up Multiple Python Versions**  
+*If you have default Python 3.9 installed on RHEL 9, you can add and manage additional Python versions using the…*medium.com](https://medium.com/@sydasif78/setting-up-multiple-python-versions-1eec1d6d031e "https://medium.com/@sydasif78/setting-up-multiple-python-versions-1eec1d6d031e")
+
+Resource: <https://itsfoss.com/pyenv-ubuntu/>
+
+### Thank you for being a part of the community
+
+*Before you go:*
+
+* Be sure to **clap** and **follow** the writer ️👏️**️**
+* Follow us: [**X**](https://x.com/inPlainEngHQ) | [**LinkedIn**](https://www.linkedin.com/company/inplainenglish/) | [**YouTube**](https://www.youtube.com/@InPlainEnglish) | [**Newsletter**](https://newsletter.plainenglish.io/) | [**Podcast**](https://open.spotify.com/show/7qxylRWKhvZwMz2WuEoua0) | [**Twitch**](https://twitch.tv/inplainenglish)
+* [**Start your own free AI-powered blog on Differ**](https://differ.blog/) 🚀
+* [**Join our content creators community on Discord**](https://discord.gg/in-plain-english-709094664682340443) 🧑🏻‍💻
+* For more content, visit [**plainenglish.io**](https://plainenglish.io/) + [**stackademic.com**](https://stackademic.com/)

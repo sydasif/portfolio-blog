@@ -1,0 +1,469 @@
+---
+title: "Customizing Claude Code for Python Development: A Practical Guide"
+date: "2026-02-09"
+excerpt: "Problem: You repeat the same context every time you ask Claude for help with Python development...."
+description: "Problem: You repeat the same context every time you ask Claude for help with Python development...."
+category: "Uncategorized"
+tags: []
+image: ""
+author: "Syed Asif"
+readingTime: "5 min read"
+status: "published"
+lastModified: "2026-02-09"
+---
+
+---
+
+![](https://cdn-images-1.medium.com/max/800/0*BpicgdmQlAjwqeun)
+
+Photo by [Solen Feyissa](https://unsplash.com/@solenfeyissa?utm_source=medium&utm_medium=referral) on [Unsplash](https://unsplash.com?utm_source=medium&utm_medium=referral)
+
+### Customizing Claude Code for Python Development: A Practical Guide
+
+### TL;DR
+
+Problem: You repeat the same context every time you ask Claude for help with Python development.
+
+Solution: Build a 3-tier customization system that teaches Claude your standards permanently.
+
+What You’ll Learn:
+
+* How CLAUDE.md injects context into every conversation automatically
+* Using Rules (always-on) + Guidelines (on-demand) for token-efficient guidance
+* Creating domain-specific Skills for on-demand workflows
+* Building read-only Subagents for code review
+* Complete configuration structure for teams
+
+Time Investment: 30 minutes setup + 5 min per project. Expected ROI: 5–10 minutes saved per development task (80% time reduction). Break-even: After 3–6 development tasks
+
+---
+
+### The Problem: Explaining Yourself Over and Over
+
+Every time you start a new conversation, you’re back to zero context.
+
+You ask Claude to help with a data processing function, and it gives you generic Python. No type hints. No error handling. No input validation.
+
+So you type: *“Add type hints.”* Then: *“Handle the edge case where data is None.”* Then: *“Use logging instead of print.”*
+
+By the time you get working code, you’ve spent 10 minutes explaining what you wanted instead of 2 minutes getting it.
+
+This guide shows you how to fix that. Permanently.
+
+---
+
+### The Customization Architecture
+
+Claude Code’s customization system operates through hierarchical tiers:
+
+### Tier 1: Always-On (Rules)
+
+* Location: `~/.claude/rules/`
+* Loading: Auto-loaded every session
+* Purpose: Critical constraints (security, testing, tools)
+* Token usage: Always consumed
+* Files: `security.md`, `testing.md`, `tools.md`
+
+### Tier 2: On-Demand (Guidelines)
+
+* Location: `~/.claude/guidelines/`
+* Loading: Loaded when needed via the Read tool
+* Purpose: Domain-specific patterns (Python, API, Database)
+* Token usage: Saves tokens — only load what’s needed
+* Files: `python.md`, `api-design.md`, `database.md`, `documentation.md`
+
+### Tier 3: Workflows (Skills)
+
+* Location: `~/.claude/skills/`
+* Loading: On-demand when triggered
+* Purpose: Step-by-step procedures (refactoring, research, review)
+* Token usage: Only when the skill is activated
+* Files: `code-refactoring/`, `fresh-review/`, `web-research/`
+
+### Tier 4: Specialized Workers (Subagents)
+
+* Location: `~/.claude/agents/`
+* Loading: Spawned for specific tasks
+* Purpose: Constrained AI workers (code review, testing)
+* Token usage: Isolated context
+* Files: `code-reviewer.md`
+
+Key Insight: Lower tiers provide broader context, higher tiers provide specific constraints. This progressive disclosure saves tokens while ensuring comprehensive guidance.
+
+### Rules — Always-On Critical Constraints
+
+### How It Works
+
+Rules are automatically loaded into every conversation. They contain critical constraints that must always be followed:
+
+* Security requirements — Input validation, secret management
+* Testing requirements — Coverage thresholds, verification pyramid
+* Tool commands — Standard commands for linting, testing, and formatting
+
+### File Format
+
+Rules are standard Markdown files (no YAML frontmatter required):
+
+```
+# Rule Name  
+  
+## Core Requirements  
+- Requirement 1  
+- Requirement 2  
+  
+## STOP & ASK Triggers  
+You must stop and ask if:  
+1. Condition 1  
+2. Condition 2
+```
+
+### Rules Directory Structure
+
+```
+~/.claude/rules/  
+├── security.md    # Security constraints (always loaded)  
+├── testing.md     # Testing requirements (always loaded)  
+└── tools.md       # Tool reference (always loaded)
+```
+
+### Why This Matters
+
+Without Rules:
+
+* You: *“Help me write a function.”*
+* Claude: *“Here’s code…”* [No security checks, no testing requirements]
+
+With Rules:
+
+* You: *“Help me write a function.”*
+* Claude: *“I’ll create this with input validation, error handling, and tests as required…”*
+
+Security and testing standards are automatically enforced.
+
+### Guidelines — On-Demand Domain Knowledge
+
+### How It Works
+
+Guidelines are reference materials loaded on demand via the Read tool. They contain detailed domain-specific best practices:
+
+* Python patterns — Type hints, async patterns, framework selection
+* API design — RESTful principles, versioning, authentication
+* Database patterns — ORM usage, query optimization, migrations
+* Documentation standards — README format, docstrings, ADRs
+
+### Loading Guidelines
+
+Guidelines are NOT auto-loaded. You explicitly load them when needed:
+
+```
+# Before working on Python code  
+Read ~/.claude/guidelines/python.md  
+  
+# Before designing an API  
+Read ~/.claude/guidelines/api-design.md  
+  
+# Before database work  
+Read ~/.claude/guidelines/database.md
+```
+
+This approach saves context tokens.
+
+### Skills — On-Demand Workflows
+
+### What Are Skills?
+
+Skills are specialized knowledge bundles stored as Markdown files with YAML frontmatter. They contain:
+
+* Step-by-step workflows
+* Design patterns
+* Code templates
+* Checklists
+
+### How Skills Load
+
+1. Skills are discovered from `~/.claude/skills/` directories
+2. Each skill has a SKILL.md with YAML frontmatter:
+
+```
+---  
+name: skill-name  
+description: What this skill does and when to use it  
+---
+```
+
+1. Skills load on-demand when Claude detects relevant tasks
+2. Multiple files can be bundled (SKILL.md + references/)
+
+### Skills Directory Structure
+
+```
+~/.claude/skills/  
+├── code-refactoring/  
+│   └── SKILL.md          # Code modernization workflow  
+├── fresh-review/  
+│   └── SKILL.md          # Systematic review process  
+└── web-research/  
+    └── SKILL.md          # Research strategies
+```
+
+### kill Loading in Action
+
+When you ask: *“Help me refactor this legacy code.”*
+
+1. Claude detectsthe “refactor” keyword
+2. Loads `code-refactoring` skill
+3. Applies modernization checklist:
+
+* Convert to f-strings
+* Add type hints
+* Use pathlib
+* Migrate to dataclasses
+
+### Subagents — Specialized Workers
+
+### What Are Subagents?
+
+Subagents are constrained AI workers designed for specific tasks. They can be restricted to:
+
+* Read-only tools (safety for code reviews)
+* Specific tool subsets
+* Different AI models (Haiku for speed, Sonnet for complex analysis)
+
+### Configuration
+
+Subagents are defined in Markdown files with YAML frontmatter:
+
+```
+---  
+name: subagent-name  
+description: What this subagent does  
+model: haiku | sonnet | opus | inherit  
+tools:  
+  - Read  
+  - Bash  
+disallowedTools:  
+  - Write  
+  - Edit  
+---
+```
+
+### Use Case: Code Review Subagent
+
+A read-only subagent reviews code before commits:
+
+```
+---  
+name: code-reviewer  
+description: Semantic code review using specific skills  
+color: "#FFFF00"  
+skills:  
+   - code-refactoring  
+---
+```
+
+The subagent:
+
+1. Loads with read-only permissions
+2. Reviews the code
+3. Checks against rules and guidelines
+4. Returns a structured report
+
+### Complete Directory Structure
+
+Here’s the consolidated configuration structure:
+
+```
+~/.claude/  
+├── CLAUDE.md                    # Core principles (auto-loaded)  
+├── rules/                       # ALWAYS-ON (critical constraints)  
+│   ├── security.md              # Security requirements  
+│   ├── testing.md               # Testing requirements  
+│   └── tools.md                 # Tool commands  
+├── guidelines/                  # ON-DEMAND (domain patterns)  
+│   ├── python.md                # Python patterns  
+│   ├── api-design.md            # API patterns  
+│   ├── database.md              # Database patterns  
+│   └── documentation.md         # Documentation standards  
+├── agents/                      # SUBAGENTS (specialized workers)  
+│   └── code-reviewer.md         # Read-only code reviewer  
+└── skills/                      # SKILLS (on-demand workflows)  
+    ├── code-refactoring/        # Code modernization  
+    ├── fresh-review/            # Systematic review  
+    └── web-research/            # Research workflows
+```
+
+---
+
+### The Brain `CLAUDE.md`
+
+```
+# Claude Engineering Guidelines  
+  
+- **Role:** Senior + Autonomous Software Engineer  
+- **Mandate:** Discover `deeply`, plan `strategically`, execute `surgically`, and verify `ruthlessly`.  
+- **Task Delegation:** Use Subagents for `isolated`, `deterministic` subtasks only.  
+  
+---  
+  
+## 1. Authority & Decision Boundaries  
+  
+### Independence Tier (Proceed & Notify)  
+- Implementation Strategy: Choosing patterns that fit the existing codebase  
+- Internal Refactoring: Improving legibility of specific functions  
+- Dependency Versioning: Minor/Patch updates for security fixes  
+- Test Suite Design: Balance between unit and integration tests  
+  
+### Collaboration Tier (Propose & Wait)  
+- Architecture Shifts: New paradigms (e.g., sync to async)  
+- External Interfaces: Public API signatures, CLI arguments, schemas  
+- New Dependencies: Any library not already in requirements.txt  
+- Constraint Negotiation: When requirements conflict with best practices  
+  
+### Strict Prohibition (Do Not Touch)  
+- Secrets/Auth Logic: Never modify without security review  
+- Unrelated Infrastructure: CI/CD, Docker, Terraform unless requested  
+- Global Formatting: Never run "Auto-format All" on repositories  
+  
+---  
+  
+## 2. The Engineering Lifecycle  
+  
+### Phase 1: Discovery ("Read-Before-Write")  
+1. **Call-Site Search:** Who uses this code? Search all references.  
+2. **Pattern Search:** How does this project handle similar tasks?  
+3. **History Search:** Check recent commits for context.  
+  
+### Phase 2: Strategic Planning (OODA Loop)  
+- **Negative Planning:** Explicitly state what you will NOT change  
+- **Rollback Path:** How to revert if this fails in production?  
+- **Subagent Parallelism:** Define "Pure" vs "Side-Effect" subtasks  
+  
+### Phase 3: Surgical Execution  
+- **Atomic Commits:** Each logical change independent  
+- **No-Noise Policy:** Delete debug logs before submission  
+- **Idiomatic Alignment:** Follow project conventions, not personal preference  
+  
+---  
+  
+## 3. Core Principles  
+  
+### 1. Security-First Engineering  
+- **Input is Poison:** Validate all external input (type, length, format)  
+- **Least Privilege:** Minimum permissions necessary  
+- **No Secrets in Code:** Use environment variables  
+  
+### 2. The Simplicity Tax  
+- Every line is a "tax" on future maintenance  
+- **Junior Test:** Could a junior understand this in 15 minutes?  
+  
+### 3. Explicit Failure Modes  
+- Handle timeouts, network loss, disk full, malformed data  
+- Don't just handle the "Happy Path"  
+  
+---  
+  
+## 4. Mandatory Output Structure  
+  
+```markdown  
+## 1. Discovery Report  
+- **Found Patterns:** [e.g., "Project uses Pydantic for validation"]  
+- **Affected Areas:** [List of files referencing the code]  
+  
+## 2. Strategic Plan  
+- **Primary Objective:** [One sentence goal]  
+- **The "Surgical" Scope:** [Exact functions/lines targeted]  
+- **Non-Goals:** [What you are explicitly avoiding]  
+  
+## 3. Assumptions & Risk Assessment  
+- **Assumption:** [e.g., "The API always returns UTF-8"]  
+- **Risk:** [e.g., "Adding this library increases binary size by 5MB"]  
+  
+## 4. Proposed Changes  
+- [File A] -> [Action] (Reason)  
+- [File B] -> [Action] (Reason)  
+  
+## 5. Verification Pyramid (Evidence Required)  
+- [ ] **Static:** [Linter/Type-checker output]  
+- [ ] **Positive:** [Test case for expected behavior]  
+- [ ] **Negative:** [Test case for bad input]  
+- [ ] **Regression:** [Proof that existing tests still pass]  
+- [ ] **Rollback:** [Proof that rollback procedures work]  
+```  
+  
+---  
+  
+## 5. The "Stop & Ask" Triggers  
+  
+**You must stop and ask if:**  
+1. You find a **security vulnerability** in unrelated code  
+2. You realize the "Surgical Scope" will actually require changing **>5 files**  
+3. You find **contradictory requirements** (e.g., "Make it fast" vs "Use this slow legacy library")  
+4. You are tempted to **bypass the existing architecture** because "it's cleaner"  
+  
+---  
+  
+## 6. Professional Failure Handling  
+  
+If a task is impossible or fails:  
+1. **Show the "Dead End":** Provide exact error or constraint  
+2. **Provide "Pivot Options":** "I can't do X because of Y, but I could do Z"  
+3. **Preserve State:** Provide code for parts that did work  
+  
+---  
+  
+## 7. Reference Architecture  
+  
+### Always-On (rules/)  
+Critical constraints loaded automatically:  
+- `rules/security.md` - Security requirements  
+- `rules/testing.md` - Testing requirements  
+- `rules/tools.md` - Tool commands  
+  
+### On-Demand (guidelines/)  
+Domain-specific patterns loaded when needed:  
+- `guidelines/python.md` - Python patterns  
+- `guidelines/api-design.md` - API patterns  
+- `guidelines/database.md` - Database patterns  
+- `guidelines/documentation.md` - Documentation standards  
+  
+### Skills (skills/)  
+Action-oriented capabilities:  
+- `skills/code-refactoring/` - Code modernization  
+- `skills/fresh-review/` - Systematic review process  
+- `skills/web-research/` - Research workflows  
+  
+---  
+  
+**Verification of Adherence:** *When I complete a task, I am not just `done`. I am `verified`. My success is measured by the clarity of my evidence, not the confidence of my claims.*
+```
+
+---
+
+### Conclusion: From Generic to Specialized
+
+This architecture transforms Claude Code from a general-purpose assistant into a domain-aware Python development partner:
+
+* Rules for always-on critical constraints
+* Guidelines for on-demand domain knowledge
+* Skills for specialized workflows
+* Subagents for constrained tasks
+
+Key Benefits:
+
+* 60–80% token savings vs loading everything
+* Security and testing are always enforced
+* Domain knowledge available when needed
+* No cross-references or duplication
+* Clear separation of concerns
+
+The bottom line: 30 minutes of setup saves you 12 minutes on every development task. After just 3 tasks, you’re ahead.
+
+---
+
+### Resources
+
+* Claude Code Documentation: [code.claude.com/docs](https://code.claude.com/docs)
+* Python Type Hints: [docs.python.org/3/library/typing.html](https://docs.python.org/3/library/typing.html)
+* pytest Documentation: [docs.pytest.org](https://docs.pytest.org/)
+* FastAPI Documentation: [fastapi.tiangolo.com](https://fastapi.tiangolo.com/)
+* PEP 8 Style Guide: [peps.python.org/pep-0008](https://peps.python.org/pep-0008)

@@ -1,0 +1,151 @@
+---
+title: "Understanding Mutable and Immutable Objects in Python"
+date: "2023-10-26"
+excerpt: "Python, is a popular and versatile programming language, the distinction between mutable and immutable objects is a key concept to understand for effe..."
+description: "Python, is a popular and versatile programming language, the distinction between mutable and immutable objects is a key concept to understand for effective Python programming. This concept significant..."
+category: "Uncategorized"
+tags: []
+image: ""
+author: "Syed Asif"
+readingTime: "5 min read"
+status: "published"
+lastModified: "2023-10-26"
+---
+
+---
+
+![](https://cdn-images-1.medium.com/max/800/1*3eOjNNoB9aZNPnqj1XGTEQ.png)
+
+### Understanding Mutable and Immutable Objects in Python
+
+#### Python for Network Engineers
+
+Python, is a popular and versatile programming language, the distinction between mutable and immutable objects is a key concept to understand for effective Python programming. This concept significantly impacts how Python behaves in various situations. In this blog, we’ll explore these concepts step by step, using code examples to make it clear.
+
+### Mutable and Immutable Objects
+
+In Python, we classify objects into two categories: mutable and immutable. Mutable objects can change their values after creation, while immutable objects stay the same once created.
+
+Let’s start by understanding how assignments function work in Python. When you assign a value to a variable, like `rtr_addr = "10.1.1.1"`, Python allocates memory to store that value, and the variable `rtr_addr` becomes a reference to that memory location.
+
+```
+rtr_addr = "10.1.1.1"
+```
+
+It’s essential to comprehend that the variable’s name and the actual object in memory are separate. If we add another variable, such as `gate_way = rtr_addr`, both names point to the same object in memory.
+
+```
+gate_way = rtr_addr
+```
+
+Now, both `rtr_addr` and `gate_way` refer to the same string object in memory.
+
+#### Identifying Objects with `id()`
+
+Python uses the `id()` function to identify the unique identity of an object. It helps us compare whether two names refer to the same object.
+
+```
+id(rtr_addr)  # Output: 1513552872240  
+id(gate_way)  # Output: 1513552872240
+```
+
+The `id()` function returns a distinct identifier for each object in memory. When comparing the identities of `rtr_addr` and `gate_way`, we can determine if they refer to the same object.
+
+### Immutable Objects
+
+In Python, we have immutable objects, which cannot change their values once created. Even some operations that seem to change their value actually make a new object with the updated value.
+
+Let’s consider an example to understand this better, suppose we create a variable, `ssh_timeout`, and assign it the value `20`. We can use the `id()` function to check its identity.
+
+```
+ssh_timeout = 20  
+id(ssh_timeout)  # Output: 1513546842960
+```
+
+The `id()` function returns a unique identifier for the object in memory. In this case, it's associated with the value `20`.
+
+#### Reassigning an Object
+
+Now, if we reassign the `ssh_timeout` variable to a new value, like `ssh_timeout = 10`, a new object with the value `10` is created in memory. The variable `ssh_timeout` is updated to point to this new object, rather than modifying the original object.
+
+```
+ssh_timeout = 10  
+id(ssh_timeout)  # Output: 1513546842640
+```
+
+The `id()` function returns a different identifier associated with the new value `10`.
+
+Even when performing operations like incrementing or decrementing an immutable object; `ssh_timeout += 1`, a fresh assignment is taking place. This results in creating a new object with the updated value, and the variable is updated to point to this new object.
+
+```
+ssh_timeout += 1  
+id(ssh_timeout)  # Output: 1513546842672
+```
+
+Again, the `id()` function returns a different identifier after the assignment, representing the new object with the updated value.
+
+#### Types of Immutable Objects
+
+There are several data types, that are considered immutable object:
+
+* `None`
+* Boolean (`True` and `False`)
+* Strings
+* Integers
+* Floats
+
+These data types cannot be altered once created. Any operation that seems to modify them actually creates new objects, and the variables involved are updated to reference these new objects.
+
+Understanding the concept of immutable objects in Python is crucial for designing and debugging your code. It ensures that you work within fundamental rules and avoid unexpected behavior.
+
+### Mutable Objects in Python
+
+Python also has mutable objects, which can change their values after creation. Common examples of mutable objects include lists, dictionaries, and sets. In this section, we’ll specifically look at lists to illustrate the concept.
+
+Let’s begin by creating a list called `data_center` containing several elements.
+
+```
+data_center = ["sf", "la", "den", "dal"]  
+id(data_center)  # Output: 2036909283072
+```
+
+The `id()` function checks the unique identifier associated with the `data_center` list, which points to a specific memory location.
+
+#### Modifying Lists
+
+Now, let’s expand the `data_center` list by adding a new element, "ny."
+
+```
+data_center.append("ny")  
+id(data_center)  # Output: 2036909283072
+```
+
+Surprisingly, even though we added an element to the list, the identifier for the list itself remains the same. This is because lists are mutable objects, and Python doesn’t create a new list every time you modify it.
+
+#### The Internal Mechanism of Lists
+
+To understand how lists work internally, it’s crucial to know that Python allocates a block of memory for the list when it’s created. However, this memory doesn’t store the actual elements, but rather pointers to those elements.
+
+#### Memory Addresses
+
+A list in Python functions as a container for references to objects, rather than a container for the objects themselves. When you create a list and populate it with elements, what the list stores are memory addresses (pointers) to the actual data objects.
+
+For instance, consider this representation of memory for the `data_center` list:
+
+![List pointer](https://cdn-images-1.medium.com/max/800/1*faDnKtGuj92oI9ht3dLh7Q.png)
+
+List pointer
+
+In this representation, P1, P2, P3, P4, and P5 are pointers to the actual elements of the list. The list doesn’t directly contain the elements; it contains references to the memory addresses where these elements are stored in the computer’s memory.
+
+To gain a deeper understanding of this concept, you can check the `id()` of individual list elements:
+
+```
+id(data_center[0])  # 1668505141296
+```
+
+Therefore, it is important to see how things can be changed and how they can't be changed. This helps when working with data and making sure changes to variables work correctly.
+
+---
+
+[**Syed Asif / python-network-automation**](https://gitlab.com/sydasif/python-network-automation/-/blob/main/Class-02/05_mutable_imutable.md "https://gitlab.com/sydasif/python-network-automation/-/blob/main/Class-02/05_mutable_imutable.md")

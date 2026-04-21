@@ -1,0 +1,96 @@
+---
+title: "Setting Up Multiple Python Versions"
+date: "2024-12-27"
+excerpt: "If you have default Python 3.9 installed on RHEL 9, you can add and manage additional Python versions using the alternatives system. This guide will h..."
+description: "If you have default Python 3.9 installed on RHEL 9, you can add and manage additional Python versions using the alternatives system. This guide will help you set up Python 3.12 alongside Python 3.9 an..."
+category: "Uncategorized"
+tags: []
+image: ""
+author: "Syed Asif"
+readingTime: "5 min read"
+status: "published"
+lastModified: "2024-12-27"
+---
+
+---
+
+![](https://cdn-images-1.medium.com/max/800/0*mTkk-y94sM_z5wiX)
+
+Photo by [Hitesh Choudhary](https://unsplash.com/@hiteshchoudhary?utm_source=medium&utm_medium=referral) on [Unsplash](https://unsplash.com?utm_source=medium&utm_medium=referral)
+
+### Setting Up Multiple Python Versions
+
+If you have default Python 3.9 installed on RHEL 9, you can add and manage additional Python versions using the `alternatives` system. This guide will help you set up Python 3.12 alongside Python 3.9 and configure the system effectively.
+
+---
+
+#### 1. Check Default Python Version
+
+RHEL 9 comes with Python 3.9 as the default version. Verify it:
+
+```
+python3 --version
+```
+
+This should show Python 3.9 as the default version.
+
+---
+
+#### 2. Install Python 3.12
+
+Starting from RHEL 9.4, Python 3.12 is available in the default package manager. Install it using:
+
+```
+sudo dnf install python3.12
+```
+
+---
+
+#### 3. Add Python Versions to Alternatives
+
+Register both Python versions with the `alternatives` system:
+
+```
+sudo alternatives --install /usr/bin/python python /usr/bin/python3.12 10  
+sudo alternatives --install /usr/bin/python python /usr/bin/python3.9 20
+```
+
+Always assign a higher priority to the default Python version (e.g., Python 3.9) to ensure the system uses it without breaking dependencies.
+
+---
+
+#### 4. Switch Between Python Versions
+
+To switch between the Python versions, use:
+
+```
+sudo alternatives --config python
+```
+
+Select the desired version from the list.
+
+---
+
+#### 5. Set Default Python Interpreter in VS Code
+
+To set Python 3.12 as the default interpreter in VS Code, add the following to your workspace or global `settings.json` file:
+
+```
+{  
+    "python.defaultInterpreterPath": "/usr/bin/python3.12" // Set the default Python interpreter path  
+}
+```
+
+---
+
+#### 6. Verify the Setup
+
+Ensure the correct Python version is active:
+
+```
+python --version
+```
+
+---
+
+With these steps, you can manage multiple Python versions on RHEL 9, while keeping your system stable by prioritizing the correct Python version.

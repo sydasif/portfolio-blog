@@ -1,0 +1,123 @@
+---
+title: "Duplicate File Remover"
+date: "2024-11-20"
+excerpt: "This Python script removes duplicate files from a selected directory. It uses the MD5 hash of files to identify duplicates, keeping the first occurren..."
+description: "This Python script removes duplicate files from a selected directory. It uses the MD5 hash of files to identify duplicates, keeping the first occurrence of each unique file and deleting subsequent dup..."
+category: "Uncategorized"
+tags: []
+image: ""
+author: "Syed Asif"
+readingTime: "5 min read"
+status: "published"
+lastModified: "2024-11-20"
+---
+
+---
+
+![](https://cdn-images-1.medium.com/max/800/0*4d-3tBDgCJy4G0-h)
+
+Photo by [AltumCode](https://unsplash.com/@altumcode?utm_source=medium&utm_medium=referral) on [Unsplash](https://unsplash.com?utm_source=medium&utm_medium=referral)
+
+### Duplicate File Remover
+
+This Python script removes duplicate files from a selected directory. It uses the MD5 hash of files to identify duplicates, keeping the first occurrence of each unique file and deleting subsequent duplicates.
+
+```
+from tkinter.filedialog import askdirectory  
+from tkinter import Tk, messagebox  
+import os  
+import hashlib  
+from pathlib import Path  
+  
+  
+def get_file_hash(file_path):  
+    """Calculate MD5 hash of a file."""  
+    hash_md5 = hashlib.md5()  
+    with open(file_path, "rb") as f:  
+        for chunk in iter(lambda: f.read(4096), b""):  
+            hash_md5.update(chunk)  
+    return hash_md5.hexdigest()  
+  
+  
+def remove_duplicates(directory):  
+    """Remove duplicate files from the given directory."""  
+    unique = {}  
+    duplicates_removed = 0  
+    errors = 0  
+  
+    for file_path in Path(directory).rglob("*"):  
+        if file_path.is_file():  
+            try:  
+                file_hash = get_file_hash(file_path)  
+                if file_hash not in unique:  
+                    unique[file_hash] = file_path  
+                else:  
+                    os.remove(file_path)  
+                    print(f"Successfully deleted {file_path}")  
+                    duplicates_removed += 1  
+            except Exception as error:  
+                print(f"Error processing {file_path}: {str(error)}")  
+                errors += 1  
+  
+    return duplicates_removed, errors  
+  
+  
+def main():  
+    """Main function to run the script."""  
+    Tk().withdraw()  
+    path = askdirectory(title="Select a directory")  
+  
+    if not path:  
+        print("No directory selected. Exiting.")  
+        return  
+  
+    duplicates_removed, errors = remove_duplicates(path)  
+  
+    message = "Operation completed.\n"  
+    message += f"Duplicates removed: {duplicates_removed}\n"  
+    message += f"Errors encountered: {errors}"  
+  
+    print(message)  
+    messagebox.showinfo("Results", message)  
+  
+  
+if __name__ == "__main__":  
+    main()
+```
+
+### Features
+
+* Prompts the user to select a directory using a GUI dialog.
+* Removes duplicate files based on their MD5 hash.
+* Provides a summary of the operation, including the number of duplicates removed and any errors encountered.
+
+### Requirements
+
+* Python 3.x
+* Tkinter (usually included with Python installations)
+
+### Usage
+
+Run the script using Python:
+
+```
+python app.py
+```
+
+1. A dialog will appear prompting you to select a directory.
+2. The script will process the selected directory, remove duplicate files, and display a summary of the operation.
+
+### Notes
+
+* The script modifies the file system by deleting duplicate files. Ensure you have backups if necessary.
+* The script prints results to the console and also displays a message box with the results.
+
+### Disclaimer
+
+Use this script at your own risk. The author is not responsible for any data loss or damage caused by this script.
+
+### Video Tutorial
+
+For a video tutorial on how to use this script, visit:
+
+[**Syed Asif / dup\_file\_remove**](https://gitlab.com/sydasif/dup_file_remove "https://gitlab.com/sydasif/dup_file_remove")

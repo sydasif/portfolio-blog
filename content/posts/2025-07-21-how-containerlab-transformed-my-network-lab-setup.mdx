@@ -1,0 +1,192 @@
+---
+title: "🚀 How Containerlab Transformed My Network Lab Setup"
+date: "2025-07-21"
+excerpt: "If you’ve ever tried building a network lab from scratch, you know the pain: finding hardware, setting up virtual machines, dealing with clunky GUIs, ..."
+description: "If you’ve ever tried building a network lab from scratch, you know the pain: finding hardware, setting up virtual machines, dealing with clunky GUIs, and troubleshooting image imports. That was my wor..."
+category: "Uncategorized"
+tags: []
+image: ""
+author: "Syed Asif"
+readingTime: "5 min read"
+status: "published"
+lastModified: "2025-07-21"
+---
+
+---
+
+### How Containerlab Transformed My Network Lab Setup
+
+### A Practical Guide for Engineers and Automation Enthusiasts
+
+If you’ve ever tried building a network lab from scratch, you know the pain: finding hardware, setting up virtual machines, dealing with clunky GUIs, and troubleshooting image imports. That was my world — until I found `Containerlab`.
+
+In this post, I’ll share my personal journey with `Containerlab`: how it replaced my reliance on bulky setups, streamlined my topologies, and helped me build a complete CI/CD-style virtual lab. Whether you're an engineer, or just a student, this guide will help you get started — and possibly fall in love with the tool the way I did.
+
+### Why Containerlab?
+
+`Containerlab` simplifies the process dramatically by leveraging Docker containers to run NOS instances. Think of it as Docker Compose but tailored for networking. With just a YAML file and a few CLI commands, you can build, deploy, and manage complex topologies.
+
+You’ll need Linux (I’m on Ubuntu 25.04) and Docker installed. Once ready, install `Containerlab` with:
+
+```
+bash -c "$(curl -sL https://get-clab.srlinux.dev)"
+```
+
+To upgrade simply perform:
+
+```
+containerlab version upgrade
+```
+
+### Adding Network Images
+
+Images are added differently, depending on if:
+
+* They are containers
+* They rely on vrnetlab
+
+#### Adding Container Images
+
+Container images can be directly imported to docker. For example, to use Arista cEOS:
+
+1. Create a free account on Arista website.
+2. Download the cEOS image.
+3. Import it into Docker:
+
+```
+docker import cEOS64-lab-4.27.0F.tar ceos:4.27.0F
+```
+
+Check that the image is within docker:
+
+```
+docker images
+```
+
+Certain images — such as srlinux can be pulled automatically if needed.
+
+#### Creating a Topology
+
+`Containerlab` uses a simple YAML file to define topologies. Here’s a snippet:
+
+```
+name: cisco_lab_02  
+# prefix: ""  
+  
+mgmt:  
+  network: statics  
+  ipv4_subnet: 172.100.100.0/24  
+  
+topology:  
+  nodes:  
+    R1:  
+      kind: linux  
+      image: asifsyd/cisco_vios:15.9.3M6  
+      mgmt_ipv4: 172.100.100.11  
+    D1:  
+      kind: linux  
+      image: asifsyd/cisco_viosl2:15.2  
+      mgmt_ipv4: 172.100.100.12  
+    S1:  
+      kind: cisco_iol  
+      image: asifsyd/cisco_iol:l2-17.12.01  
+      mgmt_ipv4: 172.100.100.13  
+      type: l2  
+      labels:  
+        graph-icon: switch  
+    S2:  
+      kind: cisco_iol  
+      image: asifsyd/cisco_iol:l2-17.12.01  
+      mgmt_ipv4: 172.100.100.14  
+      type: l2  
+      labels:  
+        graph-icon: switch  
+  
+  links:  
+    - endpoints: [R1:eth1, D1:eth1]  
+    - endpoints: [D1:eth2, S1:Ethernet0/1]  
+    - endpoints: [D1:eth3, S2:Ethernet0/2]
+```
+
+#### Deploying the Topology
+
+```
+containerlab deploy --topo  cisco_02.clab.yml
+```
+
+`Containerlab` spins up all containers and virtual links in under a minute. It also updates `/etc/hosts` for easy access.
+
+![container lab topology](https://cdn-images-1.medium.com/max/800/1*aeoK9Ne7EPzKd10tYaH-Ng.png)
+
+lab-vscode
+
+***Note:*** *It will pull images from* [*Docker Hub*](https://hub.docker.com/u/asifsyd)*, which I have build.*
+
+[**GitHub - sydasif/containerlab\_project**  
+*Contribute to sydasif/containerlab\_project development by creating an account on GitHub.*](https://github.com/sydasif/containerlab_project "https://github.com/sydasif/containerlab_project")
+
+#### Connecting to Nodes
+
+When a lab is up and running, each node will be given a management address that is using the Docker network. These can be seen following deployment, or can be checked at any time using the following:
+
+```
+containerlab inspect --all
+```
+
+You can access nodes via SSH or Docker exec:
+
+```
+ssh admin@172.100.100.12  
+# or
+```
+
+#### Visualizing the Topology
+
+`Containerlab` can generate topology images:
+
+```
+sudo containerlab graph --topo  cisco_02.clab.yml
+```
+
+This starts a local web server to render the graph.
+
+![](https://cdn-images-1.medium.com/max/800/1*trfAV1d8RVBujZd09pLgCw.png)
+
+Web-Server
+
+#### Tearing Down
+
+You can destroy a lab without losing configs:
+
+```
+containerlab destroy --topo  cisco_02.clab.yml
+```
+
+Or clean everything:
+
+```
+containerlab destroy --topo  cisco_02.clab.yml --cleanup
+```
+
+That’s it, you have done.
+
+#### VSCode Integration
+
+If you prefer working in Visual Studio Code, there’s an official Containerlab extension available. It enhances your workflow with syntax highlighting, CLI integration, and topology visualization. You can find details and usage instructions here: [Containerlab VS Code Extension](https://containerlab.dev/manual/vsc-extension/#containerlab-vs-code-extension).
+
+![](https://cdn-images-1.medium.com/max/800/1*jWPUZXeHnHyFTAvgXEG5IQ.png)
+
+VSCode Ext
+
+### Final Thoughts
+
+`Containerlab` has completely changed how I build and test network topologies. It’s efficient, lightweight, and incredibly flexible. I can see it being a great tool for engineers, architects, and even students in a classroom environment. If you’re into network automation, give it a try — it just might become your new favorite tool.
+
+---
+
+### Resources
+
+* [My Journey and Experience With Containerlab](https://juliopdx.com/2021/12/10/my-journey-and-experience-with-containerlab/)
+* [Building Virtual Fabrics with vJunos-switch and Containerlab](https://community.juniper.net/blogs/aninda-chatterjee/2023/10/27/virtual-fabrics-vjunos-switch-and-containerlab)
+* [Containerlab — Creating Network Labs Can’t Be Any Easier](https://www.packetswitch.co.uk/containerlabs-intro/)
+* [Containerlab: Cisco CSRs in containers?!](https://devnetdan.com/2021/12/15/containerlab-cisco-csrs-in-containers/)

@@ -1,0 +1,140 @@
+---
+title: "Dual Boot Windows 11 and RHEL 9.5"
+date: "2025-01-22"
+excerpt: "Dual booting Windows 11 and Red Hat Enterprise Linux (RHEL) 9.5 allows users to switch between two operating systems based on their requirements. This..."
+description: "Dual booting Windows 11 and Red Hat Enterprise Linux (RHEL) 9.5 allows users to switch between two operating systems based on their requirements. This configuration is particularly useful for those wh..."
+category: "Uncategorized"
+tags: []
+image: ""
+author: "Syed Asif"
+readingTime: "5 min read"
+status: "published"
+lastModified: "2025-01-22"
+---
+
+---
+
+![](https://cdn-images-1.medium.com/max/800/0*N_kUc6TXJrry4q7z)
+
+Photo by [Arthur Reeder](https://unsplash.com/@arthurreeder?utm_source=medium&utm_medium=referral) on [Unsplash](https://unsplash.com?utm_source=medium&utm_medium=referral)
+
+### Dual Boot Windows 11 and RHEL 9.5
+
+Dual booting Windows 11 and Red Hat Enterprise Linux (RHEL) 9.5 allows users to switch between two operating systems based on their requirements. This configuration is particularly useful for those who want the flexibility of using Windows for everyday tasks and RHEL for development or server administration. This guide provides detailed instructions for setting up dual boot on a machine where Windows 11 is already installed, even on unsupported hardware using tools like Rufus. See [Windows 11 installation](https://www.xda-developers.com/install-windows-11-unsupported-pc/ "https://www.xda-developers.com/install-windows-11-unsupported-pc/") on supported/unsupported device.
+
+### Preparation Steps
+
+#### 1. Verify Disk Partition Scheme
+
+* Open PowerShell in Windows and execute the following command to confirm the disk uses the GPT partition style:
+
+```
+Get-Disk
+```
+
+#### 2. Check BIOS Mode
+
+* Search for “System Information” in the Windows Start menu.
+* In the “System Summary,” locate the “BIOS Mode” entry. It should indicate “UEFI.”
+
+#### 3. Disable Secure Boot
+
+* Press `Win + R`, type `msinfo32`, and press Enter.
+* Look for “Secure Boot State.” If it is “On,” disable it in the BIOS settings.
+
+#### 4. Create Space for RHEL
+
+* Use Windows Disk Management to shrink an existing partition and create unallocated space for the RHEL installation.
+
+### Installation Steps
+
+#### 1. Download RHEL ISO
+
+* Visit the official Red Hat website to download the latest RHEL ISO image.
+
+#### 2. Create Boot-able USB
+
+* Use a tool like Rufus or Etcher to create a boot-able USB drive with the RHEL ISO.
+
+#### 3. Install RHEL
+
+* Boot from the USB drive.
+* Follow the on-screen instructions to install RHEL in the unallocated space. See [Dual Booting Windows And RHEL](https://ostechnix.com/dual-booting-windows-and-rhel/ "https://ostechnix.com/dual-booting-windows-and-rhel/") for more information.
+* Ensure the boot-loader is installed correctly to manage both operating systems. See [Fix Grub Not Showing for Windows and Linux Dual Boot System](https://itsfoss.com/no-grub-windows-linux/ "https://itsfoss.com/no-grub-windows-linux/") if any issue arise in boot-loader.
+
+### Setting Up RHEL
+
+When dual-booting Windows and RHEL, you may encounter time discrepancies because of how each operating system handles the hardware clock:
+
+* **Windows**: Assumes the hardware clock is set to local time.
+* **Linux**: Assumes the hardware clock is set to UTC (Coordinated Universal Time).
+
+#### Solution: Aligning Time Settings
+
+To align the time settings, configure Linux to interpret the hardware clock as local time:
+
+1. Open a terminal in Linux.
+2. Execute the following command:
+
+```
+sudo timedatectl set-local-rtc 1
+```
+
+This will resolve the issue, ensuring both operating systems display the correct time. See [Wrong Time Displayed in Windows-Linux Dual Boot Setup?](https://itsfoss.com/wrong-time-dual-boot/ "https://itsfoss.com/wrong-time-dual-boot/") for more information.
+
+### Access Windows Files from RHEL
+
+To access Windows partitions from RHEL, you can use the NTFS-3G driver, which supports reading and writing to NTFS partitions.
+
+#### Installing NTFS-3G on RHEL 9
+
+* Enable the Extra Packages for Enterprise Linux (EPEL) repository:
+
+```
+sudo subscription-manager repos --enable codeready-builder-for-rhel-9-$(arch)-rpms  
+sudo dnf install https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.noarch.rpm
+```
+
+* Install the NTFS-3G package:
+
+```
+sudo dnf install ntfs-3g
+```
+
+* Follow any prompts to import the GPG key for signing the package.
+* Use the Filesystem in Userspace interface to mount NTFS partitions:
+
+![fig](https://cdn-images-1.medium.com/max/800/1*Y_UgPwjjjj9OUOxZV3SMzA.png)
+
+fig 1
+
+Once mounted, you can create, delete, rename, and move files within the partition.
+
+### Installing Visual Studio Code on RHEL
+
+Visual Studio Code can be easily installed on RHEL by following these steps:
+
+1. Import the Microsoft GPG key:
+
+```
+sudo rpm --import https://packages.microsoft.com/keys/microsoft.asc
+```
+
+1. Add the Visual Studio Code repository:
+
+```
+sudo sh -c 'echo -e "[code]\nname=Visual Studio Code\nbaseurl=https://packages.microsoft.com/yumrepos/vscode\nenabled=1\ngpgcheck=1\ngpgkey=https://packages.microsoft.com/keys/microsoft.asc" > /etc/yum.repos.d/vscode.repo'
+```
+
+1. Update the package cache and install Visual Studio Code:
+
+```
+sudo dnf check-update  
+sudo dnf install code
+```
+
+After completing these steps, Visual Studio Code will be installed and ready to use on your RHEL system.
+
+---
+
+With these steps, you can successfully set up a dual-boot environment with Windows 11 and RHEL 9.5, access Windows files from Linux, and install essential tools like Visual Studio Code for development purposes.

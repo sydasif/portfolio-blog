@@ -1,0 +1,131 @@
+---
+title: "Claude Code + Gemma 4 and Gemini API"
+date: "2026-04-19"
+excerpt: "With Gemma 4 from Google, developers can now pair high-level tooling with efficient, open-weight models—without compromise. This setup lets you run th..."
+description: "With Gemma 4 from Google, developers can now pair high-level tooling with efficient, open-weight models—without compromise. This setup lets you run the Claude Code CLI on top of Gemma 4 for free with ..."
+category: "Uncategorized"
+tags: []
+image: ""
+author: "Syed Asif"
+readingTime: "5 min read"
+status: "published"
+lastModified: "2026-04-19"
+---
+
+---
+
+![](https://cdn-images-1.medium.com/max/800/1*riHzHJFQGRHZYIIIR_wkNA.png)
+
+### Claude Code + Gemma 4 and Gemini API
+
+With Gemma 4 from Google, developers can now pair high-level tooling with efficient, open-weight models—without compromise. This setup lets you run the Claude Code CLI on top of Gemma 4 for ***free*** with gemini api, combining a refined developer experience with strong reasoning performance.
+
+Claude Code is designed for Anthropic models and offers a smooth, agent-focused workflow. Many developers, though, want the flexibility and cost efficiency of Gemma 4. These ecosystems don’t natively connect.
+
+### The Bridge — Gemini Proxy (LiteLLM)
+
+Gemini Proxy (built on LiteLLM) translates Claude requests into Gemini API calls for Gemma 4. It sits between your CLI and the model, making the integration seamless.
+
+### Why It Matters
+
+🚀 Direct Model Mapping: Route Claude model names to specific Gemma 4 variants with simple config
+
+🤝 Agentic Fit: Strong reasoning for multi-step CLI workflows
+
+🔓 Open Weights (Apache 2.0): Use, modify, and deploy freely
+
+🐳 Fast Setup: Docker-based and ready in minutes
+
+### Zero-Cost Entry
+
+The Gemini API includes a free tier with 1,500 requests per day for Gemma 4 ( 02 models each), making it easy to experiment or even run daily workflows without upfront cost.
+
+### Performance Snapshot
+
+Top-tier ranking: Gemma 4 31B sits among leading open models (Arena leaderboard)
+
+High efficiency: Delivers strong results relative to its size, making it fast and cost-effective
+
+### Who Should Use This
+
+Developers looking to reduce cost without losing capability
+
+Engineers testing agentic workflows in a CLI environment
+
+Open-source users who prefer open-weight models
+
+### Quick Start
+
+#### Prerequisites
+
+* Docker
+* Gemini API key (Google AI Studio)
+
+#### Setup
+
+```
+git clone https://github.com/sydasif/gemini-proxy  
+  
+cd gemini  
+  
+cp .env.example .env # Add GEMINI_API_KEY
+```
+
+#### Run
+
+```
+docker compose up -d --build
+```
+
+**Proxy endpoint**: *http://localhost:3455*
+
+---
+
+#### Model Mapping
+
+Claude models to Gemma:
+
+```
+# config.yaml  
+model_list:  
+  - model_name: claude-sonnet-4-6  
+    litellm_params:  
+      model: gemini/gemma-4-31b-it  
+      api_key: os.environ/GEMINI_API_KEY  
+  - model_name: claude-haiku-4-5-20251001  
+    litellm_params:  
+      model: gemini/gemma-4-26b-a4b-it  
+      api_key: os.environ/GEMINI_API_KEY
+```
+
+#### Connect Claude Code
+
+Update ***.claude/settings.json***:
+
+```
+{  
+  "env": {  
+    "ANTHROPIC_BASE_URL": "http://127.0.0.1:3455",  
+    "ANTHROPIC_AUTH_TOKEN": "sk-xxx"  
+  }  
+}
+```
+
+#### Wrap-Up
+
+Gemini Proxy brings together a polished CLI experience and efficient open-weight models in one workflow.
+
+You don’t have to choose anymore—just wire them together.
+
+---
+
+Tip: Watch live traffic with:
+
+```
+docker compose logs -f
+```
+
+---
+
+[**GitHub - sydasif/gemini-proxy: Use Google Gemma models with Claude code**  
+*Use Google Gemma models with Claude code. Contribute to sydasif/gemini-proxy development by creating an account on…*github.com](https://github.com/sydasif/gemini-proxy "https://github.com/sydasif/gemini-proxy")

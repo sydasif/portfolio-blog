@@ -1,0 +1,147 @@
+---
+title: "Network Protocol Suites: The Backbone of Digital Communication"
+date: "2023-09-30"
+excerpt: "In the huge array of networked devices, communication is the key, imagine trying to have a conversation with someone who speaks a completely different..."
+description: "In the huge array of networked devices, communication is the key, imagine trying to have a conversation with someone who speaks a completely different language. In the world of networking, this langua..."
+category: "Uncategorized"
+tags: []
+image: ""
+author: "Syed Asif"
+readingTime: "5 min read"
+status: "published"
+lastModified: "2023-09-30"
+---
+
+---
+
+![OSI and TCP/IP Protocols](https://cdn-images-1.medium.com/max/800/1*B3VcX-Xc5bMunYesZmHI0w.png)
+
+### Network Protocol Suites: The Backbone of Digital Communication
+
+In the huge array of networked devices, communication is the key, imagine trying to have a conversation with someone who speaks a completely different language. In the world of networking, this language barrier is overcome by something called network protocol suites. These suites help devices to communicate effectively on a network.
+
+In this article, we’ll explore the significance of network protocol suites and compare two renowned models: the OSI (Open Systems Interconnection) Reference Model and the TCP/IP Model.
+
+### The Language of Network
+
+What is a protocol suite? At its core, a protocol suite is a standardized set of rules and conventions that devices follow when exchanging messages on a network. It’s like a universal language that ensures all networking devices can understand and communicate with each other. Without this common language, digital communication would be wild and full of errors.
+
+In the early days of computing, manufacturers developed their own proprietary protocol suites, restricting communication to devices from the same vendor. This isolated approach prevented interoperability and created islands of technology. The need for a universal framework led to the most common Inter-networking Models, the OSI Reference Model and the TCP/IP Model.
+
+#### The Advantages of Layered Architecture
+
+A fundamental concept within network protocol suites is layered architecture. There are several benefits to this approach, as below:
+
+**1. Reduces Complexity and Accelerates Evolution**
+
+Layered architecture allows vendors to focus their research and development efforts on a single layer without having to deal down with complexity of other layers.
+
+Changes made in one layer don’t disrupt the functionality of other layers, this modularity speeds up innovation and evolution.
+
+**2. Ensures Interoperability**
+
+Interoperability is crucial in a world filled with diverse networking products. When vendors adhere to open standards and base their products on them, it ensures that different devices can seamlessly communicate with each other. This quality prevents creating isolated technology silos.
+
+### Exploring the Protocol Suite
+
+Let’s delve into a detailed comparison of the OSI model and the TCP/IP protocol suite, both essential frameworks in the world of networking.
+
+#### The OSI Model
+
+The OSI model, known for its seven-layer structure, plays a vital role in understanding network communication.
+
+Here’s a breakdown of each layer:
+
+**1. Application Layer (Layer 7)**
+
+Acts as the interface between applications and the underlying network protocol, that is, presentation layer. In fact, they use this interface for communication with remote applications at the other end.
+
+Keep in mind that the web browser is simply an application running on a computer allows, the user, to use an application layer protocol such as HTTPS to exchange messages between a computer and a web server.
+
+Protocols: HTTP/HTTPS, FTP, SMTP, Telnet, SNMP, DNS and DHCP.
+
+**2. Presentation Layer (Layer 6)**
+
+Defines data formats, presents data, and handles compression and encryption. When an application layer protocol sends the data to the network, it passes through the presentation layer, which has to perform some tasks before sending it to the lower layers.
+
+As an example, the FTP ASCII and binary transfer modes define how FTP transfer data in a compatible format for both the lower layers and the recipient’s device(s) to understand. So the receiving end will reassemble data according to the format used and pass them back to the application layer.
+
+Formats: ASCII, EBCDIC, JPEG, GIF, TIFF, MPEG, WAV, MIDI.
+
+**4. Transport Layer (Layer 4)**
+
+Offers reliable (TCP) and unreliable (UDP) application data delivery services. Manages segmentation and reassembly of application data. Concepts include connection-oriented, connection-less, error recovery, acknowledgment, flow control, and windowing.
+
+**5. Network Layer (Layer 3)**
+
+Responsible for logical addressing on the network. Adds source and destination IP addresses (IPv4/IPv6) to packets. Directs traffic flows using routing protocols.
+
+**6. Data Link Layer (Layer 2)**
+
+Defines how data is transmitted over network media with physical addressing (MAC Address). Facilitates communication between end systems within the same network. Protocols include LAN (Ethernet) and WAN (HDLC, PPP, Frame Relay, ATM).
+
+**7. Physical Layer (Layer 1)**
+
+Specifies communication between end systems and physical media. Defines connector specifications, pin configurations, electrical levels, and signal encoding schemes. Protocols include Ethernet, RS-232, and V.35.
+
+#### Unpacking the Transport Layer
+
+The transport layer is responsible for moving data between the upper layers onto the network. Whenever a device wants to send a message across a network, the transport layer prepares the data (message) and separates it into manageable pieces for delivery. This is due to the fact that networking devices such as switches and routers, together with client machines such as desktop and server operating systems, have limitations regarding the amount of data that can be put in an IP packet. Therefore, the transport layer handles how to segment and reassemble these messages between the sender and the receiver.
+
+In other words, if a web browser is sending HTTP(S) traffic to a device on a network, the recipient application protocol on the destination device is expected to be running HTTP or HTTPS, such as a web server. The transport layer ensures each data is sent to its corresponding application or application layer protocol by assigning a unique port number to the data, therefore creating a \*\*transport layer header\*\*. This process is known as \*\*encapsulation\*\*.
+
+Each application layer protocol uses a unique port that they send and receive their traffic type to and from. For example, all HTTP traffic will be sent to a device running a web server application with open port 80. For HTTPS traffic to enter the web server, port 443 is the default port that must be open.
+
+![Network Ports](https://cdn-images-1.medium.com/max/800/1*BQu9CcWWIjKJxoPeea92DQ.png)
+
+Registered ports are used by software and other vendors who want to use a specific port only for their application. These dynamic ports are used temporarily when a device is sending traffic and are sometimes referred to as ephemeral ports. For example, if a PC wants to send traffic to a web server, we know the web server will have port 80 and/or 443 open by default. However, the PC must use a source port. This means a dynamically generated port (ephemeral) between 49152 and 65535 will be used.
+
+![Transport Header](https://cdn-images-1.medium.com/max/800/1*H3PwK2JpuvHeA6CWaczYmQ.png)
+
+#### The Network Layer: Logical Addressing and Routing
+
+The network layer, is responsible for the logical address on the network and the encapsulation of the IP header, which adds both the source (sender) and destination (receiver) IP (IPv4)/(IPv6) addresses to the packet.
+
+IP is a connection-less protocol, which means the protocol itself does not establish a session with a recipient before attempting to send or receive messages. Lastly, IP can function independently of the medium on the network (copper, fiber optic, or even wireless).
+
+Furthermore, the network layer provides the functionality of directing traffic flows using routing protocols, which operate using the IP. When the data is passed down, it is encapsulated with an IPv4 or an IPv6 header to provide logical addressing, as shown here:
+
+![](https://cdn-images-1.medium.com/max/800/1*JVMAjuw-XtNMVvVGFSbwpQ.png)
+
+Network Layer PDU
+
+It’s worth noting that the source and destination IP addresses remain unchanged during transmission between devices on a network. However, there’s one exception: when data passes through a NAT-enabled router, it changes the source IP address from a private one to the router’s public IP address.
+
+#### The Data Link Layer and Physical Layer
+
+**Data Link Layer (Layer 2)**
+
+The data link layer defines how data is transmitted over network media, whether it’s through cables or wirelessly. It also handles physical addressing and facilitates communication between end systems within the same network. Protocols for this layer include LAN (Ethernet) and WAN (HDLC, PPP, Frame Relay, ATM).
+
+**Physical Layer (Layer 1)**
+
+Defines specifications for communication between end systems and the physical media (how to place data link layer frames onto the media). Defines connector shapes, number of pins, pin usages or assignments, electrical current levels, and signal encoding schemes. Ex: Ethernet, RS-232, V.35.
+
+Data encapsulation is the process of wrapping data from the upper layer with a particular layer’s header (and trailer), which creates PDU for that particular layer (for adjacent-layer interaction).
+
+![](https://cdn-images-1.medium.com/max/800/1*Prk_3DtdgPcdIqApOmGrdQ.png)
+
+PDU at Different Stages
+
+In the field of networking, a device such as a computer creates a Protocol Data Unit (PDU), sometimes referred to as a datagram. This is the raw data to be sent across a network to another device. At each layer of the OSI model, the PDU has a different name. These names are used to reference the characteristics of the PDU at a particular layer.
+
+#### TCP/IP: A Streamlined Approach
+
+In contrast to the OSI reference model’s seven layers, the TCP/IP protocol suite adopts a more streamlined structure with five layers. Below is a visual representation that aligns these five layers with their counterparts in the OSI model:
+
+![](https://cdn-images-1.medium.com/max/800/1*nmY6FTkgO93tEuTnMfIsmA.png)
+
+OSI vs. TCP/IP
+
+It’s essential to note that TCP/IP has been universally adopted and implemented in all network-connected devices, ranging from end-user devices like laptops and smartphones to robust servers and critical network infrastructure.
+
+In conclusion, network protocol suites serve as the backbone of digital communication. They enable the seamless exchange of data across diverse networks, ensuring that our digital interactions remain smooth and efficient. Whether you’re sending emails, browsing the web, or streaming videos, these suites work tirelessly behind the scenes to make it all possible.
+
+---
+
+*Originally published at* [*https://networklabguide.blogspot.com*](https://networklabguide.blogspot.com/2023/09/network-protocol-suites-backbone-of.html)*.*

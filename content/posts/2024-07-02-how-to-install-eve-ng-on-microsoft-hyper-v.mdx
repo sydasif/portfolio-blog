@@ -1,0 +1,129 @@
+---
+title: "How to Install EVE-NG on Microsoft Hyper-V"
+date: "2024-07-02"
+excerpt: "In this blog, I will guide you through the process of installing EVE-NG on Microsoft Hyper-V. Typically, I use GNS3 on VMware as recommended by the do..."
+description: "In this blog, I will guide you through the process of installing EVE-NG on Microsoft Hyper-V. Typically, I use GNS3 on VMware as recommended by the documentation. However, if you want to use a Docker ..."
+category: "Uncategorized"
+tags: []
+image: ""
+author: "Syed Asif"
+readingTime: "5 min read"
+status: "published"
+lastModified: "2024-07-02"
+---
+
+---
+
+![](https://cdn-images-1.medium.com/max/800/0*RsiviHY7eTODE7NT)
+
+Photo by [Lukas Blazek](https://unsplash.com/@goumbik?utm_source=medium&utm_medium=referral) on [Unsplash](https://unsplash.com?utm_source=medium&utm_medium=referral)
+
+### How to Install EVE-NG on Microsoft Hyper-V
+
+In this blog, I will guide you through the process of installing EVE-NG on Microsoft Hyper-V. Typically, I use GNS3 on VMware as recommended by the documentation. However, if you want to use a Docker Desktop on Windows and WSL2, there is a glitch: Microsoft Hyper-V and WSL2 do not coexist well with VMWare on the same machine.
+
+During my research, I found an article titled [How to install EVE-NG on Microsoft Hyper-V](https://aboutnetworks.net/eve-ng-on-hyper-v/), written on November 15, 2018. The tutorial was based on Ubuntu Server 16.04. I applied the same procedure to Ubuntu Server 22.04 but did not succeed due to differences in the Ubuntu versions.
+
+The `EVE-NG CE Community Edition Cookbook` provides a procedure for `BM Server Installation Ubuntu legacy ISO` for Server 22.04. By combining both tutorials, I managed to get EVE-NG running on Microsoft Hyper-V.
+
+Let’s dive into the process!
+
+### Ubuntu Server Installation on Hyper-V
+
+First, download the Ubuntu Server 22.04 image from the official Ubuntu website.
+
+#### Create a New VM in Hyper-V
+
+1. Open Hyper-V Manager and click on `New Virtual Machine`.
+2. Name: Enter `EVE-NG`.
+3. Generation: Select `Generation 2`.
+4. Startup Memory: Allocate `8GB/4GB` and disable dynamic memory.
+5. Networking: Use an existing `Default vSwitch` connected to the Internet.
+6. Hard Disk: Set the size to a minimum of `60GB`.
+7. Installation Options: Choose “Install the operating system from a bootable image file” and select the Ubuntu Server 22.04 image.
+8. Click “Next,” then “Finish.” Hyper-V will create your VM.
+
+#### Configure VM Settings
+
+1. In Hyper-V Manager, select your VM, right-click, and choose “Settings.”
+2. Under Security, disable Secure Boot (necessary for ISO boot).
+
+![Secure Boot](https://cdn-images-1.medium.com/max/800/1*4bnbw9A8-Fd5X3ap8ESSLQ.png)
+
+3. Under Firmware, Set the boot order.
+
+![Boot Order](https://cdn-images-1.medium.com/max/800/1*bDrwRcmLlBc68u69E8WPEw.png)
+
+4. Under Processor, increase the number of virtual processors according to your hardware.
+
+#### Install Ubuntu Server
+
+1. Connect to the VM and start it. The Ubuntu installation will begin.
+2. Follow the steps in the `EVE-NG CE Community Edition Cookbook` for `BM Server Installation Ubuntu legacy ISO`.
+3. After installation, reboot the server.
+
+![Ubuntu Server](https://cdn-images-1.medium.com/max/800/1*W-n2uYdrX3WV-fqQxa4Ghw.png)
+
+### EVE-NG Pre-Installation
+
+After rebooting, log in with the user created during the installation and get root access. Change the root password (for example: in my case `eve`):
+
+![Set root password](https://cdn-images-1.medium.com/max/800/1*2bO1qS6gWBxkmgkfoY8Vbg.png)
+
+To allow SSH root login edit:
+
+```
+root@eve-ng:~# vim /etc/ssh/sshd_config
+```
+
+Change:
+
+```
+PermitRootLogin prohibit-password
+```
+
+To:
+
+```
+PermitRootLogin yes
+```
+
+Save settings and restart the SSH service:
+
+```
+root@eve-ng:~# service sshd restart
+```
+
+#### EVE-NG Installation
+
+1. SSH to your EVE-NG server using an SSH client like Putty and login as ***root***.
+2. Update and upgrade the system:
+
+```
+$ apt update  
+$ apt upgrade
+```
+
+3. Run the EVE-NG Community Edition installation script:
+
+```
+$ wget -O - https://www.eve-ng.net/jammy/install-eve.sh | bash -i
+```
+
+4. Reboot the server after the installation completes.
+
+5. Go back to Hyper-V, right-click on your VM, and click Connect.
+
+![](https://cdn-images-1.medium.com/max/800/1*g-2WYPN0r7ICkgEVK3RXdw.png)
+
+Now follow the [official guide](https://www.eve-ng.net/index.php/documentation/installation/howto-configure-eve-during-first-boot/) for the first boot configuration.
+
+Open a PowerShell prompt as administrator on your PC and run the following command:
+
+```
+$ Set-VMProcessor -VMName "EVE-NG" -ExposeVirtualizationExtensions $true
+```
+
+Start your EVE-NG VM again in the Hyper-V console. The message `neither Intel VT-x nor AMD-V found on Hyper-V` should not appear, and you should be able to connect to the web interface using your `<server ip>`.
+
+And there you have it! You now have a running EVE-NG environment on Microsoft Hyper-V. This setup allows you to emulate network scenarios efficiently and leverage the powerful features of EVE-NG.
